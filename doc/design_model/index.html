@@ -45,27 +45,39 @@
     </nav>
     <div id="big-container">
       <div id="panel" onmouseenter="onMouseEnterPanel()" onmouseleave="onMouseLeavePanel()">
-        <div class="panel-icon-container panel-icon-container-selected">
-          <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
-        </div>
-        <div class="panel-icon-container">
-          <i class="fas fa-cart-arrow-down"></i> <span style="font-size: 18pt;display: none;">Withdraw</span>
-        </div>
-        <div class="panel-icon-container">
-          <i class="far fa-chart-bar"></i> <span style="font-size: 18pt;display: none;">Team report</span>
-        </div>
+        <a href="index.html">
+          <div class="panel-icon-container panel-icon-container-selected">
+            <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
+          </div>
+        </a>
+        <a href="withdraw.html">
+          <div class="panel-icon-container">
+            <i class="fas fa-cart-arrow-down"></i> <span style="font-size: 18pt;display: none;">Withdraw</span>
+          </div>
+        </a>
+        <a href="history.html">
+          <div class="panel-icon-container">
+            <i class="fas fa-history"></i> <span style="font-size: 18pt;display: none;">History</span>
+          </div>
+        </a>
+        <a href="teamReport.html">
+          <div class="panel-icon-container">
+            <i class="far fa-chart-bar"></i> <span style="font-size: 18pt;display: none;">Team report</span>
+          </div>
+        </a>
+
       </div>
       <!-- content here  -->
       <div class="content">
         <div class="d-flex flex-column" style="width: 100%;">
           <div class="center title-stock-overview">
-            <h1>Stock overview</h1>
+            <h1><i class="fas fa-search"></i> Stock overview</h1>
           </div>
           <div class="search-stock-overview d-flex flex-column">
             <div class="input-group mb-3">
               <input type="text" class="form-control" placeholder="Aliquot's name"aria-describedby="button-addon2">
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" id="button-addon2">Button</button>
+                <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i class="fas fa-search"></i></button>
               </div>
             </div>
           </div>

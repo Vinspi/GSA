@@ -1,0 +1,42 @@
+.withdraw-form {
+  /* width: 100%; */
+  margin-top: 3%;
+  padding-left: 5%;
+  padding-right: 5%;
+
+}
+
+.withdraw-scroll {
+  max-height: 40%;
+  overflow-y: auto;
+}
+
+.withdraw-cart {
+  padding-left: 5%;
+  padding-right: 5%;
+
+}
+
+.withdraw-cart h2 {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.title-cart {
+  background-color: #3a4d70;
+  color: white;
+  padding: 5px;
+}
+
+.content-cart {
+  margin-top: 12px;
+}
+
+.element-cart:nth-child(2n) {
+  background-color: #e6e7eb;
+  padding: 6px;
+}
+
+i {
+  padding: 4px;
+}

@@ -1,0 +1,176 @@
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"></link>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/withdraw.css">
+    <script type="text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.js"
+      integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+      crossorigin="anonymous"></script>
+    <script type="text/javascript" src="js/script.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <a class="navbar-brand" href="#">
+        <img id="logo"src="img/ibdm-logo-couleur.png"/>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+          <div class="d-flex justify-content-around">
+            <div class="team flex-grow-1">
+              <p>Team : Polarisation et décisions binaires au sein du système nerveux</p>
+            </div>
+            <div class="user">
+              Hi, Pierre
+            </div>
+            <div class="logout">
+              <button type="button" class="btn btn-outline-danger">Log out</button>
+            </div>
+          </div>
+
+        <ul class="navbar-nav">
+        </ul>
+      </div>
+    </nav>
+    <div id="big-container">
+      <div id="panel" onmouseenter="onMouseEnterPanel()" onmouseleave="onMouseLeavePanel()">
+        <a href="index.html">
+          <div class="panel-icon-container">
+            <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
+          </div>
+        </a>
+        <a href="withdraw.html">
+          <div class="panel-icon-container panel-icon-container-selected">
+            <i class="fas fa-cart-arrow-down"></i> <span style="font-size: 18pt;display: none;">Withdraw</span>
+          </div>
+        </a>
+        <a href="history.html">
+          <div class="panel-icon-container">
+            <i class="fas fa-history"></i> <span style="font-size: 18pt;display: none;">History</span>
+          </div>
+        </a>
+        <a href="teamReport.html">
+          <div class="panel-icon-container">
+            <i class="far fa-chart-bar"></i> <span style="font-size: 18pt;display: none;">Team report</span>
+          </div>
+        </a>
+      </div>
+      <!-- content here  -->
+      <div class="content">
+        <div class="d-flex flex-column" style="width: 100%;">
+          <div class="center">
+            <h1><i class="fas fa-cart-arrow-down"></i> Withdraw items</h1>
+          </div>
+          <div class="withdraw-form">
+            <form>
+              <div class="form-row">
+                <div class="col-2">
+                  <input type="text" class="form-control" placeholder="Id">
+                </div>
+                <div class="col-7">
+                  <input type="text" class="form-control" placeholder="Name">
+                </div>
+                <div class="col-2">
+                  <input type="text" class="form-control" placeholder="Quantity">
+                </div>
+                <div class="col-1">
+                  <button type="button" class="btn btn-outline-secondary"><i class="fas fa-plus"></i></button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="withdraw-cart">
+            <h2>Withdraw cart :</h2>
+            <div class="title-cart d-flex flex-row justify-content-around" style="width: 100%;">
+              <div class="">
+                ID
+              </div>
+              <div class="">
+                NumLot
+              </div>
+              <div class="">
+                Name
+              </div>
+              <div class="">
+                Quantity
+              </div>
+            </div>
+            <div class="withdraw-scroll">
+              <div class="content-cart d-flex flex-column" style="width: 100%;">
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+                <div class="element-cart d-flex flex-row justify-content-around" style="width: 100%;">
+                  <div>5</div><div>48217</div><div>Daclizumab, Code ATC L04AA08</div><div>2</div>
+                </div>
+              </div>
+            </div>
+            <div class="center-button">
+              <button type="button" class="btn btn-outline-secondary">Withdraw items</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>

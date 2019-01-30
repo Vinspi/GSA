@@ -1,0 +1,41 @@
+
+
+.history-scroll {
+  max-height: 40%;
+  overflow-y: auto;
+}
+
+.history-content {
+  padding-left: 5%;
+  padding-right: 5%;
+
+}
+
+.content-history-title {
+  margin-bottom: 15px;
+  margin-top: 15px;
+}
+
+.withdraw-cart h2 {
+  margin-bottom: 10px;
+}
+
+.title-history {
+  background-color: #3a4d70;
+  color: white;
+  padding: 5px;
+}
+
+.content-history {
+  margin-top: 12px;
+}
+
+.element-history:nth-child(2n) {
+  background-color: #e6e7eb;
+  padding: 6px;
+  text-align: center;
+}
+
+i {
+  padding: 4px;
+}
