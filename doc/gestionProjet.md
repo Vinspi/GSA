@@ -1,14 +1,14 @@
 ﻿# Gestion de projet
 
-Au cours de ce projet nous allons essayer de mettre en place une approche agile, je vous propose donc l'adaptation de ces méthode dans ce document.
+Au cours de ce projet nous allons essayer de mettre en place une approche agile, je vous propose donc l'adaptation de ces méthodes dans ce document.
 
-Comme nous nous trouvons dans un contexte agile nous allons travailler en cycle court, la durée des sprints est fixé à **deux semaines**.
+Comme nous nous trouvons dans un contexte agile nous allons travailler en cycle court, la durée des sprints est fixée à **deux semaines**.
 
 Au cours de chaque cycle nous allons retrouver les éléments suivants :
 
 ## Réunion de début de sprint
 
-Nous nous réunirons au début de chaque cycle pour discuter du cycle passé, ce sera aussi l'occasion de plannifier les fonctionnalités à développer dans le prochain cycle. Les éventuels problèmes techniques ne devrons pas être évoqué lors de cette réunion.
+Nous nous réunirons au début de chaque cycle pour discuter du cycle passé, ce sera aussi l'occasion de plannifier les fonctionnalités à développer dans le prochain cycle. Les éventuels problèmes techniques ne devrons pas être évoqués lors de cette réunion.
 
 C'est l'occasion de faire un poker planning pour définir la difficulté de chaque fonctionnalité, c'est aussi lors de cette réunion que les fonctionnalités seront attribués aux développeurs.
 C'est ici que nous pourrons définir les tests fonctionnels que les modules doivent passés afin de valider leur intégration (features).
@@ -34,13 +34,13 @@ Cette réunion peut se faire sur discord il n'est pas nécessaire de tous se dé
 
 Chaque développeur aura à sa charge la fonctionnalité entière qui lui sera affecté (écriture du service, intégration de celui-ci dans le controller et création du composant web associé).
 Les tests unitaires doivent être écrits en même temps que le code.
-Pour chaque fonctionnalité il est d'usage de créer une nouvelle branche sur le github. Lorsque vous avez terminé de développer votre fonctionnalité et que celle-ci passe les tests la branche en question sera merge sur le master.
+Pour chaque fonctionnalité il est d'usage de créer une nouvelle branche sur le github. Lorsque vous avez terminé de développer votre fonctionnalité et que celle-ci passe les tests fonctionnels la branche en question sera merge sur le master.
 
 Toutes les fonctions implémentées devront être commentées avec le style JavaDoc, et les informations suivantes devrons être présentes au début du fichier source : 
 ~~~
 /**
-* @author
-* @date 
+* @author auteur
+* @date dd/mm/yyyy
 * description of the class/src file
 */
 ~~~
