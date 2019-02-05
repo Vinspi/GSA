@@ -1,0 +1,10 @@
+<div *ngIf="lorem == null" style="width: 100%;">
+    <div class="d-flex justify-content-center" style="width: 100%;">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+</div>
+<div *ngIf="lorem != null">
+    {{lorem.text}}
+</div>

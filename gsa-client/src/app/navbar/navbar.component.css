@@ -1,0 +1,40 @@
+
+#navbarNav .d-flex {
+    width: 100%;
+  }
+  
+  .navbar-brand {
+    margin-left: 3%;
+  
+  }
+
+  @media only screen and (min-width: 1320px){
+    .team {
+      font-size: 15pt;
+    }
+    .user {
+      font-size: 15pt;
+      width: 15%;
+    }
+  }
+  
+  @media only screen and (max-width: 1320px){
+    .team {
+      font-size: 11pt;
+    }
+    .user {
+      font-size: 11pt;
+      width: 30%;
+    }
+  }
+  
+  #logo {
+    width: 40%;
+  }
+
+  
+nav {
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  }
