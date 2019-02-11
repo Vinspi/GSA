@@ -1,71 +1,80 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-public class Aliquot {
+public class Aliquot implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long aliquotId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long aliquotId;
 
-    private String aliquotName;
-    private long aliquotNLot;
-    private LocalDate aliquotExpirationDate;
-    private long aliquotQuantity;
+  private String aliquotName;
+  private long aliquotNLot;
+  private LocalDate aliquotExpirationDate;
+  private long aliquotQuantity;
 
-    @ManyToOne
-    private Alert aliquotAlert;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id")
+  private Product product;
 
-    public Aliquot() {
-    }
 
-    public long getAliquotId() {
-        return aliquotId;
-    }
+  public Aliquot() {
+  }
 
-    public void setAliquotId(long aliquotId) {
-        this.aliquotId = aliquotId;
-    }
+  public long getAliquotId() {
+    return aliquotId;
+  }
 
-    public String getAliquotName() {
-        return aliquotName;
-    }
+  public void setAliquotId(long aliquotId) {
+    this.aliquotId = aliquotId;
+  }
 
-    public void setAliquotName(String aliquotName) {
-        this.aliquotName = aliquotName;
-    }
+  public String getAliquotName() {
+    return aliquotName;
+  }
 
-    public long getAliquotNLot() {
-        return aliquotNLot;
-    }
+  public void setAliquotName(String aliquotName) {
+    this.aliquotName = aliquotName;
+  }
 
-    public void setAliquotNLot(long aliquotNLot) {
-        this.aliquotNLot = aliquotNLot;
-    }
+  public long getAliquotNLot() {
+    return aliquotNLot;
+  }
 
-    public LocalDate getAliquotExpirationDate() {
-        return aliquotExpirationDate;
-    }
+  public void setAliquotNLot(long aliquotNLot) {
+    this.aliquotNLot = aliquotNLot;
+  }
 
-    public void setAliquotExpirationDate(LocalDate aliquotExpirationDate) {
-        this.aliquotExpirationDate = aliquotExpirationDate;
-    }
+  public LocalDate getAliquotExpirationDate() {
+    return aliquotExpirationDate;
+  }
 
-    public long getAliquotQuantity() {
-        return aliquotQuantity;
-    }
+  public void setAliquotExpirationDate(LocalDate aliquotExpirationDate) {
+    this.aliquotExpirationDate = aliquotExpirationDate;
+  }
 
-    public void setAliquotQuantity(long aliquotQuantity) {
-        this.aliquotQuantity = aliquotQuantity;
-    }
+  public long getAliquotQuantity() {
+    return aliquotQuantity;
+  }
 
-    public Alert getAliquotAlert() {
-        return aliquotAlert;
-    }
+  public void setAliquotQuantity(long aliquotQuantity) {
+    this.aliquotQuantity = aliquotQuantity;
+  }
 
-    public void setAliquotAlert(Alert aliquotAlert) {
-        this.aliquotAlert = aliquotAlert;
-    }
+  public Product getProduct() {
+    return product;
+  }
+
+  public void setProduct(Product product) {
+    this.product = product;
+  }
 }

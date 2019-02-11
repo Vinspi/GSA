@@ -1,55 +1,61 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
-public class Team {
+public class Team implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long teamId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long teamId;
 
-    private String teamName;
+  private String teamName;
 
-    @OneToMany(mappedBy = "userTeam", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Collection<User> teamMember;
+  @OneToMany(mappedBy = "userTeam", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  private Collection<User> teamMember;
 
-    @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Collection<TeamTrimestrialReport> reports;
+  @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  private Collection<TeamTrimestrialReport> reports;
 
-    public Team() {
-    }
+  public Team() {
+  }
 
-    public long getTeamId() {
-        return teamId;
-    }
+  public long getTeamId() {
+    return teamId;
+  }
 
-    public void setTeamId(long teamId) {
-        this.teamId = teamId;
-    }
+  public void setTeamId(long teamId) {
+    this.teamId = teamId;
+  }
 
-    public String getTeamName() {
-        return teamName;
-    }
+  public String getTeamName() {
+    return teamName;
+  }
 
-    public void setTeamName(String teamName) {
-        this.teamName = teamName;
-    }
+  public void setTeamName(String teamName) {
+    this.teamName = teamName;
+  }
 
-    public Collection<User> getTeamMember() {
-        return teamMember;
-    }
+  public Collection<User> getTeamMember() {
+    return teamMember;
+  }
 
-    public void setTeamMember(Collection<User> teamMember) {
-        this.teamMember = teamMember;
-    }
+  public void setTeamMember(Collection<User> teamMember) {
+    this.teamMember = teamMember;
+  }
 
-    public Collection<TeamTrimestrialReport> getReports() {
-        return reports;
-    }
+  public Collection<TeamTrimestrialReport> getReports() {
+    return reports;
+  }
 
-    public void setReports(Collection<TeamTrimestrialReport> reports) {
-        this.reports = reports;
-    }
+  public void setReports(Collection<TeamTrimestrialReport> reports) {
+    this.reports = reports;
+  }
 }

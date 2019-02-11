@@ -1,97 +1,128 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-public class Transaction {
+public class Transaction implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long transactionId;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionMotif transactionMotif;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long transactionId;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private TransactionMotif transactionMotif;
 
-    private LocalDate transactionDate;
-    private int transactionQuantity;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private TransactionType transactionType;
 
-    @OneToOne
-    private Aliquot aliquot;
+  @Column(nullable = false)
+  private LocalDate transactionDate;
 
-    @OneToOne
-    private User user;
+  @Column(nullable = false)
+  private int transactionQuantity;
 
-    @ManyToOne
-    private TeamTrimestrialReport report;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id", nullable = false)
+  private Product product;
 
-    public Transaction() {
-    }
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "user_id", nullable = false)
+  private User user;
 
-    public long getTransactionId() {
-        return transactionId;
-    }
+  @ManyToOne
+  @JoinColumn(name = "report_id")
+  private TeamTrimestrialReport report;
 
-    public void setTransactionId(long transactionId) {
-        this.transactionId = transactionId;
-    }
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "team_id", nullable = false)
+  private Team team;
 
-    public TransactionMotif getTransactionMotif() {
-        return transactionMotif;
-    }
+  public Transaction() {
+  }
 
-    public void setTransactionMotif(TransactionMotif transactionMotif) {
-        this.transactionMotif = transactionMotif;
-    }
+  public long getTransactionId() {
+    return transactionId;
+  }
 
-    public TransactionType getTransactionType() {
-        return transactionType;
-    }
+  public void setTransactionId(long transactionId) {
+    this.transactionId = transactionId;
+  }
 
-    public void setTransactionType(TransactionType transactionType) {
-        this.transactionType = transactionType;
-    }
+  public TransactionMotif getTransactionMotif() {
+    return transactionMotif;
+  }
 
-    public LocalDate getTransactionDate() {
-        return transactionDate;
-    }
+  public void setTransactionMotif(TransactionMotif transactionMotif) {
+    this.transactionMotif = transactionMotif;
+  }
 
-    public void setTransactionDate(LocalDate transactionDate) {
-        this.transactionDate = transactionDate;
-    }
+  public TransactionType getTransactionType() {
+    return transactionType;
+  }
 
-    public int getTransactionQuantity() {
-        return transactionQuantity;
-    }
+  public void setTransactionType(TransactionType transactionType) {
+    this.transactionType = transactionType;
+  }
 
-    public void setTransactionQuantity(int transactionQuantity) {
-        this.transactionQuantity = transactionQuantity;
-    }
+  public LocalDate getTransactionDate() {
+    return transactionDate;
+  }
 
-    public Aliquot getAliquot() {
-        return aliquot;
-    }
+  public void setTransactionDate(LocalDate transactionDate) {
+    this.transactionDate = transactionDate;
+  }
 
-    public void setAliquot(Aliquot aliquot) {
-        this.aliquot = aliquot;
-    }
+  public int getTransactionQuantity() {
+    return transactionQuantity;
+  }
 
-    public User getUser() {
-        return user;
-    }
+  public void setTransactionQuantity(int transactionQuantity) {
+    this.transactionQuantity = transactionQuantity;
+  }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
+  public User getUser() {
+    return user;
+  }
 
-    public TeamTrimestrialReport getReport() {
-        return report;
-    }
+  public void setUser(User user) {
+    this.user = user;
+  }
 
-    public void setReport(TeamTrimestrialReport report) {
-        this.report = report;
-    }
+  public TeamTrimestrialReport getReport() {
+    return report;
+  }
+
+  public void setReport(TeamTrimestrialReport report) {
+    this.report = report;
+  }
+
+  public Product getProduct() {
+    return product;
+  }
+
+  public void setProduct(Product product) {
+    this.product = product;
+  }
+
+  public Team getTeam() {
+    return team;
+  }
+
+  public void setTeam(Team team) {
+    this.team = team;
+  }
 }

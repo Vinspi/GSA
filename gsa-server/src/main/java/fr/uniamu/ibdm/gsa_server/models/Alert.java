@@ -1,44 +1,64 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
-import javax.persistence.*;
-import java.util.Collection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.io.Serializable;
 
 @Entity
-public class Alert {
+public class Alert implements Serializable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long alertId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private long alertId;
 
-    private int seuil;
+  private int seuil;
 
-    @OneToMany(mappedBy = "aliquotAlert", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Collection<Aliquot> aliquots;
+  @Enumerated(EnumType.STRING)
+  private AlertType alertType;
 
-    public Alert() {
-    }
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "product_id")
+  private Product product;
 
-    public long getAlertId() {
-        return alertId;
-    }
+  public Alert() {
+  }
 
-    public void setAlertId(long alertId) {
-        this.alertId = alertId;
-    }
+  public long getAlertId() {
+    return alertId;
+  }
 
-    public int getSeuil() {
-        return seuil;
-    }
+  public void setAlertId(long alertId) {
+    this.alertId = alertId;
+  }
 
-    public void setSeuil(int seuil) {
-        this.seuil = seuil;
-    }
+  public int getSeuil() {
+    return seuil;
+  }
 
-    public Collection<Aliquot> getAliquots() {
-        return aliquots;
-    }
+  public void setSeuil(int seuil) {
+    this.seuil = seuil;
+  }
 
-    public void setAliquots(Collection<Aliquot> aliquots) {
-        this.aliquots = aliquots;
-    }
+  public Product getProduct() {
+    return product;
+  }
+
+  public void setProduct(Product product) {
+    this.product = product;
+  }
+
+  public AlertType getAlertType() {
+    return alertType;
+  }
+
+  public void setAlertType(AlertType alertType) {
+    this.alertType = alertType;
+  }
 }

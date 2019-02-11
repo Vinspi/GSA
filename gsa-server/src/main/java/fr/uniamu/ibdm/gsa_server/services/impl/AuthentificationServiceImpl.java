@@ -10,13 +10,13 @@ import java.util.Map;
 @Service
 @Transactional
 public class AuthentificationServiceImpl implements AuthentificationService {
-    @Override
-    public User login(String email, byte password) {
-        return null;
-    }
+  @Override
+  public User login(String email, byte password) {
+    return null;
+  }
 
-    @Override
-    public User register(Map<String, String> userInfo) {
-        return null;
-    }
+  @Override
+  public User register(Map<String, String> userInfo) {
+    return null;
+  }
 }

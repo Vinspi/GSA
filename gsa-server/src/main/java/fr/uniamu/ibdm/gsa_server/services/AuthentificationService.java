@@ -6,7 +6,8 @@ import java.util.Map;
 
 public interface AuthentificationService {
 
-    User login(String email, byte password);
-    User register(Map<String, String> userInfo);
+  User login(String email, byte password);
+
+  User register(Map<String, String> userInfo);
 
 }
