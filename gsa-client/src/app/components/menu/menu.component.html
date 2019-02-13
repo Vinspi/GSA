@@ -1,22 +1,66 @@
 <div *ngIf='user != null' id="panel" (mouseenter)="onMouseEnterPanel()" (mouseleave)="onMouseLeavePanel()">
-  <a href="index.html">
-    <div class="panel-icon-container panel-icon-container-selected">
-      <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
+  <div *ngIf='!user.admin'>
+    <a href="index.html">
+      <div class="panel-icon-container panel-icon-container-selected">
+        <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
+      </div>
+    </a>
+    <a href="withdraw.html">
+      <div class="panel-icon-container">
+        <i class="fas fa-cart-arrow-down"></i> <span style="font-size: 18pt;display: none;">Withdraw</span>
+      </div>
+    </a>
+    <a href="history.html">
+      <div class="panel-icon-container">
+        <i class="fas fa-history"></i> <span style="font-size: 18pt;display: none;">History</span>
+      </div>
+    </a>
+    <a href="teamReport.html">
+      <div class="panel-icon-container">
+        <i class="fas fa-file-invoice-dollar"></i> <span style="font-size: 18pt;display: none;">Reports</span>
+      </div>
+    </a>
+  </div>
+  <div *ngIf='user.admin'>
+      <a href="index.html">
+        <div class="panel-icon-container panel-icon-container-selected">
+          <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
+        </div>
+      </a>
+      <a href="withdraw.html">
+        <div class="panel-icon-container">
+          <i class="fas fa-cart-arrow-down"></i> <span style="font-size: 18pt;display: none;">Withdraw</span>
+        </div>
+      </a>
+      <a href="history.html">
+        <div class="panel-icon-container">
+          <i class="fas fa-history"></i> <span style="font-size: 18pt;display: none;">History</span>
+        </div>
+      </a>
+      <a href="teamReport.html">
+        <div class="panel-icon-container">
+          <i class="fas fa-file-invoice-dollar"></i> <span style="font-size: 18pt;display: none;">Reports</span>
+        </div>
+      </a>
+      <a href="teamReport.html">
+        <div class="panel-icon-container">
+          <i class="fas fa-edit"></i> <span style="font-size: 18pt;display: none;">Edit reports</span>
+        </div>
+      </a>
+      <a href="teamReport.html">
+        <div class="panel-icon-container">
+          <i class="far fa-chart-bar"></i> <span style="font-size: 18pt;display: none;">Stats</span>
+        </div>
+      </a>
+      <a href="teamReport.html">
+        <div class="panel-icon-container">
+            <i class="fas fa-exclamation-triangle"></i> <span style="font-size: 18pt;display: none;">Alerts</span>
+        </div>
+      </a>
+      <a href="teamReport.html">
+          <div class="panel-icon-container">
+              <i class="fas fa-book"></i> <span style="font-size: 18pt;display: none;">Inventory</span>
+          </div>
+        </a>
     </div>
-  </a>
-  <a href="withdraw.html">
-    <div class="panel-icon-container">
-      <i class="fas fa-cart-arrow-down"></i> <span style="font-size: 18pt;display: none;">Withdraw</span>
-    </div>
-  </a>
-  <a href="history.html">
-    <div class="panel-icon-container">
-      <i class="fas fa-history"></i> <span style="font-size: 18pt;display: none;">History</span>
-    </div>
-  </a>
-  <a href="teamReport.html">
-    <div class="panel-icon-container">
-      <i class="far fa-chart-bar"></i> <span style="font-size: 18pt;display: none;">Team report</span>
-    </div>
-  </a>
 </div>

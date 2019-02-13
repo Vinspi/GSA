@@ -35,9 +35,16 @@
     }
 }
 
+:host div div {
+    max-height: 85%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
 :host {
     height: 100%;
     transition: width .3s ease-in;
+
 }
 
 :host:hover {
