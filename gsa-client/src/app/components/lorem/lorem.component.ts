@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoremServiceService, Lorem } from './../services/lorem-service.service'
+import { LoremServiceService, Lorem } from './../../services/lorem-service.service'
 
 @Component({
   selector: 'app-lorem',

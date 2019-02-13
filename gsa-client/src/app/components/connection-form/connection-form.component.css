@@ -1,0 +1,11 @@
+:host {
+    width: 100%;
+    padding-left: 10%;
+    padding-right: 10%;
+    margin-top: 3%;
+}
+
+h1 {
+    text-align: center;
+}
+

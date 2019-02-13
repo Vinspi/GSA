@@ -15,12 +15,12 @@ public class Aliquot implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long aliquotId;
-
-  private String aliquotName;
   private long aliquotNLot;
+
+
   private LocalDate aliquotExpirationDate;
   private long aliquotQuantity;
+  private float aliquotPrice;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "product_id")
@@ -30,21 +30,6 @@ public class Aliquot implements Serializable {
   public Aliquot() {
   }
 
-  public long getAliquotId() {
-    return aliquotId;
-  }
-
-  public void setAliquotId(long aliquotId) {
-    this.aliquotId = aliquotId;
-  }
-
-  public String getAliquotName() {
-    return aliquotName;
-  }
-
-  public void setAliquotName(String aliquotName) {
-    this.aliquotName = aliquotName;
-  }
 
   public long getAliquotNLot() {
     return aliquotNLot;
@@ -76,5 +61,13 @@ public class Aliquot implements Serializable {
 
   public void setProduct(Product product) {
     this.product = product;
+  }
+
+  public float getAliquotPrice() {
+    return aliquotPrice;
+  }
+
+  public void setAliquotPrice(float aliquotPrice) {
+    this.aliquotPrice = aliquotPrice;
   }
 }

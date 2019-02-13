@@ -36,7 +36,7 @@ public class JsonResponse<T> implements Serializable {
    * @param status status of the response.
    * @param error error message.
    */
-  public JsonResponse(RequestStatus status, String error) {
+  public JsonResponse(String error, RequestStatus status) {
     this.status = status;
     this.error = error;
     this.data = null;

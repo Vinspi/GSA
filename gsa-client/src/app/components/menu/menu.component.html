@@ -1,4 +1,4 @@
-<div id="panel" (mouseenter)="onMouseEnterPanel()" (mouseleave)="onMouseLeavePanel()">
+<div *ngIf='user != null' id="panel" (mouseenter)="onMouseEnterPanel()" (mouseleave)="onMouseLeavePanel()">
   <a href="index.html">
     <div class="panel-icon-container panel-icon-container-selected">
       <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
