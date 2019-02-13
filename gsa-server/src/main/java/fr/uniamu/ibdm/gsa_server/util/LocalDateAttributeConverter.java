@@ -1,4 +1,4 @@
-package fr.uniamu.ibdm.gsa_server.models;
+package fr.uniamu.ibdm.gsa_server.util;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

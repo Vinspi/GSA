@@ -1,32 +1,36 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPK;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.Collection;
 
 @Entity
+@IdClass(TeamTrimestrialReportPK.class)
 public class TeamTrimestrialReport implements Serializable {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long reportId;
+  private int losts;
 
-  private int pertes;
+  /* if final flag is up, the report can't be modified */
+  private boolean finalFlag;
+
+  @Id
   private int year;
 
-  private LocalDate begin;
-  private LocalDate end;
+  @Id
+  @Enumerated(EnumType.STRING)
+  @Column(length = 9)
+  private Quarter quarter;
 
-  @OneToMany(mappedBy = "report")
-  private Collection<Transaction> transactions;
-
+  @Id
   @ManyToOne()
   @JoinColumn(name = "team_id", nullable = false)
   private Team team;
@@ -34,20 +38,29 @@ public class TeamTrimestrialReport implements Serializable {
   public TeamTrimestrialReport() {
   }
 
-  public long getReportId() {
-    return reportId;
+
+  public int getLosts() {
+    return losts;
   }
 
-  public void setReportId(long reportId) {
-    this.reportId = reportId;
+  public void setLosts(int losts) {
+    this.losts = losts;
   }
 
-  public int getPertes() {
-    return pertes;
+  public boolean isFinalFlag() {
+    return finalFlag;
   }
 
-  public void setPertes(int pertes) {
-    this.pertes = pertes;
+  public void setFinalFlag(boolean finalFlag) {
+    this.finalFlag = finalFlag;
+  }
+
+  public Quarter getQuarter() {
+    return quarter;
+  }
+
+  public void setQuarter(Quarter quarter) {
+    this.quarter = quarter;
   }
 
   public int getYear() {
@@ -58,29 +71,6 @@ public class TeamTrimestrialReport implements Serializable {
     this.year = year;
   }
 
-  public LocalDate getBegin() {
-    return begin;
-  }
-
-  public void setBegin(LocalDate begin) {
-    this.begin = begin;
-  }
-
-  public LocalDate getEnd() {
-    return end;
-  }
-
-  public void setEnd(LocalDate end) {
-    this.end = end;
-  }
-
-  public Collection<Transaction> getTransactions() {
-    return transactions;
-  }
-
-  public void setTransactions(Collection<Transaction> transactions) {
-    this.transactions = transactions;
-  }
 
   public Team getTeam() {
     return team;
@@ -89,4 +79,5 @@ public class TeamTrimestrialReport implements Serializable {
   public void setTeam(Team team) {
     this.team = team;
   }
+
 }

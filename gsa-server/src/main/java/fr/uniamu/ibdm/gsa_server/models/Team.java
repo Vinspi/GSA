@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.Collection;
@@ -18,8 +19,8 @@ public class Team implements Serializable {
 
   private String teamName;
 
-  @OneToMany(mappedBy = "userTeam", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-  private Collection<User> teamMember;
+  @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  private Collection<Member> members;
 
   @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   private Collection<TeamTrimestrialReport> reports;
@@ -43,14 +44,6 @@ public class Team implements Serializable {
     this.teamName = teamName;
   }
 
-  public Collection<User> getTeamMember() {
-    return teamMember;
-  }
-
-  public void setTeamMember(Collection<User> teamMember) {
-    this.teamMember = teamMember;
-  }
-
   public Collection<TeamTrimestrialReport> getReports() {
     return reports;
   }
@@ -58,4 +51,13 @@ public class Team implements Serializable {
   public void setReports(Collection<TeamTrimestrialReport> reports) {
     this.reports = reports;
   }
+
+  public Collection<Member> getMembers() {
+    return members;
+  }
+
+  public void setMembers(Collection<Member> members) {
+    this.members = members;
+  }
+
 }

@@ -1,10 +1,12 @@
 package fr.uniamu.ibdm.gsa_server.requests.JsonData;
 
+import java.util.List;
+
 public class LoginData {
 
   private boolean admin;
   private String userName;
-  private String userTeam;
+  private List<String> userTeams;
 
   public LoginData() {
   }
@@ -25,11 +27,11 @@ public class LoginData {
     this.userName = userName;
   }
 
-  public String getUserTeam() {
-    return userTeam;
+  public List<String> getUserTeams() {
+    return userTeams;
   }
 
-  public void setUserTeam(String userTeam) {
-    this.userTeam = userTeam;
+  public void setUserTeam(List<String> userTeams) {
+    this.userTeams = userTeams;
   }
 }

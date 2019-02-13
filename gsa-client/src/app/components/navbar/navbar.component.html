@@ -8,7 +8,7 @@
   <div class="collapse navbar-collapse" id="navbarNav">
       <div *ngIf='user != null' class="d-flex justify-content-around">
         <div class="team flex-grow-1">
-          <p>Team : {{user.userTeam}}</p>
+          <p>Team : {{user.userTeams[0]}}</p>
         </div>
         <div class="user">
           Hi, {{user.userName}}
@@ -19,7 +19,7 @@
       </div>
       <div *ngIf='user == null' class="d-flex flex-row-reverse">
         <div class="login">
-          <button (click)='toLogin()' type="button" class="btn btn-outline-primary">Log in</button>
+          <button (click)='toLogin()'  type="button" class="btn btn-outline-primary">Log in</button>
         </div>
       </div>
   </div>

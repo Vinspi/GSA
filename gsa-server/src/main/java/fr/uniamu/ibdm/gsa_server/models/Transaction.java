@@ -1,5 +1,8 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -36,20 +39,13 @@ public class Transaction implements Serializable {
   private int transactionQuantity;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id", nullable = false)
-  private Product product;
+  @JoinColumn(name = "aliquot_id", nullable = false)
+  private Aliquot aliquot;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+  @JoinColumn(name = "member_id", nullable = false)
+  private Member member;
 
-  @ManyToOne
-  @JoinColumn(name = "report_id")
-  private TeamTrimestrialReport report;
-
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "team_id", nullable = false)
-  private Team team;
 
   public Transaction() {
   }
@@ -94,35 +90,19 @@ public class Transaction implements Serializable {
     this.transactionQuantity = transactionQuantity;
   }
 
-  public User getUser() {
-    return user;
+  public Aliquot getAliquot() {
+    return aliquot;
   }
 
-  public void setUser(User user) {
-    this.user = user;
+  public void setAliquot(Aliquot aliquot) {
+    this.aliquot = aliquot;
   }
 
-  public TeamTrimestrialReport getReport() {
-    return report;
+  public Member getMember() {
+    return member;
   }
 
-  public void setReport(TeamTrimestrialReport report) {
-    this.report = report;
-  }
-
-  public Product getProduct() {
-    return product;
-  }
-
-  public void setProduct(Product product) {
-    this.product = product;
-  }
-
-  public Team getTeam() {
-    return team;
-  }
-
-  public void setTeam(Team team) {
-    this.team = team;
+  public void setMember(Member member) {
+    this.member = member;
   }
 }

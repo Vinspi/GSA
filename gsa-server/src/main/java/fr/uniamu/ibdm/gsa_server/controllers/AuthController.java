@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import fr.uniamu.ibdm.gsa_server.models.Member;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.LoginData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
@@ -45,11 +48,16 @@ public class AuthController {
     if (user == null) {
       response = new JsonResponse<>("bad credentials", RequestStatus.FAIL);
     } else {
+      List<String> teams = new ArrayList<>();
+
+      for (Member member : user.getMembers()) {
+        teams.add(member.getTeam().getTeamName());
+      }
+
       session.setAttribute("user", user);
-      session.setAttribute("test", "test");
       data.setAdmin(user.isAdmin());
       data.setUserName(user.getUserName());
-      data.setUserTeam(user.getUserTeam().getTeamName());
+      data.setUserTeam(teams);
       response = new JsonResponse<>(RequestStatus.SUCCESS, data);
     }
 
@@ -70,18 +78,28 @@ public class AuthController {
 
     if (session.getAttribute("user") == null) {
       response = new JsonResponse<>("not connected", RequestStatus.FAIL);
-    }
-    else {
+    } else {
       User u = (User) session.getAttribute("user");
+
+      List<String> teams = new ArrayList<>();
+
+      for (Member member : u.getMembers()) {
+        teams.add(member.getTeam().getTeamName());
+      }
+
       data.setAdmin(u.isAdmin());
       data.setUserName(u.getUserName());
-      data.setUserTeam(u.getUserTeam().getTeamName());
+      data.setUserTeam(teams);
       response = new JsonResponse<>(RequestStatus.SUCCESS, data);
     }
 
     return response;
   }
 
+  /**
+   * REST endpoint for logging out the users.
+   * @return This method returns a json formatted response for the logout request.
+   */
   @GetMapping("/logout")
   public JsonResponse<String> logout() {
 

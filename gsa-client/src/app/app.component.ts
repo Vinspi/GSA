@@ -15,7 +15,12 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.authentificationService.checkLogin().subscribe(response => {
       if (response.status == 'FAIL') {
-        this.localStorage.clear().subscribe(() => {});
+        this.localStorage.getItem("user").subscribe(user => {
+          if(user != null){
+            this.localStorage.clear().subscribe(() => {});
+            window.location.reload();
+          }
+        });
       }
       else {
         this.localStorage.getItem("user").subscribe(user => {

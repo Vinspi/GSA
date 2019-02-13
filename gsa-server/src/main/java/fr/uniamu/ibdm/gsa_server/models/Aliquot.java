@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -14,16 +15,20 @@ import java.time.LocalDate;
 public class Aliquot implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.IDENTITY) /* changer pour la prod */
   private long aliquotNLot;
 
 
   private LocalDate aliquotExpirationDate;
   private long aliquotQuantity;
   private float aliquotPrice;
+  private String provider;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id")
+  @JoinColumns({
+      @JoinColumn(name = "source", nullable = false),
+      @JoinColumn(name = "target", nullable = false)
+  })
   private Product product;
 
 
@@ -70,4 +75,14 @@ public class Aliquot implements Serializable {
   public void setAliquotPrice(float aliquotPrice) {
     this.aliquotPrice = aliquotPrice;
   }
+
+  public String getProvider() {
+    return provider;
+  }
+
+  public void setProvider(String provider) {
+    this.provider = provider;
+  }
+
+
 }

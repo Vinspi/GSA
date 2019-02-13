@@ -1,5 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -8,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
@@ -24,7 +27,10 @@ public class Alert implements Serializable {
   private AlertType alertType;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "product_id")
+  @JoinColumns({
+      @JoinColumn(name = "source", insertable = false, updatable = false),
+      @JoinColumn(name = "target", insertable = false, updatable = false)
+  })
   private Product product;
 
   public Alert() {
@@ -61,4 +67,5 @@ public class Alert implements Serializable {
   public void setAlertType(AlertType alertType) {
     this.alertType = alertType;
   }
+
 }

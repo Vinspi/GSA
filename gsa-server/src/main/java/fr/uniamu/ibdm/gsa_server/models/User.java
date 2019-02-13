@@ -6,7 +6,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.io.Serializable;
+import java.util.Collection;
 
 @Entity
 public class User implements Serializable {
@@ -21,9 +23,8 @@ public class User implements Serializable {
   private byte[] salt;
   private boolean isAdmin;
 
-  @ManyToOne
-  @JoinColumn(name = "team_id")
-  private Team userTeam;
+  @OneToMany(mappedBy = "user")
+  private Collection<Member> members;
 
   public User() {
   }
@@ -76,11 +77,11 @@ public class User implements Serializable {
     isAdmin = admin;
   }
 
-  public Team getUserTeam() {
-    return userTeam;
+  public Collection<Member> getMembers() {
+    return members;
   }
 
-  public void setUserTeam(Team userTeam) {
-    this.userTeam = userTeam;
+  public void setMembers(Collection<Member> members) {
+    this.members = members;
   }
 }
