@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { LoremComponent } from './lorem/lorem.component'
+import { LoremComponent } from './components/lorem/lorem.component'
+import { ConnectionFormComponent } from './components/connection-form/connection-form.component'
 
 const routes: Routes = [
-  {path: 'lorem', component: LoremComponent}
+  {path: 'lorem', component: LoremComponent},
+  {path: 'login', component: ConnectionFormComponent}
 ];
 
 @NgModule({

@@ -19,6 +19,7 @@
     "@angular/platform-browser": "~7.1.0",
     "@angular/platform-browser-dynamic": "~7.1.0",
     "@angular/router": "~7.1.0",
+    "@ngx-pwa/local-storage": "^7.4.1",
     "bootstrap": "^4.2.1",
     "core-js": "^2.5.4",
     "jquery": "^3.3.1",

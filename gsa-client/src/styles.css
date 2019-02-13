@@ -35,3 +35,11 @@ body {
     display: flex;
     padding: 3%;
 }
+
+.button-container {
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
