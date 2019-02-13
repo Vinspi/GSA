@@ -1,6 +1,5 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
-import com.sun.xml.internal.bind.v2.TODO;
 import fr.uniamu.ibdm.gsa_server.dao.MemberRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
 import fr.uniamu.ibdm.gsa_server.dao.UserRepository;
