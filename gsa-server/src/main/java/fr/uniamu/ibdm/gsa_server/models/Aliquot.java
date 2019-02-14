@@ -41,6 +41,22 @@ public class Aliquot implements Serializable {
     this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
   }
 
+  /**
+   * The method withdraw a quantity of the visible stock,
+   * if the quantity is higher than the actual, set the quantity of the aliquot to 0.
+   *
+   * @param q quantity to withdraw
+   */
+  public void withdrawFromVisibleStock(int q) {
+
+    if (q > this.getAliquotQuantityVisibleStock()) {
+      this.setAliquotQuantityVisibleStock(0);
+    } else {
+      this.setAliquotQuantityVisibleStock(this.getAliquotQuantityVisibleStock() - q);
+    }
+
+  }
+
   public long getAliquotNLot() {
     return aliquotNLot;
   }
