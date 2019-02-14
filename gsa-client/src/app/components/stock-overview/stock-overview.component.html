@@ -1,0 +1,16 @@
+<div class="d-flex justify-content-center stock-overview">
+  <table datatable data-paging='false' [dtTrigger]="dtTrigger" data-info='false' class="custom-table" style="width: 100%;">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of data">
+        <td>{{item.productName}}</td>
+        <td>{{item.quantity}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

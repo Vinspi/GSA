@@ -1,0 +1,12 @@
+:host {
+    display: flex;
+    width: 100%;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+:host .d-flex {
+    width: 100%;
+}
+
+
