@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.controllers;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
+import fr.uniamu.ibdm.gsa_server.requests.forms.GetProductNameForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +44,19 @@ public class UserController {
    *
    * @return A json formatted response.
    */
-  @PostMapping("/withdrowCart")
-  public JsonResponse<String> withdrowCart(@RequestBody List<WithdrowForm> form) {
+  @PostMapping("/withdrawCart")
+  public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
 
+    boolean data = userService.withdrawCart(form);
+    JsonResponse<Boolean> response;
 
-    return null;
+    if (data) {
+      response = new JsonResponse<>(RequestStatus.SUCCESS);
+    } else {
+      response = new JsonResponse<>("bad aliquot nlot", RequestStatus.FAIL);
+    }
+
+    return response;
   }
 
   /**
@@ -56,9 +65,18 @@ public class UserController {
    * @return A json formatted response.
    */
   @GetMapping("/getProductName")
-  public JsonResponse<String> getProductName(@RequestBody Long nlot) {
+  public JsonResponse<String> getProductName(@RequestBody GetProductNameForm form) {
 
-    return null;
+    String productName = userService.getProductNameFromNlot(form.getNlot());
+    JsonResponse<String> response;
+
+    if (productName == null) {
+      response = new JsonResponse<>("bad lot number", RequestStatus.FAIL);
+    } else {
+      response = new JsonResponse<>(RequestStatus.SUCCESS, productName);
+    }
+
+    return response;
   }
 
 }

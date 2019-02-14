@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.MemberRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,6 +32,7 @@ public class UserServiceImpl implements UserService {
   private TeamRepository teamRepository;
   private MemberRepository memberRepository;
   private ProductRepository productRepository;
+  private AliquotRepository aliquotRepository;
 
   /**
    * Constructor for UserService.
@@ -39,11 +42,16 @@ public class UserServiceImpl implements UserService {
    * @param memberRepository Dao for member entities.
    */
   @Autowired
-  public UserServiceImpl(UserRepository userRepository, TeamRepository teamRepository, MemberRepository memberRepository, ProductRepository productRepository) {
+  public UserServiceImpl(UserRepository userRepository,
+                         TeamRepository teamRepository,
+                         MemberRepository memberRepository,
+                         ProductRepository productRepository,
+                         AliquotRepository aliquotRepository) {
     this.userRepository = userRepository;
     this.teamRepository = teamRepository;
     this.memberRepository = memberRepository;
     this.productRepository = productRepository;
+    this.aliquotRepository = aliquotRepository;
   }
 
   @Override
@@ -121,11 +129,36 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public String getProductNameFromNlot(Long nlot) {
-    return null;
+
+    Optional<Aliquot> aliquotOpt = aliquotRepository.findById(nlot);
+
+    if (aliquotOpt.isPresent()) {
+      return aliquotOpt.get().getProduct().getProductName();
+    } else {
+      return null;
+    }
   }
 
   @Override
-  public boolean withdrowCart(List<WithdrowForm> cart) {
-    return false;
+  public boolean withdrawCart(List<WithdrowForm> cart) {
+
+    Optional<Aliquot> aliquotOpt;
+    Aliquot aliquot;
+    boolean returnValue = true;
+
+    for (WithdrowForm wf : cart) {
+      System.out.println(wf);
+      aliquotOpt = aliquotRepository.findById(wf.getNlot());
+      /* we verify that the aliquot exists */
+      if (aliquotOpt.isPresent()) {
+        aliquot = aliquotOpt.get();
+        aliquot.withdrawFromVisibleStock(wf.getQuantity());
+        aliquotRepository.save(aliquot);
+      } else {
+        returnValue = false;
+      }
+    }
+
+    return returnValue;
   }
 }
