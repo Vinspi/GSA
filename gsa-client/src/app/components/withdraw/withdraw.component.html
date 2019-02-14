@@ -1,0 +1,30 @@
+<div>
+  <h1>Withdraw</h1>
+  
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><i class="fas fa-barcode"></i></span>
+    </div>
+    <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode">
+  </div>
+  
+  <div class="cart">
+    <div class="cart-header">
+      <div class="cart-header-element">NLot</div><div class="cart-header-element">Nom</div><div class="cart-header-element">Quantite</div>
+    </div>
+    <div class="cart-body">
+      <div *ngFor="let item of cart, let i = index" class="cart-element">
+          <div>{{item.nlot}}</div>
+          <div>{{item.name}}</div>
+          <div>{{item.quantity}}</div>
+          <div class="cart-button">
+            <button (click)="onMinusClicked(item.nlot)" type="button" class="btn minus"><i class="fas fa-minus"></i></button>
+            <button (click)="onTimesClicked(i)" type="button" class="btn btn-danger remove"><i class="fas fa-times"></i></button>
+          </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="cart.length > 0" class="button-container">
+    <button (click)="onWithdrawClicked()" type="button" class="btn btn-outlined-custom">Withdraw</button>
+  </div>
+</div>

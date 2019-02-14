@@ -4,7 +4,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     overflow: hidden;
-    background-color: #f2f3f8;
+    background-color: #eff5ff;
     height: 100vh;
 }
 
@@ -42,6 +42,19 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+}
+
+.btn-outlined-custom {
+    background-color: white;
+    border: 1px solid #242939;
+    color: #242939;
+    transition: all .3s ease;
+}
+
+.btn-outlined-custom:hover {
+    background-color: #242939;
+    border: 1px solid #242939;
+    color: white;
 }
 
 table.dataTable thead .sorting_asc {

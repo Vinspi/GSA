@@ -64,7 +64,7 @@ public class UserController {
    *
    * @return A json formatted response.
    */
-  @GetMapping("/getProductName")
+  @PostMapping("/getProductName")
   public JsonResponse<String> getProductName(@RequestBody GetProductNameForm form) {
 
     String productName = userService.getProductNameFromNlot(form.getNlot());
