@@ -25,6 +25,11 @@ public class UserController {
   @Autowired
   UserServiceImpl userService;
 
+  /**
+   * REST controller for the stockOverview request.
+   *
+   * @return A json formatted response.
+   */
   @GetMapping("/stockOverview")
   public JsonResponse<List<ProductOverviewData>> stockOverview() {
 
@@ -33,10 +38,25 @@ public class UserController {
     return new JsonResponse<>(RequestStatus.SUCCESS, data);
   }
 
-  @PostMapping("/withdrow")
-  public JsonResponse<String> withdrow(@RequestBody List<WithdrowForm> form){
+  /**
+   * REST controller for the withdrowCart request.
+   *
+   * @return A json formatted response.
+   */
+  @PostMapping("/withdrowCart")
+  public JsonResponse<String> withdrowCart(@RequestBody List<WithdrowForm> form) {
 
 
+    return null;
+  }
+
+  /**
+   * REST controller for the getProductName request.
+   *
+   * @return A json formatted response.
+   */
+  @GetMapping("/getProductName")
+  public JsonResponse<String> getProductName(@RequestBody Long nlot) {
 
     return null;
   }

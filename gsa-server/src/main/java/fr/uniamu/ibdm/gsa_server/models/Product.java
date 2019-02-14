@@ -34,6 +34,12 @@ public class Product implements Serializable {
   public Product() {
   }
 
+  /**
+   * Constructor for product object.
+   * @param target Target of the product.
+   * @param source Source of the product.
+   * @param aliquots List of aliquot for this product.
+   */
   public Product(Species target, Species source, Collection<Aliquot> aliquots) {
     this.target = target;
     this.source = source;
@@ -41,8 +47,8 @@ public class Product implements Serializable {
   }
 
   @Transient
-  public String getProductName(){
-    return this.getSource().getSpeciesName().toUpperCase()+"_ANTI_"+this.getTarget().getSpeciesName().toUpperCase();
+  public String getProductName() {
+    return this.getSource().getSpeciesName().toUpperCase() + "_ANTI_" + this.getTarget().getSpeciesName().toUpperCase();
   }
 
   public Species getTarget() {

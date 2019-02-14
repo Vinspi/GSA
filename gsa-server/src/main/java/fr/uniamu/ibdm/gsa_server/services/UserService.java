@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
 
 import java.util.List;
 
@@ -31,5 +32,19 @@ public interface UserService {
    * @return A list of objects containing the product name and the quantity.
    */
   List<ProductOverviewData> getAllOverviewProducts();
+
+  /**
+   * This method retrieve the name of the product based on the aliquot's lot number.
+   * @param nlot The lot number of the aliquot.
+   * @return The name of the product for the nlot specified.
+   */
+  String getProductNameFromNlot(Long nlot);
+
+  /**
+   * This method perform a withdrow for every aliquot in the shopping cart.
+   * @param cart The shopping cart.
+   * @return true if the withdrow can be performed, false otherwise.
+   */
+  boolean withdrowCart(List<WithdrowForm> cart);
 
 }

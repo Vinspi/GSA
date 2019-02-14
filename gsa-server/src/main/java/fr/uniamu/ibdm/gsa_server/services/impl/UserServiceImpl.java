@@ -10,6 +10,7 @@ import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
 import fr.uniamu.ibdm.gsa_server.util.Crypto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class UserServiceImpl implements UserService {
     Collection<Aliquot> aliquots;
     int sum;
 
-    for(Product p : products){
+    for (Product p : products) {
       aliquots = p.getAliquots();
       sum = 0;
       for (Aliquot a : aliquots) {
@@ -116,5 +117,15 @@ public class UserServiceImpl implements UserService {
     }
 
     return data;
+  }
+
+  @Override
+  public String getProductNameFromNlot(Long nlot) {
+    return null;
+  }
+
+  @Override
+  public boolean withdrowCart(List<WithdrowForm> cart) {
+    return false;
   }
 }
