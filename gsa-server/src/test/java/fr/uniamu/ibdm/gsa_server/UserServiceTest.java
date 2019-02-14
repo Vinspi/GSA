@@ -1,9 +1,15 @@
 package fr.uniamu.ibdm.gsa_server;
 
+import fr.uniamu.ibdm.gsa_server.dao.MemberRepository;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
 import fr.uniamu.ibdm.gsa_server.dao.UserRepository;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.User;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
 import fr.uniamu.ibdm.gsa_server.services.impl.UserServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.Crypto;
 import org.junit.Assert;
@@ -19,7 +25,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.Array;
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -30,6 +39,12 @@ public class UserServiceTest {
 
   @MockBean
   TeamRepository teamRepository;
+
+  @MockBean
+  ProductRepository productRepository;
+
+  @MockBean
+  MemberRepository memberRepository;
 
   @InjectMocks
   UserServiceImpl userService;
@@ -91,6 +106,29 @@ public class UserServiceTest {
 
     Assert.assertNull(user);
 
+
+  }
+
+  @Test
+  public void getAllOverviewProduct(){
+
+    List<Product> products = new ArrayList<>();
+    Collection<Aliquot> aliquots = new ArrayList<>();
+
+    for (int i=0;i<5;i++){
+      ((ArrayList<Aliquot>) aliquots).add(new Aliquot(8,8));
+    }
+
+    products.add(new Product(new Species("MoNkEy"),new Species("Cat"),aliquots));
+
+    Mockito.when(productRepository.findAll()).thenReturn(products);
+
+    List<ProductOverviewData> productOverviewDataList = userService.getAllOverviewProducts();
+
+    Assert.assertNotNull(productOverviewDataList);
+    Assert.assertEquals(productOverviewDataList.size(),1);
+    Assert.assertEquals(productOverviewDataList.get(0).getQuantity(),40);
+    Assert.assertEquals(productOverviewDataList.get(0).getProductName(), "CAT_ANTI_MONKEY");
 
   }
 

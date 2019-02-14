@@ -36,6 +36,10 @@ public class Aliquot implements Serializable {
   public Aliquot() {
   }
 
+  public Aliquot(long aliquotQuantityVisibleStock, long aliquotQuantityHiddenStock) {
+    this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
+    this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
+  }
 
   public long getAliquotNLot() {
     return aliquotNLot;
