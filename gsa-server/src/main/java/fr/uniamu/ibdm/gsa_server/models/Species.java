@@ -14,6 +14,10 @@ public class Species {
   public Species() {
   }
 
+  public Species(String speciesName) {
+    this.speciesName = speciesName;
+  }
+
   public String getSpeciesName() {
     return speciesName;
   }
@@ -21,6 +25,8 @@ public class Species {
   public void setSpeciesName(String speciesName) {
     this.speciesName = speciesName;
   }
+
+
 
 
 }

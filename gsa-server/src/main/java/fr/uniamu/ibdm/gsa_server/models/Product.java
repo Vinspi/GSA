@@ -34,6 +34,12 @@ public class Product implements Serializable {
   public Product() {
   }
 
+  public Product(Species target, Species source, Collection<Aliquot> aliquots) {
+    this.target = target;
+    this.source = source;
+    this.aliquots = aliquots;
+  }
+
   @Transient
   public String getProductName(){
     return this.getSource().getSpeciesName().toUpperCase()+"_ANTI_"+this.getTarget().getSpeciesName().toUpperCase();
