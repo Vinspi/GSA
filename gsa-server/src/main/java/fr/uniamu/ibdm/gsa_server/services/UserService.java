@@ -1,6 +1,9 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.models.User;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -21,5 +24,12 @@ public interface UserService {
    * @return The user logged or null.
    */
   User login(String email, String password);
+
+
+  /**
+   * This method retrieve all products and the quantity of them left in the visible storage.
+   * @return A list of objects containing the product name and the quantity.
+   */
+  List<ProductOverviewData> getAllOverviewProducts();
 
 }

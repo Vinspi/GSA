@@ -43,3 +43,59 @@ body {
     flex-direction: row;
     justify-content: space-around;
 }
+
+table.dataTable thead .sorting_asc {
+    background-color:  #242939;
+}
+
+.dataTables_wrapper {
+    width: 100% !important;
+}
+
+table.dataTable.display tbody tr.odd > .sorting_1 {
+    background-color:#e6e6e6 !important;
+}
+
+table.dataTable.display tbody tr.even > .sorting_1:hover {
+    background-color: #f9f9f9;
+}
+
+.odd {
+    background-color:#e6e6e6 !important;
+}
+
+thead {
+    background-color: #242939;
+    color: #888f9b;
+}
+
+/* stock overview only (datatable) */
+
+.stock-overview .dataTables_wrapper .dataTables_filter {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.stock-overview .dataTables_wrapper .dataTables_filter input {
+    width: 100%;
+    display: block;
+    height: calc(2.25rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.stock-overview .dataTables_wrapper .dataTables_filter label {
+    display: flex;
+    width: 100%;
+    line-height: 35px;
+}
+

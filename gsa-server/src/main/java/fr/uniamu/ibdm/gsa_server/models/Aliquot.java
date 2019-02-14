@@ -20,7 +20,8 @@ public class Aliquot implements Serializable {
 
 
   private LocalDate aliquotExpirationDate;
-  private long aliquotQuantity;
+  private long aliquotQuantityVisibleStock;
+  private long aliquotQuantityHiddenStock;
   private float aliquotPrice;
   private String provider;
 
@@ -52,12 +53,20 @@ public class Aliquot implements Serializable {
     this.aliquotExpirationDate = aliquotExpirationDate;
   }
 
-  public long getAliquotQuantity() {
-    return aliquotQuantity;
+  public long getAliquotQuantityVisibleStock() {
+    return aliquotQuantityVisibleStock;
   }
 
-  public void setAliquotQuantity(long aliquotQuantity) {
-    this.aliquotQuantity = aliquotQuantity;
+  public void setAliquotQuantityVisibleStock(long aliquotQuantityVisibleStock) {
+    this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
+  }
+
+  public long getAliquotQuantityHiddenStock() {
+    return aliquotQuantityHiddenStock;
+  }
+
+  public void setAliquotQuantityHiddenStock(long aliquotQuantityHiddenStock) {
+    this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
   }
 
   public Product getProduct() {

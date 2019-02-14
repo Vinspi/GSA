@@ -11,6 +11,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { MenuComponent } from './components/menu/menu.component';
 import { LoremComponent } from './components/lorem/lorem.component';
 import { ConnectionFormComponent } from './components/connection-form/connection-form.component';
+import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { ConnectionFormComponent } from './components/connection-form/connection
     NavbarComponent,
     MenuComponent,
     LoremComponent,
-    ConnectionFormComponent
+    ConnectionFormComponent,
+    StockOverviewComponent
   ],
   imports: [
     BrowserModule,

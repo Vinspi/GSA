@@ -8,13 +8,13 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.util.Collection;
 
 @Entity
 @IdClass(ProductPK.class)
 public class Product implements Serializable {
-
 
 
   @Id
@@ -34,6 +34,10 @@ public class Product implements Serializable {
   public Product() {
   }
 
+  @Transient
+  public String getProductName(){
+    return this.getSource().getSpeciesName().toUpperCase()+"_ANTI_"+this.getTarget().getSpeciesName().toUpperCase();
+  }
 
   public Species getTarget() {
     return target;

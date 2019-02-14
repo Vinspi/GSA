@@ -1,6 +1,6 @@
 <div *ngIf='user != null' id="panel" (mouseenter)="onMouseEnterPanel()" (mouseleave)="onMouseLeavePanel()">
   <div *ngIf='!user.admin'>
-    <a href="index.html">
+    <a routerLink="/stockoverview">
       <div class="panel-icon-container panel-icon-container-selected">
         <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
       </div>
@@ -22,7 +22,7 @@
     </a>
   </div>
   <div *ngIf='user.admin'>
-      <a href="index.html">
+      <a routerLink="/stockoverview">
         <div class="panel-icon-container panel-icon-container-selected">
           <i class="fas fa-search"></i> <span style="font-size: 18pt;display: none;">Stock overview</span>
         </div>
