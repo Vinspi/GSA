@@ -4,12 +4,16 @@ import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.MemberRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.UserRepository;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Member;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Team;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.User;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
@@ -33,6 +37,7 @@ public class UserServiceImpl implements UserService {
   private MemberRepository memberRepository;
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
+  private TransactionRepository transactionRepository;
 
   /**
    * Constructor for UserService.
@@ -46,12 +51,14 @@ public class UserServiceImpl implements UserService {
                          TeamRepository teamRepository,
                          MemberRepository memberRepository,
                          ProductRepository productRepository,
-                         AliquotRepository aliquotRepository) {
+                         AliquotRepository aliquotRepository,
+                         TransactionRepository transactionRepository) {
     this.userRepository = userRepository;
     this.teamRepository = teamRepository;
     this.memberRepository = memberRepository;
     this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
+    this.transactionRepository = transactionRepository;
   }
 
   @Override
@@ -140,25 +147,67 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public boolean withdrawCart(List<WithdrowForm> cart) {
+  public boolean withdrawCart(List<WithdrowForm> cart, User user) {
 
     Optional<Aliquot> aliquotOpt;
     Aliquot aliquot;
     boolean returnValue = true;
+    int withdrowQuantity;
+    Transaction transaction;
+    Member member;
 
     for (WithdrowForm wf : cart) {
-      System.out.println(wf);
       aliquotOpt = aliquotRepository.findById(wf.getNlot());
       /* we verify that the aliquot exists */
       if (aliquotOpt.isPresent()) {
         aliquot = aliquotOpt.get();
-        aliquot.withdrawFromVisibleStock(wf.getQuantity());
-        aliquotRepository.save(aliquot);
+        withdrowQuantity = aliquot.withdrawFromVisibleStock(wf.getQuantity());
+        /* we choose a member in which name perform the withdraw */
+        member = null;
+        for (Member m: user.getMembers()){
+          if (m.getTeam().getTeamName().equals(wf.getTeamName())){
+            member = m;
+          }
+        }
+
+        if (member != null) {
+          transaction = new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.now(), withdrowQuantity, aliquot, member);
+          transactionRepository.save(transaction);
+          aliquotRepository.save(aliquot);
+        }
+        else {
+          returnValue = false;
+        }
       } else {
         returnValue = false;
       }
     }
 
     return returnValue;
+  }
+
+  @Override
+  public List<String> getAllProductName() {
+
+    List<String> productNames = new ArrayList<>();
+
+    productRepository.findAll().forEach(element -> {
+      productNames.add(element.getProductName());
+    });
+
+
+    return productNames;
+  }
+
+  @Override
+  public List<String> getAllTeamName() {
+
+    List<String> teamNames = new ArrayList<>();
+
+    teamRepository.findAll().forEach(element -> {
+      teamNames.add(element.getTeamName());
+    });
+
+    return teamNames;
   }
 }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
-import { element } from '@angular/core/src/render3';
+import { LocalStorage } from '@ngx-pwa/local-storage';
+import { User } from 'src/app/user';
 
 @Component({
   selector: 'app-withdraw',
@@ -11,10 +12,19 @@ export class WithdrawComponent implements OnInit {
 
   cart: Array<any> = new Array();
   barcodeNlot: number
+  user: User;
+  teamChoosed: String;
+  loaded: boolean = false;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private localStorage: LocalStorage) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.localStorage.getItem('user').subscribe(user => {
+      this.user = <User> user;
+      this.teamChoosed = this.user.userTeams[0];
+      this.loaded = true;
+    })
+  }
 
   onTimesClicked(n: number){
     this.cart.splice(n,1);
@@ -59,8 +69,6 @@ export class WithdrawComponent implements OnInit {
         this.barcodeNlot = null;
       });
     }
-
-    
   }
 
   onWithdrawClicked() {
@@ -70,7 +78,8 @@ export class WithdrawComponent implements OnInit {
     this.cart.forEach(element => {
       aliquotList.push({
         nlot: element.nlot,
-        quantity: element.quantity
+        quantity: element.quantity,
+        teamName: this.teamChoosed
       });
     });
 

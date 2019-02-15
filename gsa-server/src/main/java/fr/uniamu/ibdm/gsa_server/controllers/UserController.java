@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
@@ -47,7 +48,7 @@ public class UserController {
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
 
-    boolean data = userService.withdrawCart(form);
+    boolean data = userService.withdrawCart(form,(User) session.getAttribute("user"));
     JsonResponse<Boolean> response;
 
     if (data) {
@@ -60,7 +61,7 @@ public class UserController {
   }
 
   /**
-   * REST controller for the getProductName request.
+   * REST controller for the getProductName request, return a product name from a lot number.
    *
    * @return A json formatted response.
    */
@@ -77,6 +78,28 @@ public class UserController {
     }
 
     return response;
+  }
+
+  /**
+   * REST controller for the getAllTeamName request, return a list of all team name.
+   *
+   * @return A json formatted response.
+   */
+  @GetMapping("/getAllTeamName")
+  public JsonResponse<List<String>> getAllTeamName() {
+
+    return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllTeamName());
+  }
+
+  /**
+   * REST controller for the getAllProductName request, return a list of all product name.
+   *
+   * @return A json formatted response.
+   */
+  @GetMapping("/getAllProductName")
+  public JsonResponse<List<String>> getAllProductName() {
+
+    return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllProductName());
   }
 
 }

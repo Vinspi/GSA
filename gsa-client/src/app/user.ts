@@ -1,5 +1,5 @@
 export class User {
     userName: String;
-    userTeam: String;
+    userTeams: String[];
     isAdmin: boolean;
 }

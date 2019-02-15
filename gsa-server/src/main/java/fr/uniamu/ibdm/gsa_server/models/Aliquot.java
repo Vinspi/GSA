@@ -47,12 +47,15 @@ public class Aliquot implements Serializable {
    *
    * @param q quantity to withdraw
    */
-  public void withdrawFromVisibleStock(int q) {
+  public int withdrawFromVisibleStock(int q) {
 
     if (q > this.getAliquotQuantityVisibleStock()) {
+      int returnValue = (int) this.getAliquotQuantityVisibleStock();
       this.setAliquotQuantityVisibleStock(0);
+      return returnValue;
     } else {
       this.setAliquotQuantityVisibleStock(this.getAliquotQuantityVisibleStock() - q);
+      return q;
     }
 
   }

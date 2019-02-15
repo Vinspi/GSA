@@ -20,6 +20,14 @@ export class UserService {
   }
 
   withdrawCart(data: any): Observable<JsonResponse> {
-    return this.http.post<JsonResponse>(environment.API_URL+'/withdrawCart', data);
+    return this.http.post<JsonResponse>(environment.API_URL+'/withdrawCart', data, {withCredentials: true});
+  }
+
+  getAllTeamName(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(environment.API_URL+'/getAllTeamName');
+  }
+
+  getAllProductName(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(environment.API_URL+'/getAllProductName');
   }
 }

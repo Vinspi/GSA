@@ -4,6 +4,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
+import { ChartsModule } from 'ng2-charts/ng2-charts'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -13,6 +14,7 @@ import { LoremComponent } from './components/lorem/lorem.component';
 import { ConnectionFormComponent } from './components/connection-form/connection-form.component';
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
+import { StatsComponent } from './components/stats/stats.component';
 
 
 @NgModule({
@@ -23,7 +25,8 @@ import { WithdrawComponent } from './components/withdraw/withdraw.component';
     LoremComponent,
     ConnectionFormComponent,
     StockOverviewComponent,
-    WithdrawComponent
+    WithdrawComponent,
+    StatsComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +34,8 @@ import { WithdrawComponent } from './components/withdraw/withdraw.component';
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
-    DataTablesModule
+    DataTablesModule,
+    ChartsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -50,6 +50,15 @@ public class Transaction implements Serializable {
   public Transaction() {
   }
 
+  public Transaction(TransactionMotif transactionMotif, TransactionType transactionType, LocalDate transactionDate, int transactionQuantity, Aliquot aliquot, Member member) {
+    this.transactionMotif = transactionMotif;
+    this.transactionType = transactionType;
+    this.transactionDate = transactionDate;
+    this.transactionQuantity = transactionQuantity;
+    this.aliquot = aliquot;
+    this.member = member;
+  }
+
   public long getTransactionId() {
     return transactionId;
   }

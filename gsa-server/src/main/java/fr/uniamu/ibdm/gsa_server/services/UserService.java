@@ -45,6 +45,20 @@ public interface UserService {
    * @param cart The shopping cart.
    * @return true if the withdrow can be performed, false otherwise.
    */
-  boolean withdrawCart(List<WithdrowForm> cart);
+  boolean withdrawCart(List<WithdrowForm> cart, User user);
+
+  /**
+   * This method fetch all product in the database and return a list of all
+   * product name.
+   * @return a list of product name.
+   */
+  List<String> getAllProductName();
+
+  /**
+   * This method fetch all team in the database and return a list of all
+   * team name.
+   * @return a list of team name.
+   */
+  List<String> getAllTeamName();
 
 }

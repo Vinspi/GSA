@@ -4,6 +4,7 @@ public class WithdrowForm {
 
   private Long nlot;
   private int quantity;
+  private String teamName;
 
   public WithdrowForm() {
   }
@@ -29,4 +30,11 @@ public class WithdrowForm {
     this.quantity = quantity;
   }
 
+  public String getTeamName() {
+    return teamName;
+  }
+
+  public void setTeamName(String teamName) {
+    this.teamName = teamName;
+  }
 }
