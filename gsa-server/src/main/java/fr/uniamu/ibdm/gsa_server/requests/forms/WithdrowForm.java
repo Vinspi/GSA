@@ -8,6 +8,11 @@ public class WithdrowForm {
   public WithdrowForm() {
   }
 
+  public WithdrowForm(Long nlot, int quantity) {
+    this.nlot = nlot;
+    this.quantity = quantity;
+  }
+
   public Long getNlot() {
     return nlot;
   }

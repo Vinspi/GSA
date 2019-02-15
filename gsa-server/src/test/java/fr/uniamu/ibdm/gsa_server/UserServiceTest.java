@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server;
 
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.MemberRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
@@ -10,6 +11,7 @@ import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.UserServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.Crypto;
 import org.junit.Assert;
@@ -29,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -45,6 +48,9 @@ public class UserServiceTest {
 
   @MockBean
   MemberRepository memberRepository;
+
+  @MockBean
+  AliquotRepository aliquotRepository;
 
   @InjectMocks
   UserServiceImpl userService;
@@ -110,25 +116,85 @@ public class UserServiceTest {
   }
 
   @Test
-  public void getAllOverviewProduct(){
+  public void getAllOverviewProduct() {
 
     List<Product> products = new ArrayList<>();
     Collection<Aliquot> aliquots = new ArrayList<>();
 
-    for (int i=0;i<5;i++){
-      ((ArrayList<Aliquot>) aliquots).add(new Aliquot(8,8));
+    for (int i = 0; i < 5; i++) {
+      ((ArrayList<Aliquot>) aliquots).add(new Aliquot(8, 8));
     }
 
-    products.add(new Product(new Species("MoNkEy"),new Species("Cat"),aliquots));
+    products.add(new Product(new Species("MoNkEy"), new Species("Cat"), aliquots));
 
     Mockito.when(productRepository.findAll()).thenReturn(products);
 
     List<ProductOverviewData> productOverviewDataList = userService.getAllOverviewProducts();
 
     Assert.assertNotNull(productOverviewDataList);
-    Assert.assertEquals(productOverviewDataList.size(),1);
-    Assert.assertEquals(productOverviewDataList.get(0).getQuantity(),40);
+    Assert.assertEquals(productOverviewDataList.size(), 1);
+    Assert.assertEquals(productOverviewDataList.get(0).getQuantity(), 40);
     Assert.assertEquals(productOverviewDataList.get(0).getProductName(), "CAT_ANTI_MONKEY");
+
+  }
+
+
+  @Test
+  public void getProductNameFromAliquotNlot() {
+
+    Aliquot aliquot = new Aliquot();
+    Product product = new Product();
+    product.setSource(new Species("MONKEY"));
+    product.setTarget(new Species("GOAT"));
+    aliquot.setProduct(product);
+
+    Mockito.when(aliquotRepository.findById(1592L)).thenReturn(Optional.of(aliquot));
+
+    String productName = userService.getProductNameFromNlot(1592L);
+
+    Assert.assertNotNull(productName);
+    Assert.assertEquals("MONKEY_ANTI_GOAT", productName);
+
+    productName = userService.getProductNameFromNlot(1515L);
+
+    Assert.assertNull(productName);
+
+  }
+
+
+  @Test
+  public void withdrawCart() {
+
+    Mockito.when(aliquotRepository.findById(0L)).thenReturn(Optional.of(new Aliquot()));
+    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(new Aliquot()));
+    Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(new Aliquot()));
+
+
+    List<WithdrowForm> cart = new ArrayList<>();
+
+    for (long i = 0; i < 5; i++) {
+      cart.add(new WithdrowForm(i, 2));
+    }
+
+    boolean response = userService.withdrawCart(cart);
+
+    Assert.assertFalse(response);
+
+    cart = new ArrayList<>();
+
+    for (long i = 0; i < 3; i++) {
+      cart.add(new WithdrowForm(i, 2));
+    }
+
+    response = userService.withdrawCart(cart);
+
+    Assert.assertTrue(response);
+
+    cart = new ArrayList<>();
+
+    response = userService.withdrawCart(cart);
+
+    Assert.assertTrue(response);
 
   }
 
