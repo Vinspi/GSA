@@ -12,6 +12,7 @@ import { MenuComponent } from './components/menu/menu.component';
 import { LoremComponent } from './components/lorem/lorem.component';
 import { ConnectionFormComponent } from './components/connection-form/connection-form.component';
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
+import { WithdrawComponent } from './components/withdraw/withdraw.component';
 
 
 @NgModule({
@@ -21,7 +22,8 @@ import { StockOverviewComponent } from './components/stock-overview/stock-overvi
     MenuComponent,
     LoremComponent,
     ConnectionFormComponent,
-    StockOverviewComponent
+    StockOverviewComponent,
+    WithdrawComponent
   ],
   imports: [
     BrowserModule,

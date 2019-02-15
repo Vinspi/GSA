@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DoCheck } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { User } from 'src/app/user';
 import { AuthentificationService } from '../../services/authentification.service';
@@ -21,7 +21,6 @@ export class NavbarComponent implements OnInit {
     }
 
   ngOnInit() {
-    console.log("init navbar");
     
     this.localStorage.getItem("user").subscribe(user => {
       this.user = <User> user;

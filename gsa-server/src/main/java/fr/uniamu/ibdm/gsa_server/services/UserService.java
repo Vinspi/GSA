@@ -45,6 +45,6 @@ public interface UserService {
    * @param cart The shopping cart.
    * @return true if the withdrow can be performed, false otherwise.
    */
-  boolean withdrowCart(List<WithdrowForm> cart);
+  boolean withdrawCart(List<WithdrowForm> cart);
 
 }
