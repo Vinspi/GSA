@@ -164,8 +164,8 @@ public class UserServiceImpl implements UserService {
         withdrowQuantity = aliquot.withdrawFromVisibleStock(wf.getQuantity());
         /* we choose a member in which name perform the withdraw */
         member = null;
-        for (Member m: user.getMembers()){
-          if (m.getTeam().getTeamName().equals(wf.getTeamName())){
+        for (Member m : user.getMembers()) {
+          if (m.getTeam().getTeamName().equals(wf.getTeamName())) {
             member = m;
           }
         }
@@ -174,8 +174,7 @@ public class UserServiceImpl implements UserService {
           transaction = new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.now(), withdrowQuantity, aliquot, member);
           transactionRepository.save(transaction);
           aliquotRepository.save(aliquot);
-        }
-        else {
+        } else {
           returnValue = false;
         }
       } else {

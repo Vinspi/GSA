@@ -50,6 +50,16 @@ public class Transaction implements Serializable {
   public Transaction() {
   }
 
+  /**
+   * Constructor.
+   *
+   * @param transactionMotif Motif of the transaction.
+   * @param transactionType Type of the transaction.
+   * @param transactionDate Date of the transaction.
+   * @param transactionQuantity Quantity of the transaction.
+   * @param aliquot Aliquot for this transaction.
+   * @param member Member who performed this transaction.
+   */
   public Transaction(TransactionMotif transactionMotif, TransactionType transactionType, LocalDate transactionDate, int transactionQuantity, Aliquot aliquot, Member member) {
     this.transactionMotif = transactionMotif;
     this.transactionType = transactionType;

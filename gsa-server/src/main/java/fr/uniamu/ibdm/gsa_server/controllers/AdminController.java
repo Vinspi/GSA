@@ -26,8 +26,14 @@ public class AdminController {
   @Autowired
   AdminService adminService;
 
+  /**
+   * REST endpoint for /stats call, return stats needed for building admin chart.
+   *
+   * @param form The information needed to compute data.
+   * @return a JSON formatted response.
+   */
   @PostMapping("/stats")
-  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form){
+  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form) {
 
     System.out.println(form.getProductName());
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));

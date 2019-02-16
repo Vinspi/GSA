@@ -10,6 +10,16 @@ public class WithdrawStatsForm {
   private int yearLowerBound;
 
 
+  /**
+   * Constructor.
+   *
+   * @param teamName Team name involved in the stats.
+   * @param productName Product name involved in the stats.
+   * @param monthLowerBound Month lower bound.
+   * @param monthUpperBound Month upper bound.
+   * @param yearUpperBound Year upper bound.
+   * @param yearLowerBound Year lower bound.
+   */
   public WithdrawStatsForm(String teamName, String productName, String monthLowerBound, String monthUpperBound, int yearUpperBound, int yearLowerBound) {
     this.teamName = teamName;
     this.productName = productName;
@@ -70,15 +80,4 @@ public class WithdrawStatsForm {
     this.monthUpperBound = monthUpperBound;
   }
 
-  @Override
-  public String toString() {
-    return "WithdrawStatsForm{" +
-        "teamName='" + teamName + '\'' +
-        ", productName='" + productName + '\'' +
-        ", monthLowerBound='" + monthLowerBound + '\'' +
-        ", monthUpperBound='" + monthUpperBound + '\'' +
-        ", yearUpperBound=" + yearUpperBound +
-        ", yearLowerBound=" + yearLowerBound +
-        '}';
-  }
 }

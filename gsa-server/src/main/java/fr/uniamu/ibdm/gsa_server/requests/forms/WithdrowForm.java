@@ -9,6 +9,13 @@ public class WithdrowForm {
   public WithdrowForm() {
   }
 
+  /**
+   * Constructor.
+   *
+   * @param nlot Lot number of the target.
+   * @param quantity Quantity of the withdrawal.
+   * @param teamName Team name in which performed the withdrawal.
+   */
   public WithdrowForm(Long nlot, int quantity, String teamName) {
     this.nlot = nlot;
     this.quantity = quantity;

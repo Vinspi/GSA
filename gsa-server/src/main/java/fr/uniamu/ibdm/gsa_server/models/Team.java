@@ -28,6 +28,13 @@ public class Team implements Serializable {
   public Team() {
   }
 
+  /**
+   * Constructor.
+   *
+   * @param teamName Name of the team.
+   * @param members Collection of members.
+   * @param reports Collection of reports for this team.
+   */
   public Team(String teamName, Collection<Member> members, Collection<TeamTrimestrialReport> reports) {
     this.teamName = teamName;
     this.members = members;

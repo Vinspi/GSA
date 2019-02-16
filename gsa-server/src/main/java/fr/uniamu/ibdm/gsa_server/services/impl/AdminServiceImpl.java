@@ -29,18 +29,26 @@ public class AdminServiceImpl implements AdminService {
 
     String[] shards = form.getProductName().split("_");
 
-    if (shards.length < 3){
+    if (shards.length < 3) {
       return new ArrayList<>();
     }
 
-    String lowerBound, upperBound;
+    String lowerBound;
+    String upperBound;
 
-    lowerBound = form.getYearLowerBound()+"-" + DateConverter.monthToNumberConvertor(form.getMonthLowerBound()) + "-01 00:00:00";
-    upperBound = form.getYearUpperBound()+"-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound()) + "-31 00:00:00";
+    lowerBound = form.getYearLowerBound()
+        + "-"
+        + DateConverter.monthToNumberConvertor(form.getMonthLowerBound())
+        + "-01 00:00:00";
 
-    System.out.println("lower bound : "+lowerBound);
+    upperBound = form.getYearUpperBound()
+        + "-"
+        + DateConverter.monthToNumberConvertor(form.getMonthUpperBound())
+        + "-31 00:00:00";
 
-    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound,shards[0], shards[2]);
+    System.out.println("lower bound : " + lowerBound);
+
+    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0], shards[2]);
     List<StatsWithdrawQuery> returnValue = new ArrayList<>();
 
 
