@@ -30,4 +30,5 @@ export class UserService {
   getAllProductName(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(environment.API_URL+'/getAllProductName');
   }
+
 }

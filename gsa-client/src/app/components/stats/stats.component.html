@@ -1,0 +1,48 @@
+<form>
+  <div class="row">
+    <div class="col">
+      <label for="from">from</label>
+      <select (change)="onValueChange()" [(ngModel)]="beginMonth" id="from" class="form-control" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let item of months">{{item}}</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="team">year</label>
+      <select (change)="onValueChange()" [(ngModel)]="beginYear" id="from" class="form-control" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let item of years">{{item}}</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="to">to</label>
+      <select (change)="onValueChange()" [(ngModel)]="endMonth" id="to" class="form-control" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let item of months">{{item}}</option>
+      </select>
+    </div>
+    <div class="col">
+        <label for="team">year</label>
+      <select (change)="onValueChange()" [(ngModel)]="endYear" id="from" class="form-control" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let item of years">{{item}}</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="team">team</label>
+      <select (change)="onValueChange()" [(ngModel)]="team" id="team" class="form-control" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let item of teams">{{item}}</option>
+      </select>
+    </div>
+    <div class="col">
+      <label for="product">product</label>
+      <select (change)="onValueChange()" [(ngModel)]="product" id="product" class="form-control" [ngModelOptions]="{standalone: true}">
+        <option *ngFor="let item of products">{{item}}</option>
+      </select>
+    </div>
+  </div>
+</form>
+<canvas baseChart
+        [data]="chartData"
+        [labels]="chartLabels"
+        [chartType]="chartType"
+        [colors]="chartColors"
+        [options]="chartOptions">
+
+</canvas>

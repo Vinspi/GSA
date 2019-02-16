@@ -1,12 +1,19 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
+import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -18,5 +25,18 @@ public class AdminController {
 
   @Autowired
   AdminService adminService;
+
+  /**
+   * REST endpoint for /stats call, return stats needed for building admin chart.
+   *
+   * @param form The information needed to compute data.
+   * @return a JSON formatted response.
+   */
+  @PostMapping("/stats")
+  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form) {
+
+    System.out.println(form.getProductName());
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
+  }
 
 }
