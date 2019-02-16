@@ -7,6 +7,12 @@ import java.util.List;
 
 public interface AdminService {
 
+  /**
+   * This method retrieve stats for building admin chart.
+   *
+   * @param form container for building options of the chart.
+   * @return a list of months, years, and withdrawals
+   */
   List<StatsWithdrawQuery> getWithdrawStats(WithdrawStatsForm form);
 
 }
