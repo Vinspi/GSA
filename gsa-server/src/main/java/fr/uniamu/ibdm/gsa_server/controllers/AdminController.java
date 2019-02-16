@@ -29,7 +29,7 @@ public class AdminController {
   @PostMapping("/stats")
   public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form){
 
-
+    System.out.println(form.getProductName());
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
 

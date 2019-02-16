@@ -69,4 +69,16 @@ public class WithdrawStatsForm {
   public void setMonthUpperBound(String monthUpperBound) {
     this.monthUpperBound = monthUpperBound;
   }
+
+  @Override
+  public String toString() {
+    return "WithdrawStatsForm{" +
+        "teamName='" + teamName + '\'' +
+        ", productName='" + productName + '\'' +
+        ", monthLowerBound='" + monthLowerBound + '\'' +
+        ", monthUpperBound='" + monthUpperBound + '\'' +
+        ", yearUpperBound=" + yearUpperBound +
+        ", yearLowerBound=" + yearLowerBound +
+        '}';
+  }
 }

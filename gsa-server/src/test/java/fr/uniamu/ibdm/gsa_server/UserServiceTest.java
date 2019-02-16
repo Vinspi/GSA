@@ -4,11 +4,14 @@ import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.MemberRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.UserRepository;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Member;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
@@ -18,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -51,6 +55,9 @@ public class UserServiceTest {
 
   @MockBean
   AliquotRepository aliquotRepository;
+
+  @MockBean
+  TransactionRepository transactionRepository;
 
   @InjectMocks
   UserServiceImpl userService;
@@ -138,7 +145,6 @@ public class UserServiceTest {
 
   }
 
-
   @Test
   public void getProductNameFromAliquotNlot() {
 
@@ -161,43 +167,112 @@ public class UserServiceTest {
 
   }
 
-
   @Test
   public void withdrawCart() {
 
-//    Mockito.when(aliquotRepository.findById(0L)).thenReturn(Optional.of(new Aliquot()));
-//    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(new Aliquot()));
-//    Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(new Aliquot()));
-//
-//
-//    List<WithdrowForm> cart = new ArrayList<>();
-//
-//    for (long i = 0; i < 5; i++) {
-//      cart.add(new WithdrowForm(i, 2));
-//    }
-//
-//    boolean response = userService.withdrawCart(cart);
-//
-//    Assert.assertFalse(response);
-//
-//    cart = new ArrayList<>();
-//
-//    for (long i = 0; i < 3; i++) {
-//      cart.add(new WithdrowForm(i, 2));
-//    }
-//
-//    response = userService.withdrawCart(cart);
-//
-//    Assert.assertTrue(response);
-//
-//    cart = new ArrayList<>();
-//
-//    response = userService.withdrawCart(cart);
-//
-//    Assert.assertTrue(response);
+    Aliquot aliquot = new Aliquot();
+
+    Mockito.when(aliquotRepository.findById(0L)).thenReturn(Optional.of(aliquot));
+    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(aliquot));
+    Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(aliquot));
+
+    ArgumentCaptor<Transaction> captor = ArgumentCaptor.forClass(Transaction.class);
+
+    Collection<Member> collectionMember = new ArrayList<>();
+
+    User user = fakeUser();
+    Member member = new Member();
+    Team team = new Team();
+    team.setTeamName("fake team");
+    member.setTeam(team);
+    member.setUser(user);
+    collectionMember.add(member);
+    user.setMembers(collectionMember);
+
+    List<WithdrowForm> cart = new ArrayList<>();
+
+    for (long i = 0; i < 5; i++) {
+      cart.add(new WithdrowForm(i, 2, "fake team"));
+    }
+
+    boolean response = userService.withdrawCart(cart, user);
+
+    Mockito.verify(transactionRepository, Mockito.times(3)).save(captor.capture());
+    Assert.assertFalse(response);
+    Transaction transactionCaptured1 = captor.getValue();
+
+    Assert.assertEquals(transactionCaptured1.getMember().getTeam(), team);
+    Assert.assertEquals(transactionCaptured1.getMember().getUser(), user);
+    Assert.assertEquals(transactionCaptured1.getMember(), member);
+    Assert.assertEquals(transactionCaptured1.getAliquot(), aliquot);
+
+    Mockito.reset(transactionRepository);
+    cart = new ArrayList<>();
+
+    for (long i = 0; i < 3; i++) {
+      cart.add(new WithdrowForm(i, 2, "fake team"));
+    }
+
+    response = userService.withdrawCart(cart, user);
+
+    Mockito.verify(transactionRepository, Mockito.times(3)).save(captor.capture());
+    Assert.assertTrue(response);
+
+    Transaction transactionCaptured2 = captor.getValue();
+
+    Assert.assertEquals(transactionCaptured2.getMember().getTeam(), team);
+    Assert.assertEquals(transactionCaptured2.getMember().getUser(), user);
+    Assert.assertEquals(transactionCaptured2.getMember(), member);
+    Assert.assertEquals(transactionCaptured2.getAliquot(), aliquot);
+
+    Mockito.reset(transactionRepository);
+    cart = new ArrayList<>();
+
+    response = userService.withdrawCart(cart, user);
+
+    Mockito.verify(transactionRepository, Mockito.never()).save(Mockito.any());
+    Assert.assertTrue(response);
 
   }
 
+  @Test
+  public void getAllProductName() {
+
+    List<Product> products = new ArrayList<>();
+
+    for (int i=0;i<10;i++){
+      products.add(new Product(new Species("target"+i), new Species("source"+i), null));
+    }
+
+    Mockito.when(productRepository.findAll()).thenReturn(products);
+
+    List<String> names = userService.getAllProductName();
+
+    for (int i=0;i<10;i++){
+      Assert.assertTrue(names.contains("SOURCE"+i+"_ANTI_"+"TARGET"+i));
+    }
+
+  }
+
+  @Test
+  public void getAllTeamName() {
+
+
+    List<Team> teams = new ArrayList<>();
+
+    for (int i=0;i<10;i++){
+      teams.add(new Team("fake team"+i, null, null));
+    }
+
+    Mockito.when(teamRepository.findAll()).thenReturn(teams);
+
+    List<String> names = userService.getAllTeamName();
+
+    for (int i=0;i<10;i++){
+      Assert.assertTrue(names.contains("fake team"+i));
+    }
+
+  }
 
   private User fakeUser() {
     User user = new User();

@@ -28,6 +28,12 @@ public class Team implements Serializable {
   public Team() {
   }
 
+  public Team(String teamName, Collection<Member> members, Collection<TeamTrimestrialReport> reports) {
+    this.teamName = teamName;
+    this.members = members;
+    this.reports = reports;
+  }
+
   public long getTeamId() {
     return teamId;
   }

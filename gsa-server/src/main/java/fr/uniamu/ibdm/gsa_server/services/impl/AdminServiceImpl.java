@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 @Service
@@ -32,11 +29,16 @@ public class AdminServiceImpl implements AdminService {
 
     String[] shards = form.getProductName().split("_");
 
+    if (shards.length < 3){
+      return new ArrayList<>();
+    }
+
     String lowerBound, upperBound;
 
     lowerBound = form.getYearLowerBound()+"-" + DateConverter.monthToNumberConvertor(form.getMonthLowerBound()) + "-01 00:00:00";
     upperBound = form.getYearUpperBound()+"-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound()) + "-31 00:00:00";
 
+    System.out.println("lower bound : "+lowerBound);
 
     List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound,shards[0], shards[2]);
     List<StatsWithdrawQuery> returnValue = new ArrayList<>();
@@ -44,8 +46,8 @@ public class AdminServiceImpl implements AdminService {
 
     for (int i = 0; i < result.size(); i++) {
 
-      System.out.println(result.get(i));
       returnValue.add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
+
     }
 
     /* remove 'holes' in the data */
@@ -56,7 +58,7 @@ public class AdminServiceImpl implements AdminService {
 
       if (tmp.getMonth() == 12 && returnValue.get(i + 1).getMonth() != 1) {
         returnValue.add(i + 1, new StatsWithdrawQuery(1, tmp.getYear(), 0));
-      } else if (returnValue.get(i + 1).getMonth() != returnValue.get(i).getMonth() + 1) {
+      } else if (returnValue.get(i + 1).getMonth() != returnValue.get(i).getMonth() + 1 && tmp.getMonth() != 12) {
         returnValue.add(i + 1, new StatsWithdrawQuery(tmp.getMonth() + 1, tmp.getYear(), 0));
       }
     }

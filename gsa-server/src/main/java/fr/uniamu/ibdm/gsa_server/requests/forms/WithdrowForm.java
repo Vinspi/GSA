@@ -9,9 +9,10 @@ public class WithdrowForm {
   public WithdrowForm() {
   }
 
-  public WithdrowForm(Long nlot, int quantity) {
+  public WithdrowForm(Long nlot, int quantity, String teamName) {
     this.nlot = nlot;
     this.quantity = quantity;
+    this.teamName = teamName;
   }
 
   public Long getNlot() {
