@@ -15,6 +15,7 @@ import { ConnectionFormComponent } from './components/connection-form/connection
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { StatsComponent } from './components/stats/stats.component';
     ConnectionFormComponent,
     StockOverviewComponent,
     WithdrawComponent,
-    StatsComponent
+    StatsComponent,
+    AddAliquoteComponent
   ],
   imports: [
     BrowserModule,
