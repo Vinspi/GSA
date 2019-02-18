@@ -1,31 +1,40 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.AdminService;
-import fr.uniamu.ibdm.gsa_server.util.DateConverter;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
   private ProductRepository productRepository;
 
-  @Autowired
-  public AdminServiceImpl(ProductRepository productRepository) {
-    this.productRepository = productRepository;
-  }
+  private SpeciesRepository speciesRepository;
 
+  @Autowired
+  public AdminServiceImpl(ProductRepository productRepository, SpeciesRepository speciesRepository) {
+    this.productRepository = productRepository;
+    this.speciesRepository = speciesRepository;
+  }
 
   @Override
   public List<StatsWithdrawQuery> getWithdrawStats(WithdrawStatsForm form) {
-
 
     String[] shards = form.getProductName().split("_");
 
@@ -36,25 +45,22 @@ public class AdminServiceImpl implements AdminService {
     String lowerBound;
     String upperBound;
 
-    lowerBound = form.getYearLowerBound()
-        + "-"
-        + DateConverter.monthToNumberConvertor(form.getMonthLowerBound())
+    lowerBound = form.getYearLowerBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthLowerBound())
         + "-01 00:00:00";
 
-    upperBound = form.getYearUpperBound()
-        + "-"
-        + DateConverter.monthToNumberConvertor(form.getMonthUpperBound())
+    upperBound = form.getYearUpperBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound())
         + "-31 00:00:00";
 
     System.out.println("lower bound : " + lowerBound);
 
-    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0], shards[2]);
+    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0],
+        shards[2]);
     List<StatsWithdrawQuery> returnValue = new ArrayList<>();
-
 
     for (int i = 0; i < result.size(); i++) {
 
-      returnValue.add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
+      returnValue
+          .add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
 
     }
 
@@ -72,5 +78,43 @@ public class AdminServiceImpl implements AdminService {
     }
 
     return returnValue;
+  }
+
+  @Override
+  public List<String> getAllSpeciesName() {
+    return speciesRepository.getAllSpeciesName();
+  }
+
+  @Override
+  public boolean addProduct(String sourceName, String targetName) {
+
+    Species sourceSpecies = null;
+    Species targetSpecies = null;
+    Optional<Species> nullableSourceSpecies = speciesRepository.findById(sourceName);
+    Optional<Species> nullableTargetSpecies = speciesRepository.findById(targetName);
+
+    if (nullableTargetSpecies.isPresent() && nullableSourceSpecies.isPresent()) {
+      sourceSpecies = nullableSourceSpecies.get();
+      targetSpecies = nullableTargetSpecies.get();
+
+    } else {
+      return false;
+    }
+
+    Collection<Aliquot> aliquots = new ArrayList<>();
+    Product newProduct = new Product(targetSpecies, sourceSpecies, aliquots);
+
+    ProductPK productPk = new ProductPK();
+    productPk.setSource(sourceName);
+    productPk.setTarget(targetName);
+    Optional<Product> nullableProduct = productRepository.findById(productPk);
+
+    if (nullableProduct.isPresent()) {
+      return false;
+    } else {
+      productRepository.save(newProduct);
+      return true;
+    }
+
   }
 }
