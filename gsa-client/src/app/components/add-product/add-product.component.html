@@ -1,0 +1,15 @@
+<div id="add-product">
+  <h1>Add a new product</h1>
+  <form>
+    <div class="form-group">
+      <label for="source">Select the source</label>
+      <select [(ngModel)]="speciesNames" id="source" class="form-control">
+        <option *ngFor="let name of speciesNames" [value]="name">{{name}}</option>
+      </select>
+
+      <label for="target">Select the target</label>
+      <select [(ngModel)]="speciesNames" id="target" class="form-control">
+        <option *ngFor="let name of speciesNames" [value]="name">{{name}}</option>
+      </select>
+  </form>
+</div>

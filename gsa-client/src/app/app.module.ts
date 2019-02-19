@@ -15,6 +15,7 @@ import { ConnectionFormComponent } from './components/connection-form/connection
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { AddProductComponent } from './components/add-product/add-product.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { StatsComponent } from './components/stats/stats.component';
     ConnectionFormComponent,
     StockOverviewComponent,
     WithdrawComponent,
-    StatsComponent
+    StatsComponent,
+    AddProductComponent
   ],
   imports: [
     BrowserModule,

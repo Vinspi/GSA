@@ -47,9 +47,9 @@ public class AdminController {
    * 
    * @return JSON response containing all of species name.
    */
-  @GetMapping("/allSpeciesName")
-  public JsonResponse<List<String>> getAllSpeciesName() {
-    List<String> names = adminService.getAllSpeciesName();
+  @GetMapping("/allspeciesnames")
+  public JsonResponse<List<String>> getAllSpeciesNames() {
+    List<String> names = adminService.getAllSpeciesNames();
     if (names != null) {
       return new JsonResponse<>(RequestStatus.SUCCESS, names);
     } else {
@@ -65,7 +65,7 @@ public class AdminController {
    * @return if successful, a JSON response with a success status, otherwise a
    *         JSON response with a fail status and the sent form as data.
    */
-  @PostMapping("/addProduct")
+  @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
     JsonResponse<AddProductForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
     failedRequestResponse.setData(form);

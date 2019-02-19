@@ -20,7 +20,7 @@ public interface AdminService {
    *   
    * @return a list of names or null if an error occurred.
    */
-  List<String> getAllSpeciesName();
+  List<String> getAllSpeciesNames();
   
 
   /**

@@ -85,13 +85,13 @@ public class AdminServiceTest {
   }
 
   @Test
-  public void getAllSpeciesName() {
+  public void getAllSpeciesNames() {
     List<String> names = Arrays.asList("donkey", "chicken", "horse");
-    Mockito.when(speciesRepository.getAllSpeciesName()).thenReturn(names);
-    Assert.assertEquals(adminService.getAllSpeciesName(), names);
+    Mockito.when(speciesRepository.getAllSpeciesNames()).thenReturn(names);
+    Assert.assertEquals(adminService.getAllSpeciesNames(), names);
 
-    Mockito.when(speciesRepository.getAllSpeciesName()).thenReturn(null);
-    Assert.assertEquals(adminService.getAllSpeciesName(), null);
+    Mockito.when(speciesRepository.getAllSpeciesNames()).thenReturn(null);
+    Assert.assertEquals(adminService.getAllSpeciesNames(), null);
   }
 
   @Test

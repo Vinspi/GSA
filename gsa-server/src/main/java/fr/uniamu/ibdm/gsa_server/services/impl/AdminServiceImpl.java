@@ -81,8 +81,8 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public List<String> getAllSpeciesName() {
-    return speciesRepository.getAllSpeciesName();
+  public List<String> getAllSpeciesNames() {
+    return speciesRepository.getAllSpeciesNames();
   }
 
   @Override
