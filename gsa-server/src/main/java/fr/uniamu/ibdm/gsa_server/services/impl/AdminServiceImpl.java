@@ -12,10 +12,15 @@ import org.springframework.stereotype.Service;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+<<<<<<< HEAD
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+=======
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+>>>>>>> back end ok
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
@@ -115,6 +120,17 @@ public class AdminServiceImpl implements AdminService {
       productRepository.save(newProduct);
       return true;
     }
+
+  public List<TriggeredAlertsQuery> getTriggeredAlerts() {
+
+    List<Object[]> queryResult = productRepository.getTriggeredAlerts();
+    List<TriggeredAlertsQuery> returnValue = new ArrayList<>();
+
+    for (Object[] o : queryResult){
+      returnValue.add(new TriggeredAlertsQuery((String) o[0], (String) o[1], ((BigDecimal) o[2]).intValue(), (int) o[3], AlertType.valueOf((String) o[4])));
+    }
+
+    return returnValue;
 
   }
 }

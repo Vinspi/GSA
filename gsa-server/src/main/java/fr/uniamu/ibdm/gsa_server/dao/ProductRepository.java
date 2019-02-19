@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.dao;
 
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import org.springframework.data.jpa.repository.Query;
@@ -31,12 +32,12 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
                                             @Param("target") String target);
   
 
-  @Query(value = "SELECT source_pk, target_pk, SUM(aliquot.aliquot_quantity_visible_stock) as qte, seuil\n" +
+  @Query(value = "SELECT source_pk, target_pk, SUM(aliquot.aliquot_quantity_visible_stock) as qte, seuil, alert_type\n" +
       "FROM product\n" +
       "JOIN alert ON (source_pk LIKE alert.source AND target_pk LIKE alert.target)\n" +
       "JOIN aliquot ON (aliquot.source LIKE source_pk AND aliquot.target LIKE target_pk)\n" +
-      "GROUP BY source_pk, target_pk\n" +
-      "HAVING (qte < seuil AND alert_type LIKE :stock)", nativeQuery = true)
-  List<Object[]> getTriggeredAlerts(@Param("stock") String stock);
+      "GROUP BY source_pk, target_pk, alert_type\n" +
+      "HAVING (qte < seuil)", nativeQuery = true)
+  List<Object[]> getTriggeredAlerts();
 
 }

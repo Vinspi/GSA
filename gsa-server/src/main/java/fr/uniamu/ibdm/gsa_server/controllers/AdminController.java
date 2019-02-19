@@ -1,6 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
@@ -41,6 +42,7 @@ public class AdminController {
     System.out.println(form.getProductName());
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
+
 
   /**
    * /Endpoint returning all of species names.
@@ -86,4 +88,14 @@ public class AdminController {
       return failedRequestResponse;
     }
   }
+
+
+  @GetMapping("/triggeredAlerts")
+  public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts(){
+
+
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
+  }
+
+
 }
