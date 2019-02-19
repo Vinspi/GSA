@@ -19,7 +19,7 @@ public class Aliquot implements Serializable {
   private long aliquotNLot;
 
 
-  private LocalDate aliquotExpirationDate;
+  private String aliquotExpirationDate;
   private long aliquotQuantityVisibleStock;
   private long aliquotQuantityHiddenStock;
   private float aliquotPrice;
@@ -68,11 +68,11 @@ public class Aliquot implements Serializable {
     this.aliquotNLot = aliquotNLot;
   }
 
-  public LocalDate getAliquotExpirationDate() {
+  public String getAliquotExpirationDate() {
     return aliquotExpirationDate;
   }
 
-  public void setAliquotExpirationDate(LocalDate aliquotExpirationDate) {
+  public void setAliquotExpirationDate(String  aliquotExpirationDate) {
     this.aliquotExpirationDate = aliquotExpirationDate;
   }
 

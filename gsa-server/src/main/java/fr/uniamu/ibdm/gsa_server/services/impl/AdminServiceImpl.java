@@ -1,7 +1,10 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
@@ -16,10 +19,15 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService {
 
   private ProductRepository productRepository;
+  private AliquotRepository aliquotRepository;
+  private SpeciesRepository speciesRepository;
+
 
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository) {
+  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository) {
     this.productRepository = productRepository;
+    this.aliquotRepository = aliquotRepository;
+    this.speciesRepository = speciesRepository;
   }
 
 
@@ -72,5 +80,28 @@ public class AdminServiceImpl implements AdminService {
     }
 
     return returnValue;
+  }
+
+  @Override
+  public boolean addAliquote(int aliquotNLot,String aliquotExpirationDate,int aliquotQuantityVisibleStock
+          ,int aliquotQuantityHiddenStock,float aliquotPrice,String provider, String source, String target) {
+
+
+    Aliquot NewAliquot = new Aliquot();
+    NewAliquot.setAliquotNLot(aliquotNLot);
+    NewAliquot.setAliquotExpirationDate(aliquotExpirationDate);
+    NewAliquot.setAliquotQuantityVisibleStock(aliquotQuantityVisibleStock);
+    NewAliquot.setAliquotQuantityHiddenStock(aliquotQuantityHiddenStock);
+    NewAliquot.setAliquotPrice(aliquotPrice);
+    NewAliquot.setProvider(provider);
+
+
+    aliquotRepository.save(NewAliquot);
+     return true;
+  }
+
+  @Override
+  public List<String> getAllSpeciesName() {
+    return speciesRepository.getAllSpeciesName();
   }
 }
