@@ -1,15 +1,25 @@
 <div id="add-product">
   <h1>Add a new product</h1>
   <form>
-    <div class="form-group">
-      <label for="source">Select the source</label>
-      <select [(ngModel)]="speciesNames" id="source" class="form-control">
-        <option *ngFor="let name of speciesNames" [value]="name">{{name}}</option>
-      </select>
-
-      <label for="target">Select the target</label>
-      <select [(ngModel)]="speciesNames" id="target" class="form-control">
-        <option *ngFor="let name of speciesNames" [value]="name">{{name}}</option>
-      </select>
+    <div id="select-container" class="form-group">
+      <div id="source-container" class="form-group">
+        <label for="source">Select the source :</label>
+        <select id="source" class="form-control">
+          <option value="" selected disabled hidden>{{defaultOption}}</option>
+          <option *ngFor="let name of speciesNames">{{name}}</option>
+        </select>
+      </div>
+      <div id="target-container" class="form-group">
+        <label for="target">Select the target :</label>
+        <select id="target" class="form-control">
+          <option value="" selected disabled hidden>Choose</option>
+          <option *ngFor="let name of speciesNames">{{name}}</option>
+        </select>
+    </div>
+    </div>
+    <div id="button-container" class="form-group">
+      <button (click)="addProduct()" type="submit" class="btn btn-primary">Add product</button>
+    </div>
   </form>
+  <ngb-alert *ngIf="messageAlert" [(type)]="typeAlert" (close)="messageAlert = null">{{messageAlert}}</ngb-alert>
 </div>

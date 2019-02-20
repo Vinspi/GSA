@@ -4,7 +4,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
-import { ChartsModule } from 'ng2-charts/ng2-charts'
+import { ChartsModule } from 'ng2-charts/ng2-charts';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -37,7 +38,8 @@ import { AddProductComponent } from './components/add-product/add-product.compon
     HttpClientModule,
     FormsModule,
     DataTablesModule,
-    ChartsModule
+    ChartsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]
