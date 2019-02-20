@@ -1,5 +1,4 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,30 +10,58 @@ import org.springframework.stereotype.Service;
 
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
+
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-<<<<<<< HEAD
+
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-=======
+
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
->>>>>>> back end ok
+
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
+
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import fr.uniamu.ibdm.gsa_server.util.DateConverter;
+import fr.uniamu.ibdm.gsa_server.util.LocalDateAttributeConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
   private ProductRepository productRepository;
+  private AliquotRepository aliquotRepository;
 
   private SpeciesRepository speciesRepository;
 
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository, SpeciesRepository speciesRepository) {
+
+  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository) {
     this.productRepository = productRepository;
+    this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
   }
 
@@ -66,6 +93,7 @@ public class AdminServiceImpl implements AdminService {
 
       returnValue
           .add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
+
 
     }
 
@@ -124,10 +152,25 @@ public class AdminServiceImpl implements AdminService {
   public List<TriggeredAlertsQuery> getTriggeredAlerts() {
 
     List<Object[]> queryResult = productRepository.getTriggeredAlerts();
+    List<Object[]> aliquotsNativeQuery;
     List<TriggeredAlertsQuery> returnValue = new ArrayList<>();
+    List<AlertAliquot> alertAliquots;
 
     for (Object[] o : queryResult){
-      returnValue.add(new TriggeredAlertsQuery((String) o[0], (String) o[1], ((BigDecimal) o[2]).intValue(), (int) o[3], AlertType.valueOf((String) o[4])));
+      aliquotsNativeQuery = aliquotRepository.findAllBySourceAndTargetQuery((String) o[0],(String) o[1]);
+      alertAliquots = new ArrayList<>();
+
+      for (Object[] a : aliquotsNativeQuery){
+        alertAliquots.add(new AlertAliquot(((BigInteger) a[0]).longValue(), ((Timestamp) a[1]).toLocalDateTime().toLocalDate()));
+      }
+
+      returnValue.add(new TriggeredAlertsQuery(
+          (String) o[0],
+          (String) o[1],
+          ((BigDecimal) o[2]).intValue(),
+          (int) o[3], AlertType.valueOf((String) o[4]),
+          alertAliquots));
+
     }
 
     return returnValue;
