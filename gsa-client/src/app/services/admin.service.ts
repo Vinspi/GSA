@@ -18,5 +18,13 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/stats', data, {withCredentials: true})
   }
 
-  
+  getAllSpeciesName(): Observable<JsonResponse> {
+
+    return this.http.get<JsonResponse>(this.BASE_URL+'/allspeciesnames', {withCredentials: true})
+  }
+
+  addProduct(data: any): Observable<JsonResponse> {
+
+    return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true})
+  }
 }

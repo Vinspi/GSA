@@ -8,13 +8,15 @@ import { ConnectionFormComponent } from './components/connection-form/connection
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component'
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { AddProductComponent } from './components/add-product/add-product.component';
 
 const routes: Routes = [
   {path: 'lorem', component: LoremComponent},
   {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', component: StockOverviewComponent},
   {path: 'withdraw', canActivate: [AuthGuard],component: WithdrawComponent},
-  {path: 'stats', canActivate: [AdminGuard], component: StatsComponent}
+  {path: 'stats', canActivate: [AdminGuard], component: StatsComponent},
+  {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent}
 ];
 
 @NgModule({
