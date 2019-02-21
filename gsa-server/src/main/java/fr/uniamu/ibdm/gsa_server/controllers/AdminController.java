@@ -2,6 +2,8 @@ package fr.uniamu.ibdm.gsa_server.controllers;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
@@ -92,10 +94,13 @@ public class AdminController {
 
   @GetMapping("/triggeredAlerts")
   public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts(){
-
-
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
   }
 
+
+  @GetMapping("/getAllAlerts")
+  public JsonResponse<List<AlertsData>> getAllAlerts(){
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAlerts());
+  }
 
 }

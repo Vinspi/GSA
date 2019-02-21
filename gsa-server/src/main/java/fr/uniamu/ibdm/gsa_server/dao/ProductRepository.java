@@ -1,6 +1,5 @@
 package fr.uniamu.ibdm.gsa_server.dao;
 
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import org.springframework.data.jpa.repository.Query;

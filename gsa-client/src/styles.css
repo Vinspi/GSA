@@ -82,6 +82,12 @@ thead {
     color: #888f9b;
 }
 
+.separator {
+    width: 100%;
+    border: 1px solid #e6e8ed;
+    border-top: none;
+}
+
 /* stock overview only (datatable) */
 
 .stock-overview .dataTables_wrapper .dataTables_filter {

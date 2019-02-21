@@ -1,22 +1,28 @@
 package fr.uniamu.ibdm.gsa_server.dao.QueryObjects;
 
-import fr.uniamu.ibdm.gsa_server.util.LocalDateAttributeConverter;
-
-import javax.persistence.Convert;
 import java.time.LocalDate;
 
 public class AlertAliquot {
 
   private long nlot;
-  @Convert(converter = LocalDateAttributeConverter.class)
   private LocalDate expirationDate;
+  private int qte;
 
   public AlertAliquot() {
   }
 
-  public AlertAliquot(long nlot, LocalDate expirationDate) {
+  public AlertAliquot(long nlot, LocalDate expirationDate, int qte) {
     this.nlot = nlot;
     this.expirationDate = expirationDate;
+    this.qte = qte;
+  }
+
+  public int getQte() {
+    return qte;
+  }
+
+  public void setQte(int qte) {
+    this.qte = qte;
   }
 
   public long getNlot() {

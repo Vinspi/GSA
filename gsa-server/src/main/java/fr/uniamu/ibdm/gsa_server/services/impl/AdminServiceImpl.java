@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import javafx.scene.control.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
@@ -34,6 +36,7 @@ import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
@@ -54,15 +57,16 @@ public class AdminServiceImpl implements AdminService {
 
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
+  private AlertRepository alertRepository;
 
   private SpeciesRepository speciesRepository;
 
   @Autowired
-
-  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository) {
+  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository) {
     this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
+    this.alertRepository = alertRepository;
   }
 
   @Override
@@ -148,6 +152,7 @@ public class AdminServiceImpl implements AdminService {
       productRepository.save(newProduct);
       return true;
     }
+  }
 
   public List<TriggeredAlertsQuery> getTriggeredAlerts() {
 
@@ -155,25 +160,53 @@ public class AdminServiceImpl implements AdminService {
     List<Object[]> aliquotsNativeQuery;
     List<TriggeredAlertsQuery> returnValue = new ArrayList<>();
     List<AlertAliquot> alertAliquots;
+    int qte;
+    AlertType type;
+    int qteHidden;
+    int qteVisible;
 
     for (Object[] o : queryResult){
       aliquotsNativeQuery = aliquotRepository.findAllBySourceAndTargetQuery((String) o[0],(String) o[1]);
       alertAliquots = new ArrayList<>();
 
+      type = AlertType.valueOf((String) o[4]);
+
+
       for (Object[] a : aliquotsNativeQuery){
-        alertAliquots.add(new AlertAliquot(((BigInteger) a[0]).longValue(), ((Timestamp) a[1]).toLocalDateTime().toLocalDate()));
+        qteHidden = ((BigInteger) a[3]).intValue();
+        qteVisible = ((BigInteger) a[2]).intValue();
+        if (type.equals(AlertType.VISIBLE_STOCK)) {
+          qte = qteVisible;
+        }
+        else if(type.equals(AlertType.HIDDEN_STOCK)) {
+          qte = qteHidden;
+        }
+        else {
+          qte = qteVisible+qteHidden;
+        }
+        alertAliquots.add(new AlertAliquot(((BigInteger) a[0]).longValue(), ((Timestamp) a[1]).toLocalDateTime().toLocalDate(), qte));
       }
 
       returnValue.add(new TriggeredAlertsQuery(
           (String) o[0],
           (String) o[1],
           ((BigDecimal) o[2]).intValue(),
-          (int) o[3], AlertType.valueOf((String) o[4]),
+          (int) o[3], type,
           alertAliquots));
 
     }
-
     return returnValue;
+  }
 
+  @Override
+  public List<AlertsData> getAllAlerts() {
+
+    List<AlertsData> data = new ArrayList<>();
+
+    alertRepository.findAll().forEach(alert -> {
+      data.add(new AlertsData(alert.getProduct().getProductName(), alert.getSeuil(), alert.getAlertType()));
+    });
+
+    return data;
   }
 }

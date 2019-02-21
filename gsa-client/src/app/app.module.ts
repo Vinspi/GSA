@@ -16,7 +16,13 @@ import { ConnectionFormComponent } from './components/connection-form/connection
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
+<<<<<<< HEAD
 import { AddProductComponent } from './components/add-product/add-product.component';
+=======
+import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
+import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
+import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
+>>>>>>> begin alerts panel
 
 
 @NgModule({
@@ -29,7 +35,13 @@ import { AddProductComponent } from './components/add-product/add-product.compon
     StockOverviewComponent,
     WithdrawComponent,
     StatsComponent,
+<<<<<<< HEAD
     AddProductComponent
+=======
+    AlertsPanelComponent,
+    EditAlertsComponent,
+    TriggeredAlertsComponent
+>>>>>>> begin alerts panel
   ],
   imports: [
     BrowserModule,
