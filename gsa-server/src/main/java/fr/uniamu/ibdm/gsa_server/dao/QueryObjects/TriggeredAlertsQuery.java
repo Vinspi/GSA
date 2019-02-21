@@ -13,14 +13,16 @@ public class TriggeredAlertsQuery {
   private int seuil;
   private AlertType alertType;
   private List<AlertAliquot> aliquots;
+  private long alertId;
 
-  public TriggeredAlertsQuery(String source, String target, int qte, int seuil, AlertType alertType, List<AlertAliquot> aliquots) {
+  public TriggeredAlertsQuery(String source, String target, int qte, int seuil, AlertType alertType, List<AlertAliquot> aliquots, long alertId) {
     this.source = source;
     this.target = target;
     this.qte = qte;
     this.seuil = seuil;
     this.alertType = alertType;
     this.aliquots = aliquots;
+    this.alertId = alertId;
   }
 
   public TriggeredAlertsQuery() {
@@ -76,5 +78,13 @@ public class TriggeredAlertsQuery {
 
   public void setAlertType(AlertType alertType) {
     this.alertType = alertType;
+  }
+
+  public long getAlertId() {
+    return alertId;
+  }
+
+  public void setAlertId(long alertId) {
+    this.alertId = alertId;
   }
 }

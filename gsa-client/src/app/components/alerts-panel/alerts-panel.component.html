@@ -1,11 +1,13 @@
-<div id="edit-alerts">
-  <app-edit-alerts></app-edit-alerts>
-</div>
-<div id="alerts-right-panel">
-  <div id="triggered-alerts">
-    <app-triggered-alerts></app-triggered-alerts>
+<div class="d-flex w-100">
+  <div id="edit-alerts">
+    <app-edit-alerts (updateAlertList)="updateTriggeredAlerts()"></app-edit-alerts>
   </div>
-  <div id="add-alert">
+  <div id="alerts-right-panel">
+    <div id="triggered-alerts">
+      <app-triggered-alerts></app-triggered-alerts>
+    </div>
+    <div id="add-alert">
 
+    </div>
   </div>
 </div>

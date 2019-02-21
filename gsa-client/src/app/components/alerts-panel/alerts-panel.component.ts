@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { TriggeredAlertsComponent } from './triggered-alerts/triggered-alerts.component';
 
 @Component({
   selector: 'app-alerts-panel',
@@ -7,9 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AlertsPanelComponent implements OnInit {
 
+  @ViewChild(TriggeredAlertsComponent)
+  private triggeredAlertsComponent: TriggeredAlertsComponent;
+
   constructor() { }
 
   ngOnInit() {
   }
 
+  updateTriggeredAlerts(){
+    this.triggeredAlertsComponent.ngOnChanges({});
+  }
 }

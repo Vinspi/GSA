@@ -1,10 +1,14 @@
 
 <div class="accordion" id="accordionExample">
+  <h1 *ngIf="data.length == 0">No alert triggered</h1>
   <div *ngFor="let item of data, let i = index" class="card">
     <div class="card-header" id="headingOne">
       <h2 class="mb-0">
         <div class="d-flex flex-direction-row justify-content-between w-100">
-          <div class="icon-danger"><i class="fas fa-exclamation-triangle"></i></div>
+          <div *ngIf="item.alertType == 'VISIBLE_STOCK'" class="color-visible"><i class="fas fa-exclamation-triangle"></i></div>
+          <div *ngIf="item.alertType == 'HIDDEN_STOCK'" class="color-hidden"><i class="fas fa-exclamation-triangle"></i></div>
+          <div *ngIf="item.alertType == 'GENERAL'" class="color-general"><i class="fas fa-exclamation-triangle"></i></div>
+
           <div class="product-name">{{item.source}}_ANTI_{{item.target}}</div>
           <button class="btn btn-outlined-custom d-flex flex-direction-reverse-row" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+i" aria-expanded="true" [attr.aria-controls]="'collapse'+i">
             <i class="fas fa-caret-down"></i>

@@ -7,11 +7,25 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +41,12 @@ import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,6 +57,12 @@ public class AdminServiceTest {
 
   @MockBean
   SpeciesRepository speciesRepository;
+
+  @MockBean
+  AlertRepository alertRepository;
+
+  @MockBean
+  AliquotRepository aliquotRepository;
 
   @InjectMocks
   AdminServiceImpl adminService;
@@ -124,6 +150,128 @@ public class AdminServiceTest {
     Mockito.when(speciesRepository.findById(targetName)).thenReturn(nullableTargetSpecies);
     Mockito.when(productRepository.findById(productPk)).thenReturn(Optional.of(newProduct));
     Assert.assertEquals(false, adminService.addProduct(sourceName, targetName));
+  }
+
+  public void getAllAlerts(){
+
+    List<Alert> alerts = new ArrayList<>();
+    Alert tmp;
+
+    for (int i=0;i<10;i++){
+      tmp = new Alert();
+      tmp.setSeuil(10);
+      tmp.setAlertId(i);
+      tmp.setAlertType(AlertType.VISIBLE_STOCK);
+      tmp.setProduct(new Product(new Species("MONKEY"), new Species("DONKEY"), null));
+      alerts.add(tmp);
+    }
+
+    Mockito.when(alertRepository.findAll()).thenReturn(alerts);
+
+    List<AlertsData> alertsData = adminService.getAllAlerts();
+
+    Assert.assertEquals(10, alertsData.size());
+
+    for (int i=0;i<alertsData.size();i++){
+      Assert.assertEquals(i , alertsData.get(i).getAlertId());
+      Assert.assertEquals(10, alertsData.get(i).getSeuil());
+      Assert.assertEquals(AlertType.VISIBLE_STOCK, alertsData.get(i).getAlertType());
+      Assert.assertEquals("DONKEY_ANTI_MONKEY", alertsData.get(i).getProductName());
+    }
+
+  }
+
+  @Test
+  public void removeAlert(){
+
+    Mockito.when(alertRepository.findById(1L)).thenReturn(Optional.of(new Alert()));
+
+    boolean success = adminService.removeAlert(0);
+
+    Assert.assertEquals(false, success);
+
+    success = adminService.removeAlert(1);
+
+    Assert.assertEquals(true, success);
+
+  }
+
+  @Test
+  public void updateAlert(){
+
+    Alert alert = new Alert();
+    alert.setSeuil(10);
+
+    UpdateAlertForm form = new UpdateAlertForm(1, 50);
+    UpdateAlertForm formFail = new UpdateAlertForm(0, 50);
+
+    Mockito.when(alertRepository.findById(1L)).thenReturn(Optional.of(alert));
+
+    boolean success = adminService.updateAlertSeuil(formFail);
+
+    Assert.assertEquals(false, success);
+
+    success = adminService.updateAlertSeuil(form);
+
+    Assert.assertEquals(true, success);
+
+  }
+
+  @Test
+  public void getTriggeredAlerts(){
+
+    Object[] queryVisible = new Object[6];
+    Object[] queryHidden = new Object[6];
+    Object[] queryGeneral = new Object[6];
+
+    queryVisible[0] = "SOURCE";
+    queryVisible[1] = "TARGET";
+    queryVisible[2] = BigDecimal.valueOf(30);
+    queryVisible[3] = 40;
+    queryVisible[4] = "VISIBLE_STOCK";
+    queryVisible[5] = 1;
+
+    queryHidden[0] = "SOURCE";
+    queryHidden[1] = "TARGET";
+    queryHidden[2] = BigDecimal.valueOf(30);
+    queryHidden[3] = 40;
+    queryHidden[4] = "HIDDEN_STOCK";
+    queryHidden[5] = 1;
+
+    queryGeneral[0] = "SOURCE";
+    queryGeneral[1] = "TARGET";
+    queryGeneral[2] = BigDecimal.valueOf(30);
+    queryGeneral[3] = 70;
+    queryGeneral[4] = "GENERAL";
+    queryGeneral[5] = 1;
+
+    List<Object[]> listQueryVisible = new ArrayList<>();
+    listQueryVisible.add(queryVisible);
+
+    List<Object[]> listQueryHidden = new ArrayList<>();
+    listQueryHidden.add(queryHidden);
+
+    List<Object[]> listQueryGeneral = new ArrayList<>();
+    listQueryGeneral.add(queryGeneral);
+
+    Mockito.when(productRepository.getTriggeredAlertsVisible()).thenReturn(listQueryVisible);
+    Mockito.when(productRepository.getTriggeredAlertsHidden()).thenReturn(listQueryHidden);
+    Mockito.when(productRepository.getTriggeredAlertsGeneral()).thenReturn(listQueryGeneral);
+
+    Object[] aliquotQuery = new Object[4];
+
+    aliquotQuery[0] = BigInteger.valueOf(5);
+    aliquotQuery[1] = new Timestamp(1254891);
+    aliquotQuery[2] = BigInteger.valueOf(30);
+    aliquotQuery[3] = BigInteger.valueOf(30);
+
+    List<Object[]> listAliquotQuery = new ArrayList<>();
+
+    listAliquotQuery.add(aliquotQuery);
+
+    Mockito.when(aliquotRepository.findAllBySourceAndTargetQuery("SOURCE", "TARGET")).thenReturn(listAliquotQuery);
+
+    List<TriggeredAlertsQuery> triggeredAlertsQueries = adminService.getTriggeredAlerts();
 
   }
 

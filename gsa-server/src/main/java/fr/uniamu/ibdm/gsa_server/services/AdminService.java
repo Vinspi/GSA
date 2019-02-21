@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
 import java.util.List;
@@ -50,5 +51,19 @@ public interface AdminService {
    * @return A list of alerts.
    */
   List<AlertsData> getAllAlerts();
+
+  /**
+   * This method update the alert seuil of the given alert.
+   *
+   * @param form Wrapper containing new seuil and alert id.
+   */
+  boolean updateAlertSeuil(UpdateAlertForm form);
+
+  /**
+   * This method remove the given alert from the database.
+   *
+   * @param id targeted alert id.
+   */
+  boolean removeAlert(long id);
 
 }

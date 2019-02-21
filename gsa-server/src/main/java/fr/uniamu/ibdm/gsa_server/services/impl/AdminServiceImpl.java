@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
@@ -36,21 +35,22 @@ import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
-import fr.uniamu.ibdm.gsa_server.util.LocalDateAttributeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -156,7 +156,10 @@ public class AdminServiceImpl implements AdminService {
 
   public List<TriggeredAlertsQuery> getTriggeredAlerts() {
 
-    List<Object[]> queryResult = productRepository.getTriggeredAlerts();
+    List<Object[]> queryResult = productRepository.getTriggeredAlertsVisible();
+    queryResult.addAll(productRepository.getTriggeredAlertsHidden());
+    queryResult.addAll(productRepository.getTriggeredAlertsGeneral());
+
     List<Object[]> aliquotsNativeQuery;
     List<TriggeredAlertsQuery> returnValue = new ArrayList<>();
     List<AlertAliquot> alertAliquots;
@@ -192,7 +195,8 @@ public class AdminServiceImpl implements AdminService {
           (String) o[1],
           ((BigDecimal) o[2]).intValue(),
           (int) o[3], type,
-          alertAliquots));
+          alertAliquots,
+          ((BigInteger) o[5]).longValue()));
 
     }
     return returnValue;
@@ -204,9 +208,41 @@ public class AdminServiceImpl implements AdminService {
     List<AlertsData> data = new ArrayList<>();
 
     alertRepository.findAll().forEach(alert -> {
-      data.add(new AlertsData(alert.getProduct().getProductName(), alert.getSeuil(), alert.getAlertType()));
+      data.add(new AlertsData(alert.getProduct().getProductName(), alert.getSeuil(), alert.getAlertType(), alert.getAlertId() ));
     });
 
     return data;
+  }
+
+  @Override
+  public boolean updateAlertSeuil(UpdateAlertForm form) {
+
+    Optional<Alert> optAlert = alertRepository.findById(form.getAlertId());
+
+    if (optAlert.isPresent()){
+      Alert a = optAlert.get();
+      a.setSeuil(form.getSeuil());
+      alertRepository.save(a);
+      return true;
+    }
+    else {
+      return false;
+    }
+
+  }
+
+  @Override
+  public boolean removeAlert(long id) {
+
+    Optional<Alert> optAlert = alertRepository.findById(id);
+
+    if (optAlert.isPresent()){
+      alertRepository.delete(optAlert.get());
+      return true;
+    }
+    else {
+      return false;
+    }
+
   }
 }

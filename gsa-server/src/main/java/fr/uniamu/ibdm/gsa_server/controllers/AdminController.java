@@ -2,15 +2,18 @@ package fr.uniamu.ibdm.gsa_server.controllers;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -91,16 +94,58 @@ public class AdminController {
     }
   }
 
-
+  /**
+   * REST endpoint, return all triggered alerts.
+   *
+   * @return a list of triggered alerts with their corresponding aliquots.
+   */
   @GetMapping("/triggeredAlerts")
   public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts(){
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
   }
 
 
+  /**
+   * REST endpoint, return all alerts present in the database.
+   *
+   * @return a list of wrappers containing product name, seuil and type of the alert.
+   */
   @GetMapping("/getAllAlerts")
   public JsonResponse<List<AlertsData>> getAllAlerts(){
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAlerts());
+  }
+
+  /**
+   * REST endpoint, remove the specified alert from the database.
+   *
+   * @param form wrapper containing targeted alert id.
+   * @return SUCCESS status if the product exist, FAIL status otherwise.
+   */
+  @PostMapping("/removeAlert")
+  public JsonResponse<Boolean> removeAlert(@RequestBody RemoveAlertForm form){
+    if (adminService.removeAlert(form.getAlertId())) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, true);
+    }
+    else {
+      return new JsonResponse<>("This alert doesn't exists or has already been removed",RequestStatus.FAIL);
+    }
+  }
+
+  /**
+   * REST endpoint, update the specified alert from the database.
+   *
+   * @param form wrapper containing targeted alert id end new seuil.
+   * @return SUCCESS status if the product exist, FAIL status otherwise.
+   */
+  @PostMapping("/updateAlert")
+  public JsonResponse<Boolean> updateAlert(@RequestBody UpdateAlertForm form) {
+
+    if(adminService.updateAlertSeuil(form)) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, true);
+    }
+    else {
+      return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
+    }
   }
 
 }
