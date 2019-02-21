@@ -12,12 +12,14 @@ import { Subject } from 'rxjs';
   styleUrls: ['./add-aliquote.component.css']
 })
 export class AddAliquoteComponent implements OnInit {
-
+  public isViewable: boolean;
   data: Array<aliquoteOverview>;
   dtTrigger: Subject<any> = new Subject();
 
-  constructor(private userService: UserService) { }
-
+  constructor(private userService: UserService) {
+    this.isViewable = false; 
+   }
+   
   ngOnInit() {
     this.userService.getAllSpeciesName().subscribe(response => {
       this.data = <Array<aliquoteOverview>> response.data;
@@ -25,5 +27,10 @@ export class AddAliquoteComponent implements OnInit {
       this.dtTrigger.next();
     });
   }
+  public toggle(): void { 
+    this.isViewable = !this.isViewable; 
+    console.log('---->' +this.isViewable);
+  }
+
 
 }
