@@ -1,0 +1,22 @@
+<div class="container">
+  <h1>Existing alerts</h1>
+  <div class="separator"></div>
+  <div class="alert-list">
+    <div class="alert-list-header d-flex flex-direction-column w-100 justify-content-between">
+      <div class="d-flex flex-direction-column w-75 justify-content-around">
+        <div>product</div>
+        <div>seuil</div>
+        <div>type</div>
+      </div>
+      <div></div>
+    </div>
+    <div *ngFor="let item of data, let i = index" class="alert-list-element d-flex flex-direction-column w-100 justify-content-between">
+      <div class="alert-list-item d-flex flex-direction-column w-75 justify-content-around" [ngClass]="{'odd': i%2==1}">
+        <div>{{item.productName}}</div>
+        <div>{{item.seuil}}</div>
+        <div>{{item.alertType}}</div>
+      </div>
+      <div class="w-25">add suppr</div>
+    </div>
+  </div>
+</div>

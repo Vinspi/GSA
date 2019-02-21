@@ -1,0 +1,26 @@
+.product-name {
+    font-size: 18pt;
+    color: #242939;
+}
+
+.icon-danger i {
+    color: #d23a3a;
+    transition: rotate 1s ease-in;
+}
+
+.reverse {
+    transform: rotate(180deg);
+}
+
+.aliquot-list {
+    margin-top: 5px;
+}
+
+.aliquot-list-header {
+    background-color: #242939;
+    color: #888f9b;
+}
+
+.show {
+    border-bottom: solid 1px #d8d8d8;
+}

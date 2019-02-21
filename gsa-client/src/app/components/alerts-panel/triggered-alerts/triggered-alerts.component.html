@@ -1,0 +1,36 @@
+
+<div class="accordion" id="accordionExample">
+  <div *ngFor="let item of data, let i = index" class="card">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <div class="d-flex flex-direction-row justify-content-between w-100">
+          <div class="icon-danger"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="product-name">{{item.source}}_ANTI_{{item.target}}</div>
+          <button class="btn btn-outlined-custom d-flex flex-direction-reverse-row" type="button" data-toggle="collapse" [attr.data-target]="'#collapse'+i" aria-expanded="true" [attr.aria-controls]="'collapse'+i">
+            <i class="fas fa-caret-down"></i>
+          </button>
+        </div>
+      </h2>
+    </div>
+    <div id="collapse{{i}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+      <div class="card-body">
+        <div class="d-flex flex-direction-row justify-content-around w-100">
+          <div>Quantity left : {{item.qte}}</div>
+          <div>Seuil : {{item.seuil}}</div>
+        </div>
+        <div class="aliquot-list">
+          <div class="aliquot-list-header d-flex w-100 flex-direction-row justify-content-around">
+            <div>nlot</div>
+            <div>quantity</div>
+            <div>expiration date</div>
+          </div>
+          <div *ngFor="let aliquot of item.aliquots" class="aliquot-list-element d-flex w-100 flex-direction-row justify-content-around">
+              <div>{{aliquot.nlot}}</div>
+              <div>{{aliquot.qte}}</div>
+              <div>{{aliquot.expirationDate}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
