@@ -1,15 +1,13 @@
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 
 <body>
 	<div class="container">
-		<h1 class="well">Add Aliquote</h1>
+		<h1 class="well">Add a new aliquote</h1>
 		<div class="col-lg-12 well">
 			<div class="row">
 				<form>
 					<div class="col-sm-12 form-group">
-						<!-- Default switch -->
 						<div class="custom-control custom-switch">
 							<input type="checkbox" id="reserveInput" class="custom-control-input" (click)="toggle()"
 								id="customSwitches">
@@ -25,7 +23,7 @@
 					<div class="col-sm-12">
 						<div class="row">
 							<div id="price-container" class="col-sm-6 form-group">
-								<label>Price</label>
+								<label>Price*</label>
 								<input type="text" id="price" placeholder="Enter Price Here.." class="form-control">
 							</div>
 							<div id="reserveQty-container" class="col-sm-6 form-group">
@@ -42,32 +40,33 @@
 									class="form-control">
 							</div>
 							<div class="col-sm-6 form-group">
-								<label>Provider</label>
+								<label>Provider*</label>
 								<input type="text" id="provider" placeholder="Enter Provider Here.."
 									class="form-control">
 							</div>
 						</div>
 						<div class="row">
 							<div id="source-container" class="col-sm-6 form-group">
-								<label>Source</label>
+								<label>Source*</label>
 								<select id="source" class="form-control">
 									<option value="" selected disabled hidden>{{defaultOption}}</option>
 									<option value="" *ngFor="let item of data">{{item}}</option>
 								</select>
 							</div>
 							<div id="target-container" class="col-sm-6 form-group">
-								<label>Target</label>
+								<label>Target*</label>
 								<select id="target" class="form-control">
 									<option value="" selected disabled hidden>{{defaultOption}}</option>
 									<option value="" *ngFor="let item of data">{{item}}</option>
 								</select>
 							</div>
 						</div>
-						<button type="button"  (click)="addAliquote()"class="btn btn-lg btn-info">Submit</button>
+						<div id="button-container" class="form-group">
+							<button (click)="addAliquote()" type="submit" class="btn btn-primary">Add Aliquote</button>
+						</div>
 					</div>
 				</form>
 				<ngb-alert *ngIf="messageAlert" [(type)]="typeAlert" (close)="messageAlert = null">{{messageAlert}}</ngb-alert>
-
 			</div>
 		</div>
 	</div>

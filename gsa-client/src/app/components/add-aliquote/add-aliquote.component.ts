@@ -5,15 +5,13 @@ import { Subject } from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
 
 
-
-
-
 @Component({
   selector: 'app-add-aliquote',
   templateUrl: './add-aliquote.component.html',
   styleUrls: ['./add-aliquote.component.css']
 })
 export class AddAliquoteComponent implements OnInit {
+
   public isViewable: boolean;
   private SelectedPrice : string;
   private SelectedReserveQty : string;
@@ -46,23 +44,24 @@ export class AddAliquoteComponent implements OnInit {
     console.log('---->' +this.isViewable);
   }
 
-  private configureMessageAlert(type: string, message: string, time: number) {
-    this.typeAlert = type;
-    this._success.subscribe((m) => this.messageAlert = m);
-    this._success.pipe(
-      debounceTime(time)
-    ).subscribe(() => this.messageAlert = null);
-    this._success.next(message);
-  }
-
   addAliquote(){
     this.SelectedVisibleQty =(<HTMLInputElement>document.getElementById("visibleQty")).value;
-    this.SelectedReserveQty = (<HTMLInputElement>document.getElementById("reserveStock")).value;
     this.SelectedPrice = (<HTMLInputElement>document.getElementById("price")).value;
     this.SelectedProvider = (<HTMLInputElement>document.getElementById("provider")).value;
     this.selectedSource = $('#source option:selected').text();
     this.selectedTarget = $('#target option:selected').text();
-   
+
+    if(this.isViewable){
+
+      this.SelectedReserveQty = (<HTMLInputElement>document.getElementById("reserveStock")).value;
+    } else this.SelectedReserveQty ="";
+  
+    if (this.SelectedPrice === null ||this.SelectedProvider === null || this.selectedSource === this.defaultOption || this.selectedTarget === this.defaultOption){
+      this.typeAlert = "danger";
+      this.messageAlert = "Fields with * are required ";
+      this.adminService.configureMessageAlert(this.typeAlert,this.messageAlert, 4000);
+      return;
+    }
 
     this.adminService.addAliquote({
       aliquotQuantityVisibleStock : this.SelectedVisibleQty,
@@ -73,10 +72,14 @@ export class AddAliquoteComponent implements OnInit {
       target : this.selectedTarget,
     }).subscribe(res => {
       if (res.status === 'SUCCESS') {
-        this.configureMessageAlert('success', 'The product was successfully added.', 4000);
+        this.typeAlert = "success";
+        this.messageAlert = "The product was successfully added.";
+
       } else if (res.status === 'FAIL') {
-        this.configureMessageAlert('danger', 'An error occurred, this product could not be added.', 4000);
+        this.typeAlert = "danger";
+        this.messageAlert = "An error occurred, this product could not be added.";
       }
+      this.adminService.configureMessageAlert(this.typeAlert,this.messageAlert, 4000);
     });
   }
 }

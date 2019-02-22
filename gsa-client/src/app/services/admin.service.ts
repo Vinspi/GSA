@@ -3,13 +3,29 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JsonResponse } from './request-interfaces/json-response';
 import { environment } from '../../environments/environment';
+import { Subject } from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
 
+  public messageAlert: string;
+  public typeAlert: string;
+  public _success = new Subject<string>();
+
   constructor(private http: HttpClient) { }
+
+  public configureMessageAlert(type: string, message: string, time: number) {
+    this.typeAlert = type;
+    this._success.subscribe((m) => this.messageAlert = m);
+    this._success.pipe(
+      debounceTime(time)
+    ).subscribe(() => this.messageAlert = null);
+    this._success.next(message);
+  }
 
   private BASE_URL: String = environment.API_URL+environment.API_ADMIN;
 
