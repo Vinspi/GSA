@@ -8,11 +8,8 @@ import { ConnectionFormComponent } from './components/connection-form/connection
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component'
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
-<<<<<<< HEAD
 import { AddProductComponent } from './components/add-product/add-product.component';
-=======
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
->>>>>>> begin alerts panel
 
 const routes: Routes = [
   {path: 'lorem', component: LoremComponent},
@@ -20,11 +17,8 @@ const routes: Routes = [
   {path: 'stockoverview', component: StockOverviewComponent},
   {path: 'withdraw', canActivate: [AuthGuard],component: WithdrawComponent},
   {path: 'stats', canActivate: [AdminGuard], component: StatsComponent},
-<<<<<<< HEAD
-  {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent}
-=======
+  {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent},
   {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent}
->>>>>>> begin alerts panel
 ];
 
 @NgModule({

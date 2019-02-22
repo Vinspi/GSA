@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import javafx.scene.control.Alert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -217,10 +216,10 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public boolean updateAlertSeuil(UpdateAlertForm form) {
 
-    Optional<Alert> optAlert = alertRepository.findById(form.getAlertId());
+    Optional<fr.uniamu.ibdm.gsa_server.models.Alert> optAlert = alertRepository.findById(form.getAlertId());
 
     if (optAlert.isPresent()){
-      Alert a = optAlert.get();
+      fr.uniamu.ibdm.gsa_server.models.Alert a = optAlert.get();
       a.setSeuil(form.getSeuil());
       alertRepository.save(a);
       return true;
