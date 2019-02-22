@@ -1,0 +1,113 @@
+:host {
+    
+}
+
+h1 {
+    text-align: center;
+    font-size: 18pt;
+    padding: 3%;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 40%;
+    font-size: 16pt;
+}
+
+.alert-list {
+    overflow-y: auto;
+    height: 65vh;
+}
+
+.alert-list-item {
+   
+    padding-top: 2px;
+    padding-bottom: 2px;
+
+}
+
+.card {
+    margin-bottom: 3px;
+}
+
+.alert-list-header div {
+    margin-top: 3%;
+    background-color: #242939;
+    color: #888f9b;
+    padding-bottom: 1px;
+    padding-top: 2px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+
+}
+
+.icon-bell-container i {
+    font-size: 25pt;
+}
+
+.alert-list {
+    margin-top: 5px;
+}
+
+.btn-outlined-icon-dark-blue {
+    padding: 2px;
+    padding-left: 6px;
+    background-color: white;
+    color: #242939;
+    font-size: 18pt !important;
+    border: none;
+    cursor: pointer;
+    transition: all .3s ease;
+    border-radius: 5px;
+}
+
+.btn-outlined-icon-red {
+    padding: 2px;
+    padding-left: 6px;
+    background-color: white;
+    color: #242939;
+    font-size: 15pt !important;
+    border: none;
+    cursor: pointer;
+    transition: all .3s ease;
+    border-radius: 5px;
+    margin-left: 5px;
+}
+
+.btn-outlined-icon-red:hover {
+    color: red;
+}
+
+.btn-outlined-icon-dark-blue:hover {
+    /* background-color: #242939; */
+    color: rgb(28, 132, 218);
+}
+
+.label-seuil {
+    margin-right: 12px;
+}
+
+form {
+    margin-top: 25px;
+}
+
+.legend-visible {
+    background-color: #6d3580;
+    width: 15px;
+    height: 8px;
+    display: inline-block;
+}
+
+.legend-hidden {
+    background-color: #99235c;
+    width: 15px;
+    height: 8px;
+    display: inline-block;
+}
+
+.legend-general {
+    background-color: #32dbc6;
+    width: 15px;
+    height: 8px;
+    display: inline-block;
+}

@@ -1,0 +1,82 @@
+<div class="container">
+  <h1>Existing alerts</h1>
+  <small>Legend : <span class="legend-visible"></span> stock, <span class="legend-hidden"></span> reserve, <span class="legend-general"></span> general</small>
+  <div class="separator"></div>
+  <h2 *ngIf="data.length == 0">No alerts configured yet</h2>
+  <div *ngIf="data.length > 0" class="alert-list">
+    <div *ngFor="let item of data, let i = index" class="card">
+      <div class="card-body d-flex w-100 flex-direction-row justify-content-between">
+        <div *ngIf="item.alertType == 'VISIBLE_STOCK'" class="icon-bell-container color-visible">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div *ngIf="item.alertType == 'HIDDEN_STOCK'" class="icon-bell-container color-hidden">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div *ngIf="item.alertType == 'GENERAL'" class="icon-bell-container color-general">
+          <i class="fas fa-bell"></i>
+        </div>
+        <div class="card-product-name">
+          {{item.productName}}
+        </div>
+        <div class="card-product-seuil">
+          {{item.seuil}}
+        </div>
+        <div>
+          <button (click)="chooseElement(i)" type="button" class="btn-outlined-icon-dark-blue" data-toggle="modal" data-target="#modalEdit"><i class="far fa-edit"></i></button>
+          <button (click)="chooseElement(i)" type="button" class="btn btn-outlined-icon-red" data-toggle="modal" data-target="#modalSuppress"><i class="fas fa-times"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="data.length > 0" id="modalEdit" class="modal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit : {{data[elementChoosed].productName}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body d-flex flex-column w-100">
+        <div class="d-flex flex-row justify-content-around w-100">
+          <div>alert-type : {{data[elementChoosed].alertType}},</div>
+          <div>seuil : {{data[elementChoosed].seuil}}</div>     
+        </div>
+        <div>
+          <form>
+            <div class="d-flex flex-row w-100 justify-content-center">
+              <div class="label-seuil">New seuil : </div>
+              <div class="form-group">
+                <input [(ngModel)]="seuil" type="text" name="seuil" class="form-control" id="new-seuil" aria-describedby="emailHelp" value="{{data[elementChoosed].seuil}}">
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button (click)="updateAlert()" type="button" class="btn btn-primary" data-dismiss="modal">Save changes</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="data.length > 0" id="modalSuppress" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Suppress : {{data[elementChoosed].productName}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>You're about to suppress alert type {{data[elementChoosed].alertType}}<br/> on product {{data[elementChoosed].productName}}</p>
+        </div>
+        <div class="modal-footer">
+          <button (click)="removeAlert()" type="button" class="btn btn-danger" data-dismiss="modal">Yes, suppress it</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>

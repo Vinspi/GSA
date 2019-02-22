@@ -79,3 +79,8 @@ insert into transaction (transaction_id, transaction_date, transaction_motif, tr
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (51, '2018-11-14 02:24:41', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 1, 1);
 SET FOREIGN_KEY_CHECKS = 1;
 DELETE FROM `transaction` WHERE (transaction_date > '2019-04-30 00:00:00' AND transaction_date < '2019-06-01 00:00:00');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('VISIBLE_STOCK', 10, 'WOLF', 'shark');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('HIDDEN_STOCK', 10, 'WOLF', 'shark');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 20, 'WOLF', 'shark');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'WOLF', 'spider');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'goat', 'WOLF');
