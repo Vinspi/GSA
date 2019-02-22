@@ -1,22 +1,26 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
+@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200" })
 public class AdminController {
 
   @Autowired
@@ -38,9 +42,58 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
 
-  @PostMapping("/addAliquote")
-  public JsonResponse <AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form){
+  /**
+   * /Endpoint returning all of species names.
+   *
+   * @return JSON response containing all of species name.
+   */
+  @GetMapping("/allspeciesnames")
+  public JsonResponse<List<String>> getAllSpeciesNames() {
+    List<String> names = adminService.getAllSpeciesNames();
+    if (names != null) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, names);
+    } else {
+      return new JsonResponse<>("Could not retrieve all of species names", RequestStatus.FAIL);
+    }
+  }
 
+  /**
+   * Endpoint enabling well-formatted POST requests to add a product.
+   *
+   * @param form
+   *          contains "targetName" and "sourceName" keys.
+   * @return if successful, a JSON response with a success status, otherwise a
+   *         JSON response with a fail status and the sent form as data.
+   */
+  @PostMapping("/addproduct")
+  public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
+    JsonResponse<AddProductForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+    failedRequestResponse.setData(form);
+
+    String sourceName = form.getSourceName();
+    String targetName = form.getTargetName();
+
+    if (sourceName == null || targetName == null) {
+      failedRequestResponse.setError("Missing attributes within request body");
+      return failedRequestResponse;
+    }
+
+    boolean success = adminService.addProduct(sourceName, targetName);
+    if (success) {
+      return new JsonResponse<>(RequestStatus.SUCCESS);
+    } else {
+      failedRequestResponse.setError("Could not add the product");
+      return failedRequestResponse;
+    }
+  }
+
+  /**
+   *
+   * @param form
+   * @return
+   */
+  @PostMapping("/addAliquote")
+  public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form){
     JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
     failedRequestResponse.setData(form);
 
@@ -50,17 +103,17 @@ public class AdminController {
     int aliquotQuantityHiddenStock = form.getAliquotQuantityHiddenStock();
     float aliquotPrice = form.getAliquotPrice();
     String provider = form.getProvider();
-    String source = "goat";
-    String target = "WOLF";
+    String source = form.getSource();
+    String target = form.getTarget();
 
-    if (aliquotNLot == 0|| aliquotExpirationDate == null || aliquotQuantityVisibleStock == 0 ||
-            aliquotQuantityHiddenStock == 0 || aliquotPrice == 0 || provider == null ) {
+
+    if (aliquotPrice == 0 || provider == null || source == null || target == null)
+    {
       failedRequestResponse.setError("Missing attributes within request body");
       return failedRequestResponse;
-
     }
 
-    boolean success = adminService.addAliquote(aliquotNLot, aliquotExpirationDate, aliquotQuantityVisibleStock,
+    boolean success = adminService.addAliquote(aliquotQuantityVisibleStock,
             aliquotQuantityHiddenStock, aliquotPrice, provider, source,target );
     if (success)
     {
@@ -68,21 +121,6 @@ public class AdminController {
     } else {
       failedRequestResponse.setError("Could not add the aliquote");
       return failedRequestResponse;
-    }
-  }
-
-  /**
-   * /Endpoint returning all of species names.
-   *
-   * @return JSON response containing all of species name.
-   */
-  @GetMapping("/allSpeciesName")
-  public JsonResponse<List<String>> getAllSpeciesName() {
-    List<String> names = adminService.getAllSpeciesName();
-    if (names != null) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, names);
-    } else {
-      return new JsonResponse<>("Could not retrieve all of species names", RequestStatus.FAIL);
     }
   }
 

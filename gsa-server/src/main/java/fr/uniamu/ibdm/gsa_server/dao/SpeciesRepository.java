@@ -11,6 +11,6 @@ import fr.uniamu.ibdm.gsa_server.models.Species;
 @Repository
 public interface SpeciesRepository extends CrudRepository<Species, String> {
 
-    @Query(value = "SELECT species_name FROM species", nativeQuery = true)
-    List<String> getAllSpeciesName();
+  @Query(value = "SELECT species_name FROM species", nativeQuery = true)
+  List<String> getAllSpeciesNames();
 }

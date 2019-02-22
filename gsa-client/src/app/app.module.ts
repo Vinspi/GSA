@@ -4,7 +4,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
-import { ChartsModule } from 'ng2-charts/ng2-charts'
+import { ChartsModule } from 'ng2-charts/ng2-charts';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -15,6 +16,7 @@ import { ConnectionFormComponent } from './components/connection-form/connection
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { AddProductComponent } from './components/add-product/add-product.component';
 import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.component';
 
 
@@ -28,6 +30,8 @@ import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.com
     StockOverviewComponent,
     WithdrawComponent,
     StatsComponent,
+    AddProductComponent,
+    StatsComponent,
     AddAliquoteComponent
   ],
   imports: [
@@ -37,7 +41,8 @@ import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.com
     HttpClientModule,
     FormsModule,
     DataTablesModule,
-    ChartsModule
+    ChartsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

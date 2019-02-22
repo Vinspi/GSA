@@ -19,7 +19,7 @@ public class Aliquot implements Serializable {
   private long aliquotNLot;
 
 
-  private String aliquotExpirationDate;
+  private LocalDate aliquotExpirationDate;
   private long aliquotQuantityVisibleStock;
   private long aliquotQuantityHiddenStock;
   private float aliquotPrice;
@@ -27,8 +27,8 @@ public class Aliquot implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumns({
-      @JoinColumn(name = "source", nullable = false),
-      @JoinColumn(name = "target", nullable = false)
+          @JoinColumn(name = "source", nullable = false),
+          @JoinColumn(name = "target", nullable = false)
   })
   private Product product;
 
@@ -68,11 +68,11 @@ public class Aliquot implements Serializable {
     this.aliquotNLot = aliquotNLot;
   }
 
-  public String getAliquotExpirationDate() {
+  public LocalDate getAliquotExpirationDate() {
     return aliquotExpirationDate;
   }
 
-  public void setAliquotExpirationDate(String  aliquotExpirationDate) {
+  public void setAliquotExpirationDate(LocalDate aliquotExpirationDate) {
     this.aliquotExpirationDate = aliquotExpirationDate;
   }
 

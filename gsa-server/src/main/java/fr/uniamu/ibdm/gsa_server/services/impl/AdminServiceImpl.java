@@ -1,39 +1,45 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.AdminService;
-import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 
 @Service
 public class AdminServiceImpl implements AdminService {
 
   private ProductRepository productRepository;
-  private AliquotRepository aliquotRepository;
   private SpeciesRepository speciesRepository;
+  private AliquotRepository aliquotRepository;
 
 
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository) {
+  public AdminServiceImpl(ProductRepository productRepository, SpeciesRepository speciesRepository,AliquotRepository aliquotRepository) {
     this.productRepository = productRepository;
-    this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
-  }
+    this.aliquotRepository = aliquotRepository;
 
+  }
 
   @Override
   public List<StatsWithdrawQuery> getWithdrawStats(WithdrawStatsForm form) {
-
 
     String[] shards = form.getProductName().split("_");
 
@@ -44,25 +50,22 @@ public class AdminServiceImpl implements AdminService {
     String lowerBound;
     String upperBound;
 
-    lowerBound = form.getYearLowerBound()
-        + "-"
-        + DateConverter.monthToNumberConvertor(form.getMonthLowerBound())
+    lowerBound = form.getYearLowerBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthLowerBound())
         + "-01 00:00:00";
 
-    upperBound = form.getYearUpperBound()
-        + "-"
-        + DateConverter.monthToNumberConvertor(form.getMonthUpperBound())
+    upperBound = form.getYearUpperBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound())
         + "-31 00:00:00";
 
     System.out.println("lower bound : " + lowerBound);
 
-    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0], shards[2]);
+    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0],
+        shards[2]);
     List<StatsWithdrawQuery> returnValue = new ArrayList<>();
-
 
     for (int i = 0; i < result.size(); i++) {
 
-      returnValue.add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
+      returnValue
+          .add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
 
     }
 
@@ -83,25 +86,78 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public boolean addAliquote(int aliquotNLot,String aliquotExpirationDate,int aliquotQuantityVisibleStock
-          ,int aliquotQuantityHiddenStock,float aliquotPrice,String provider, String source, String target) {
+  public List<String> getAllSpeciesNames() {
+    return speciesRepository.getAllSpeciesNames();
+  }
 
+  @Override
+  public boolean addProduct(String sourceName, String targetName) {
+
+    Species sourceSpecies = null;
+    Species targetSpecies = null;
+    Optional<Species> nullableSourceSpecies = speciesRepository.findById(sourceName);
+    Optional<Species> nullableTargetSpecies = speciesRepository.findById(targetName);
+
+    if (nullableTargetSpecies.isPresent() && nullableSourceSpecies.isPresent()) {
+      sourceSpecies = nullableSourceSpecies.get();
+      targetSpecies = nullableTargetSpecies.get();
+
+    } else {
+      return false;
+    }
+
+    Collection<Aliquot> aliquots = new ArrayList<>();
+    Product newProduct = new Product(targetSpecies, sourceSpecies, aliquots);
+
+    ProductPK productPk = new ProductPK();
+    productPk.setSource(sourceName);
+    productPk.setTarget(targetName);
+    Optional<Product> nullableProduct = productRepository.findById(productPk);
+
+    if (nullableProduct.isPresent()) {
+      return false;
+    } else {
+      productRepository.save(newProduct);
+      return true;
+    }
+
+  }
+
+  @Override
+  public boolean addAliquote(int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String source, String target) {
+
+    Species sourceSpecies = null;
+    Species targetSpecies = null;
+    Optional<Species> nullableSourceSpecies = speciesRepository.findById(source);
+    Optional<Species> nullableTargetSpecies = speciesRepository.findById(target);
+
+    if (nullableTargetSpecies.isPresent() && nullableSourceSpecies.isPresent()) {
+      sourceSpecies = nullableSourceSpecies.get();
+      targetSpecies = nullableTargetSpecies.get();
+
+    } else {
+      return false;
+    }
 
     Aliquot NewAliquot = new Aliquot();
-    NewAliquot.setAliquotNLot(aliquotNLot);
-    NewAliquot.setAliquotExpirationDate(aliquotExpirationDate);
+    NewAliquot.setAliquotExpirationDate(LocalDate.now().plusYears(1));
     NewAliquot.setAliquotQuantityVisibleStock(aliquotQuantityVisibleStock);
     NewAliquot.setAliquotQuantityHiddenStock(aliquotQuantityHiddenStock);
     NewAliquot.setAliquotPrice(aliquotPrice);
     NewAliquot.setProvider(provider);
 
+    ProductPK productPk = new ProductPK();
+    productPk.setSource(source);
+    productPk.setTarget(target);
+    Optional<Product> nullableProduct = productRepository.findById(productPk);
 
-    aliquotRepository.save(NewAliquot);
-     return true;
-  }
-
-  @Override
-  public List<String> getAllSpeciesName() {
-    return speciesRepository.getAllSpeciesName();
+    if(nullableProduct.isPresent())
+    {
+      NewAliquot.setProduct(nullableProduct.get());
+      aliquotRepository.save(NewAliquot);
+      return true;
+    } else {
+        return false;
+    }
   }
 }

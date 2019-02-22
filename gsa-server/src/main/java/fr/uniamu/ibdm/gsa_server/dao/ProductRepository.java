@@ -29,5 +29,6 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
                                             @Param("monthUpperBound") String monthUpperBound,
                                             @Param("source") String source,
                                             @Param("target") String target);
+  
 
 }

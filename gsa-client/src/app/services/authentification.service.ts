@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JsonResponse } from './request-interfaces/json-response';
+import { LocalStorage } from '@ngx-pwa/local-storage';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,9 @@ import { JsonResponse } from './request-interfaces/json-response';
 
 export class AuthentificationService {
 
-  constructor(private http: HttpClient) { }
+
+  constructor(private http: HttpClient, private localStorage: LocalStorage) { }
+
 
   checkLogin(): Observable<JsonResponse> {
     const headers = new HttpHeaders().set("withCredentials", "true");
@@ -35,4 +38,6 @@ export class AuthentificationService {
   logout(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(environment.API_URL+'/auth/logout',{withCredentials: true});
   }
+
+  
 }
