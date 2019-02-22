@@ -31,8 +31,4 @@ export class UserService {
     return this.http.get<JsonResponse>(environment.API_URL+'/getAllProductName');
   }
 
-  getAllSpeciesName(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(environment.API_URL+'/admin/allSpeciesName');
-  }
-
 }

@@ -8,7 +8,6 @@
 		<div class="col-lg-12 well">
 			<div class="row">
 				<form>
-					
 					<div class="col-sm-12 form-group">
 						<!-- Default switch -->
 						<div class="custom-control custom-switch">
@@ -18,52 +17,57 @@
 						</div>
 					</div>
 					<div class="col-sm-12 form-group">
-						<div class="form-group">
+						<div id="numLot-container" class="form-group">
 							<label>N°Lot</label>
-							<input type="text" placeholder="Enter N°Lot Here.." class="form-control">
+							<input type="text" id="numLot" placeholder="Enter N°Lot Here.." class="form-control">
 						</div>
 					</div>
 					<div class="col-sm-12">
 						<div class="row">
-							<div class="col-sm-6 form-group">
+							<div id="price-container" class="col-sm-6 form-group">
 								<label>Price</label>
-								<input type="text" placeholder="Enter Price Here.." class="form-control">
-							</div> 
-							<div class="col-sm-6 form-group">
+								<input type="text" id="price" placeholder="Enter Price Here.." class="form-control">
+							</div>
+							<div id="reserveQty-container" class="col-sm-6 form-group">
 								<label *ngIf="isViewable">Quantity in hidden stock</label>
-								<input type="text" *ngIf="isViewable"
+								<input type="text" id="reserveQty" *ngIf="isViewable"
 									placeholder="Enter Quantity in hidden stock Here.." class="form-control"
 									id="reserveStock">
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-6 form-group">
+							<div id="visibleQty-container" class="col-sm-6 form-group">
 								<label>Quantity in visible stock</label>
-								<input type="text" placeholder="Enter Quantity in visible stock Here.."
+								<input type="text" id="visibleQty" placeholder="Enter Quantity in visible stock Here.."
 									class="form-control">
 							</div>
 							<div class="col-sm-6 form-group">
 								<label>Provider</label>
-								<input type="text" placeholder="Enter Provider Here.." class="form-control">
+								<input type="text" id="provider" placeholder="Enter Provider Here.."
+									class="form-control">
 							</div>
 						</div>
 						<div class="row">
-							<div class="col-sm-6 form-group">
+							<div id="source-container" class="col-sm-6 form-group">
 								<label>Source</label>
-								<select class="form-control">
+								<select id="source" class="form-control">
+									<option value="" selected disabled hidden>{{defaultOption}}</option>
 									<option value="" *ngFor="let item of data">{{item}}</option>
 								</select>
 							</div>
-							<div class="col-sm-6 form-group">
+							<div id="target-container" class="col-sm-6 form-group">
 								<label>Target</label>
-								<select class="form-control">
+								<select id="target" class="form-control">
+									<option value="" selected disabled hidden>{{defaultOption}}</option>
 									<option value="" *ngFor="let item of data">{{item}}</option>
 								</select>
 							</div>
 						</div>
-						<button type="button" class="btn btn-lg btn-info">Submit</button>
+						<button type="button"  (click)="addAliquote()"class="btn btn-lg btn-info">Submit</button>
 					</div>
 				</form>
+				<ngb-alert *ngIf="messageAlert" [(type)]="typeAlert" (close)="messageAlert = null">{{messageAlert}}</ngb-alert>
+
 			</div>
 		</div>
 	</div>

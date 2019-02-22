@@ -27,4 +27,9 @@ export class AdminService {
 
     return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true})
   }
+
+  addAliquote(data: any): Observable<JsonResponse> {
+
+    return this.http.post<JsonResponse>(this.BASE_URL+'/addAliquote', data, {withCredentials: true})
+  }
 }
