@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
@@ -229,21 +230,21 @@ public class AdminServiceTest {
     queryVisible[2] = BigDecimal.valueOf(30);
     queryVisible[3] = 40;
     queryVisible[4] = "VISIBLE_STOCK";
-    queryVisible[5] = 1;
+    queryVisible[5] = BigInteger.valueOf(0);
 
     queryHidden[0] = "SOURCE";
     queryHidden[1] = "TARGET";
     queryHidden[2] = BigDecimal.valueOf(30);
     queryHidden[3] = 40;
     queryHidden[4] = "HIDDEN_STOCK";
-    queryHidden[5] = 1;
+    queryHidden[5] = BigInteger.valueOf(1);
 
     queryGeneral[0] = "SOURCE";
     queryGeneral[1] = "TARGET";
     queryGeneral[2] = BigDecimal.valueOf(30);
-    queryGeneral[3] = 70;
+    queryGeneral[3] = 40;
     queryGeneral[4] = "GENERAL";
-    queryGeneral[5] = 1;
+    queryGeneral[5] = BigInteger.valueOf(2);
 
     List<Object[]> listQueryVisible = new ArrayList<>();
     listQueryVisible.add(queryVisible);
@@ -272,6 +273,19 @@ public class AdminServiceTest {
     Mockito.when(aliquotRepository.findAllBySourceAndTargetQuery("SOURCE", "TARGET")).thenReturn(listAliquotQuery);
 
     List<TriggeredAlertsQuery> triggeredAlertsQueries = adminService.getTriggeredAlerts();
+
+    Assert.assertEquals(3, triggeredAlertsQueries.size());
+
+
+    for (TriggeredAlertsQuery tr : triggeredAlertsQueries){
+      Assert.assertEquals(1, tr.getAliquots().size());
+      Assert.assertEquals(triggeredAlertsQueries.indexOf(tr), tr.getAlertId());
+      Assert.assertEquals(30, tr.getQte());
+      Assert.assertTrue(40 == tr.getSeuil());
+      Assert.assertEquals("SOURCE",tr.getSource());
+      Assert.assertEquals("TARGET",tr.getTarget());
+
+    }
 
   }
 
