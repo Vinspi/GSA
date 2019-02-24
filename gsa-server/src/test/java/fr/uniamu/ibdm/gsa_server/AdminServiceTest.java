@@ -290,4 +290,28 @@ public class AdminServiceTest {
 
   }
 
+  @Test
+  public void addAliquote() {
+
+    int priceValue = 4;
+    int qtyHiddenValue = 6;
+    int qtyVisibleValue = 2;
+    String providerValue = "Provider x";
+    String sourceValue = "goat";
+    String targetValue = "WOLF";
+
+    final Aliquot aliquotX = new Aliquot();
+    aliquotX.setAliquotExpirationDate(LocalDate.now().plusYears(1));
+    aliquotX.setAliquotQuantityVisibleStock(qtyHiddenValue);
+    aliquotX.setAliquotQuantityHiddenStock(qtyVisibleValue);
+    aliquotX.setAliquotPrice(priceValue);
+    aliquotX.setProvider(providerValue);
+
+    Mockito.when(aliquotRepository.save(aliquotX)).thenReturn(aliquotX);
+    Assert.assertEquals(true, adminService.addAliquote(qtyVisibleValue,qtyHiddenValue,priceValue,providerValue,sourceValue, targetValue));
+
+
+  }
+
+
 }
