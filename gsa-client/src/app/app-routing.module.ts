@@ -12,6 +12,7 @@ import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.com
 
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
+import { AliquotManagementComponent } from './components/aliquot-management/aliquot-management.component';
 
 const routes: Routes = [
   {path: 'lorem', component: LoremComponent},
@@ -21,7 +22,8 @@ const routes: Routes = [
   {path: 'add-aliquote',canActivate:[AdminGuard], component: AddAliquoteComponent},
   {path: 'stats', canActivate: [AdminGuard], component: StatsComponent},
   {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent},
-  {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent}
+  {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent},
+  {path: 'aliquotManagementComponent', canActivate: [AdminGuard], component: AliquotManagementComponent},
 ];
 
 @NgModule({
