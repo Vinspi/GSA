@@ -17,12 +17,8 @@ const routes: Routes = [
   {path: 'lorem', component: LoremComponent},
   {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', component: StockOverviewComponent},
-  {path: 'withdraw', component: WithdrawComponent},
-  {path: 'stats', component: StatsComponent},
-  {path: 'add-aliquote', component: AddAliquoteComponent},
-  {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent}
-
   {path: 'withdraw', canActivate: [AuthGuard],component: WithdrawComponent},
+  {path: 'add-aliquote', component: AddAliquoteComponent},
   {path: 'stats', canActivate: [AdminGuard], component: StatsComponent},
   {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent},
   {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent}
