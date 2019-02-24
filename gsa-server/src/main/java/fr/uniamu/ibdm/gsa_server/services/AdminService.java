@@ -2,6 +2,9 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
 import java.time.LocalDate;
@@ -36,4 +39,35 @@ public interface AdminService {
 
   boolean addAliquote(int aliquotQuantityVisibleStock
           , int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String source, String target);
+
+  /**
+   * This method retrieve all products on which an
+   * alert has been triggered.
+   *
+   * @return A list of wrapper containing product names, the quantity left
+   * and the threshold of the alert.
+   */
+  List<TriggeredAlertsQuery> getTriggeredAlerts();
+
+  /**
+   * This method retrieve all alerts in the database.
+   *
+   * @return A list of alerts.
+   */
+  List<AlertsData> getAllAlerts();
+
+  /**
+   * This method update the alert seuil of the given alert.
+   *
+   * @param form Wrapper containing new seuil and alert id.
+   */
+  boolean updateAlertSeuil(UpdateAlertForm form);
+
+  /**
+   * This method remove the given alert from the database.
+   *
+   * @param id targeted alert id.
+   */
+  boolean removeAlert(long id);
+
 }

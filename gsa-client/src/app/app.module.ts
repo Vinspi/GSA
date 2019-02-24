@@ -17,6 +17,9 @@ import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.component';
+import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
+import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
+import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
 
 
 @NgModule({
@@ -31,7 +34,10 @@ import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.com
     StatsComponent,
     AddProductComponent,
     StatsComponent,
-    AddAliquoteComponent
+    AddAliquoteComponent,
+    AlertsPanelComponent,
+    EditAlertsComponent,
+    TriggeredAlertsComponent
   ],
   imports: [
     BrowserModule,

@@ -30,7 +30,6 @@ export class AdminService {
   private BASE_URL: String = environment.API_URL+environment.API_ADMIN;
 
   getWithdrawStats(data: any): Observable<JsonResponse> {
-
     return this.http.post<JsonResponse>(this.BASE_URL+'/stats', data, {withCredentials: true})
   }
 
@@ -43,6 +42,22 @@ export class AdminService {
 
     return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true})
   }
+  getTriggeredAlerts(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+"/triggeredAlerts")
+  }
+
+  getAllAlerts(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getAllAlerts', {withCredentials: true});
+  }
+
+  removeAlert(id: number): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/removeAlert', {alertId: id}, {withCredentials: true});
+  }
+
+  updateAlert(id: number, seuil: number): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/updateAlert', {alertId: id, seuil: seuil}, {withCredentials: true});
+  }
+
 
   addAliquote(data: any): Observable<JsonResponse> {
 
