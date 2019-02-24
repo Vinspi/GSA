@@ -10,6 +10,7 @@ import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
+import { AliquotManagementComponent } from './components/aliquot-management/aliquot-management.component';
 
 const routes: Routes = [
   {path: 'lorem', component: LoremComponent},
@@ -18,7 +19,8 @@ const routes: Routes = [
   {path: 'withdraw', canActivate: [AuthGuard],component: WithdrawComponent},
   {path: 'stats', canActivate: [AdminGuard], component: StatsComponent},
   {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent},
-  {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent}
+  {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent},
+  {path: 'aliquotManagementComponent', canActivate: [AdminGuard], component: AliquotManagementComponent},
 ];
 
 @NgModule({

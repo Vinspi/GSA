@@ -18,7 +18,7 @@ export class StockOverviewComponent implements OnInit {
   ngOnInit() {
     this.userService.getAllProductOverview().subscribe(response => {
       this.data = <Array<ProductOverview>> response.data;
-      console.log("data : "+JSON.stringify(this.data[0]));
+      console.log("data : "+JSON.stringify(this.data));
       this.dtTrigger.next();
     });
   }

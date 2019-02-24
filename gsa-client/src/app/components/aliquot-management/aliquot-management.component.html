@@ -1,0 +1,24 @@
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Numero</th>
+        <th>Expiration date</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of aliquoList">
+          <tr *ngIf="item.expire">
+              <td>{{item.id}}</td>
+              <td>{{item.date}}</td>
+              <td>
+                <button class="btn" (click)="deleteAliquot(item.id)">Delete</button>
+              </td>
+            </tr>
+      </ng-container>
+      
+    </tbody>
+  </table>
+
+  

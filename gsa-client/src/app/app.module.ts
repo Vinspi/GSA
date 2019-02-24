@@ -20,6 +20,7 @@ import { AddProductComponent } from './components/add-product/add-product.compon
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
 import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
+import { AliquotManagementComponent } from './components/aliquot-management/aliquot-management.component';
 
 
 @NgModule({
@@ -35,7 +36,8 @@ import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-al
     AddProductComponent,
     AlertsPanelComponent,
     EditAlertsComponent,
-    TriggeredAlertsComponent
+    TriggeredAlertsComponent,
+    AliquotManagementComponent
   ],
   imports: [
     BrowserModule,
