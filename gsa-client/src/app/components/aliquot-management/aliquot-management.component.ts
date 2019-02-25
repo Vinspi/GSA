@@ -45,7 +45,16 @@ export class AliquotManagementComponent implements OnInit {
 
   deleteAliquot(id: number){
     // appel au service suppression
+    this.aliquotService.removeAliquots(id).subscribe(res => {
+      alert("Aliquot deleted");
+    });
+
+    
   }
+
+  
+
+
 
 
 

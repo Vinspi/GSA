@@ -20,16 +20,16 @@ public class AdminServiceImpl implements AdminService {
 	private ProductRepository productRepository;
 
 	@Autowired
-	AliquotRepository aliquotRep;
+	AliquotRepository aliquotRepository;
 
 	@Override
 	public List<Aliquot> getAllAliquots() {
-		return (List<Aliquot>) aliquotRep.getAliquots();
+		return (List<Aliquot>) aliquotRepository.getAliquots();
 	}
 
 	@Override
 	public void deleteAliquot(long id) {
-		this.aliquotRep.deleteById(id);
+		this.aliquotRepository.deleteById(id);
 	}
 
 	@Autowired

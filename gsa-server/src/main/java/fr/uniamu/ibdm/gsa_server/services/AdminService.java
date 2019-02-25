@@ -19,5 +19,5 @@ public interface AdminService {
 	List<Aliquot> getAllAliquots();
 
 	void deleteAliquot(long id);
-
+		
 }
