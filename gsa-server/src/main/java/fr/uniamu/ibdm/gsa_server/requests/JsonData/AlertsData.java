@@ -9,6 +9,14 @@ public class AlertsData {
   private AlertType alertType;
   private long alertId;
 
+  /**
+   * Constructor for AlertsData object.
+   *
+   * @param productName The name of the product.
+   * @param seuil Seuil of the alert.
+   * @param alertType Type of the alert.
+   * @param alertId Id of the alert.
+   */
   public AlertsData(String productName, int seuil, AlertType alertType, long alertId) {
     this.productName = productName;
     this.seuil = seuil;

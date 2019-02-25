@@ -1,4 +1,5 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,6 +61,14 @@ public class AdminServiceImpl implements AdminService {
 
   private SpeciesRepository speciesRepository;
 
+  /**
+   * Constructor for the AdminService.
+   *
+   * @param productRepository Autowired repository.
+   * @param aliquotRepository Autowired repository.
+   * @param speciesRepository Autowired repository.
+   * @param alertRepository Autowired repository.
+   */
   @Autowired
   public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository) {
     this.productRepository = productRepository;
@@ -153,6 +162,7 @@ public class AdminServiceImpl implements AdminService {
     }
   }
 
+  @Override
   public List<TriggeredAlertsQuery> getTriggeredAlerts() {
 
     List<Object[]> queryResult = productRepository.getTriggeredAlertsVisible();
@@ -167,24 +177,22 @@ public class AdminServiceImpl implements AdminService {
     int qteHidden;
     int qteVisible;
 
-    for (Object[] o : queryResult){
-      aliquotsNativeQuery = aliquotRepository.findAllBySourceAndTargetQuery((String) o[0],(String) o[1]);
+    for (Object[] o : queryResult) {
+      aliquotsNativeQuery = aliquotRepository.findAllBySourceAndTargetQuery((String) o[0], (String) o[1]);
       alertAliquots = new ArrayList<>();
 
       type = AlertType.valueOf((String) o[4]);
 
 
-      for (Object[] a : aliquotsNativeQuery){
+      for (Object[] a : aliquotsNativeQuery) {
         qteHidden = ((BigInteger) a[3]).intValue();
         qteVisible = ((BigInteger) a[2]).intValue();
         if (type.equals(AlertType.VISIBLE_STOCK)) {
           qte = qteVisible;
-        }
-        else if(type.equals(AlertType.HIDDEN_STOCK)) {
+        } else if (type.equals(AlertType.HIDDEN_STOCK)) {
           qte = qteHidden;
-        }
-        else {
-          qte = qteVisible+qteHidden;
+        } else {
+          qte = qteVisible + qteHidden;
         }
         alertAliquots.add(new AlertAliquot(((BigInteger) a[0]).longValue(), ((Timestamp) a[1]).toLocalDateTime().toLocalDate(), qte));
       }
@@ -207,7 +215,7 @@ public class AdminServiceImpl implements AdminService {
     List<AlertsData> data = new ArrayList<>();
 
     alertRepository.findAll().forEach(alert -> {
-      data.add(new AlertsData(alert.getProduct().getProductName(), alert.getSeuil(), alert.getAlertType(), alert.getAlertId() ));
+      data.add(new AlertsData(alert.getProduct().getProductName(), alert.getSeuil(), alert.getAlertType(), alert.getAlertId()));
     });
 
     return data;
@@ -218,13 +226,12 @@ public class AdminServiceImpl implements AdminService {
 
     Optional<fr.uniamu.ibdm.gsa_server.models.Alert> optAlert = alertRepository.findById(form.getAlertId());
 
-    if (optAlert.isPresent()){
+    if (optAlert.isPresent()) {
       fr.uniamu.ibdm.gsa_server.models.Alert a = optAlert.get();
       a.setSeuil(form.getSeuil());
       alertRepository.save(a);
       return true;
-    }
-    else {
+    } else {
       return false;
     }
 
@@ -235,11 +242,10 @@ public class AdminServiceImpl implements AdminService {
 
     Optional<Alert> optAlert = alertRepository.findById(id);
 
-    if (optAlert.isPresent()){
+    if (optAlert.isPresent()) {
       alertRepository.delete(optAlert.get());
       return true;
-    }
-    else {
+    } else {
       return false;
     }
 
