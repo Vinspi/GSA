@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
-import { AliquotService } from '../../services/aliquot.service';
+import { AdminService } from '../../services/admin.service';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { User } from 'src/app/user';
 import { Aliquot } from './aliquot';
@@ -20,14 +20,14 @@ export class AliquotManagementComponent implements OnInit {
   loaded: boolean = false;
   aliquoList = new Array<Aliquot>();
 
-  constructor(private userService: UserService, private localStorage: LocalStorage, private aliquotService: AliquotService) { }
+  constructor(private userService: UserService, private localStorage: LocalStorage, private adminService: AdminService) { }
 
   ngOnInit() {
     console.log('aliqot');
     
-    // this.aliquotService.getAliquots();
-    this.aliquotService.getAliquots().subscribe(res => {
-      // this.aliquoList = res.data;
+    this.adminService.getAliquots();
+    this.adminService.getAliquots().subscribe(res => {
+      this.aliquoList = res.data;
       res.data.forEach(el => {
         const aliquot = new Aliquot();
         aliquot.id = el[0];
@@ -45,7 +45,16 @@ export class AliquotManagementComponent implements OnInit {
 
   deleteAliquot(id: number){
     // appel au service suppression
+    this.adminService.removeAliquots(id).subscribe(res => {
+      alert("Aliquot deleted");
+    });
+
+    
   }
+
+  
+
+
 
 
 

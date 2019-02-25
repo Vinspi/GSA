@@ -1,0 +1,12 @@
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.btn:disabled:hover {
+    background-color: white !important;
+    color: #242939 !important;
+}

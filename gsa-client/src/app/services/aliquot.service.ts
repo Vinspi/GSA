@@ -11,11 +11,11 @@ export class AliquotService {
 
   constructor(private http: HttpClient) { }
   getAliquots(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(environment.API_URL+'/aliquot/get-aliquots',{withCredentials: true})
+    return this.http.get<JsonResponse>(environment.API_URL+'/admin/get-aliquots',{withCredentials: true})
   }
 
-  // suppression
-  // removeAliquots(id: number): Observable<JsonResponse> {
-  //   return this.http.delete<JsonResponse>(environment.API_URL+'/aliquot/delete-aliquot/'+id,{withCredentials: true})
-  // }
+  // update VisibleQuantity and HiddenQuantity -> 0
+   removeAliquots(id: number): Observable<JsonResponse> {
+     return this.http.post<JsonResponse>(environment.API_URL+'/admin/delete-aliquot/'+id,{withCredentials: true})
+   }
 }

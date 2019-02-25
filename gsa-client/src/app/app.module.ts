@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -20,6 +20,8 @@ import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.com
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
 import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
+import { AddAlertComponent } from './components/alerts-panel/add-alert/add-alert.component';
+import { ToastComponent } from './components/toast/toast.component';
 import { AliquotManagementComponent } from './components/aliquot-management/aliquot-management.component';
 
 
@@ -39,6 +41,8 @@ import { AliquotManagementComponent } from './components/aliquot-management/aliq
     AlertsPanelComponent,
     EditAlertsComponent,
     TriggeredAlertsComponent,
+    AddAlertComponent,
+    ToastComponent,
     AliquotManagementComponent
   ],
   imports: [

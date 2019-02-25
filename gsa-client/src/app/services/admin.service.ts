@@ -47,13 +47,29 @@ export class AdminService {
 
   addAliquote(data: any): Observable<JsonResponse> {
 
-    return this.http.post<JsonResponse>(this.BASE_URL+'/addAliquote', data, {withCredentials: true})
+    return this.http.post<JsonResponse>(this.BASE_URL+'/addAliquote', data, {withCredentials: true});
   }
 
   getAllProductsName(): Observable<JsonResponse> {
 
-    return this.http.get<JsonResponse>(this.BASE_URL+'/allProducts', {withCredentials: true})
+    return this.http.get<JsonResponse>(this.BASE_URL+'/allProducts', {withCredentials: true});
   }
   
+  transfertAliquot(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/transfertAliquot', data, {withCredentials: true});
+  }
+
+  addAlert(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/addAlert', data, {withCredentials: true});
+  }
+
+  getAliquots(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/get-aliquots',{withCredentials: true})
+  }
+
+  // update VisibleQuantity and HiddenQuantity -> 0
+   removeAliquots(id: number): Observable<JsonResponse> {
+     return this.http.post<JsonResponse>(this.BASE_URL+'/delete-aliquot/'+id, {id : id},{withCredentials: true})
+   }
 
 }

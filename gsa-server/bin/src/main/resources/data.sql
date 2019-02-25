@@ -13,17 +13,17 @@ insert into team (team_id, team_name) values (10, 'NorthStar Rx LLC');
 insert into species (species_name) values ('MONKEY');
 insert into species (species_name) values ('DONKEY');
 insert into species (species_name) values ('WOLF');
-insert into species (species_name) values ('Spider');
-insert into species (species_name) values ('goat');
-insert into species (species_name) values ('shark');
+insert into species (species_name) values ('SPIDER');
+insert into species (species_name) values ('GOAT');
+insert into species (species_name) values ('SHARK');
 -- product --
-insert into product (target_pk, source_pk) values ('shark', 'WOLF');
-insert into product (target_pk, source_pk) values ('WOLF', 'goat');
-insert into product (target_pk, source_pk) values ('Spider', 'WOLF');
+insert into product (target_pk, source_pk) values ('SHARK', 'WOLF');
+insert into product (target_pk, source_pk) values ('WOLF', 'GOAT');
+insert into product (target_pk, source_pk) values ('SPIDER', 'WOLF');
 -- aliquots --
-insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (1, '2019-02-11 00:00:00', 0.167879443, 2,2, 'Dynabox', 'shark', 'WOLF');
-insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (2, '2019-02-11 00:00:00', 0.4369044297, 2,6, 'Linktype', 'shark', 'WOLF');
-insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (3, '2019-02-11 00:00:00', 2.0824829339, 13,14, 'Flipbug', 'Spider', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (1, '2019-02-11 00:00:00', 0.167879443, 2,2, 'Dynabox', 'SHARK', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (2, '2019-02-11 00:00:00', 0.4369044297, 2,6, 'Linktype', 'SHARK', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (3, '2019-02-11 00:00:00', 2.0824829339, 13,14, 'Flipbug', 'SPIDER', 'WOLF');
 -- transaction --
 SET FOREIGN_KEY_CHECKS = 0;
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (1, '2019-04-10 08:00:01', 'TEAM_WITHDRAW', 1, 'WITHDRAW', 1, 1);
@@ -79,3 +79,8 @@ insert into transaction (transaction_id, transaction_date, transaction_motif, tr
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (51, '2018-11-14 02:24:41', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 1, 1);
 SET FOREIGN_KEY_CHECKS = 1;
 DELETE FROM `transaction` WHERE (transaction_date > '2019-04-30 00:00:00' AND transaction_date < '2019-06-01 00:00:00');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('VISIBLE_STOCK', 10, 'WOLF', 'SHARK');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('HIDDEN_STOCK', 10, 'WOLF', 'SHARK');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 20, 'WOLF', 'SHARK');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'WOLF', 'SPIDER');
+INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'GOAT', 'WOLF');

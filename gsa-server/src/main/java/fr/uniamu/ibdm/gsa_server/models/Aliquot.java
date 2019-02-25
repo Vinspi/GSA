@@ -39,8 +39,19 @@ public class Aliquot implements Serializable {
     this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
     this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
   }
+  
+  
 
-  /**
+  public Aliquot(long aliquotNLot, LocalDate aliquotExpirationDate, long aliquotQuantityVisibleStock,
+		long aliquotQuantityHiddenStock) {
+	super();
+	this.aliquotNLot = aliquotNLot;
+	this.aliquotExpirationDate = aliquotExpirationDate;
+	this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
+	this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
+}
+
+/**
    * The method withdraw a quantity of the visible stock,
    * if the quantity is higher than the actual, set the quantity of the aliquot to 0.
    *
