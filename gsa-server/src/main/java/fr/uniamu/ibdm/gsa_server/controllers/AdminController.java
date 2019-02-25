@@ -137,6 +137,10 @@ public class AdminController {
   @PostMapping("/updateAlert")
   public JsonResponse<Boolean> updateAlert(@RequestBody UpdateAlertForm form) {
 
+    if (form.getSeuil() < 1) {
+      return new JsonResponse<>("Seuil must be > 0", RequestStatus.FAIL);
+    }
+
     if (adminService.updateAlertSeuil(form)) {
       return new JsonResponse<>(RequestStatus.SUCCESS, true);
     } else {

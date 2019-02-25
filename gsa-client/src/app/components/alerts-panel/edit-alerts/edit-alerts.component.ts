@@ -40,7 +40,6 @@ export class EditAlertsComponent implements OnInit {
 
   updateAlert(){
     var alert = this.data[this.elementChoosed];
-    console.log(alert);
     
     this.adminService.updateAlert(alert.alertId, this.seuil).subscribe(response => {
       if (response.status == 'SUCCESS'){
