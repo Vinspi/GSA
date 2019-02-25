@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server;
 
+<<<<<<< HEAD
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
@@ -15,6 +16,10 @@ import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
+=======
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+>>>>>>> update server back
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import org.junit.Assert;
@@ -29,14 +34,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
+<<<<<<< HEAD
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+=======
+>>>>>>> update server back
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -48,6 +55,7 @@ public class AdminServiceTest {
     @MockBean
     SpeciesRepository speciesRepository;
 
+<<<<<<< HEAD
     @MockBean
     AlertRepository alertRepository;
 
@@ -105,11 +113,24 @@ public class AdminServiceTest {
         List<String> names = Arrays.asList("donkey", "chicken", "horse");
         Mockito.when(speciesRepository.getAllSpeciesNames()).thenReturn(names);
         Assert.assertEquals(adminService.getAllSpeciesNames(), names);
+=======
+  @InjectMocks
+  AdminServiceImpl adminService;
+
+  @Before
+  public void initMocks(){
+    MockitoAnnotations.initMocks(this);
+  }
+
+  @Test
+  public void getWithdrawsStats(){
+>>>>>>> update server back
 
         Mockito.when(speciesRepository.getAllSpeciesNames()).thenReturn(null);
         Assert.assertEquals(adminService.getAllSpeciesNames(), null);
     }
 
+<<<<<<< HEAD
     @Test
     public void addProduct() {
         String sourceName = "donkey";
@@ -143,6 +164,21 @@ public class AdminServiceTest {
     }
 
     public void getAllAlerts() {
+=======
+
+    for (int i=0;i<10;i++) {
+      o = new Object[3];
+      o[0] = i+1;
+      o[1] = 2019;
+      o[2] = new BigDecimal(12);
+      if((i+1)%2 == 0)
+        returnQuery.add(o);
+    }
+
+
+    Mockito.when(productRepository.getWithdrawStats(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(returnQuery);
+    WithdrawStatsForm form = new WithdrawStatsForm("fake team", "chicken_anti_donkey","april","may",2019,2019);
+>>>>>>> update server back
 
         List<Alert> alerts = new ArrayList<>();
         Alert tmp;
@@ -156,6 +192,7 @@ public class AdminServiceTest {
             alerts.add(tmp);
         }
 
+<<<<<<< HEAD
         Mockito.when(alertRepository.findAll()).thenReturn(alerts);
 
         List<AlertsData> alertsData = adminService.getAllAlerts();
@@ -315,7 +352,16 @@ public class AdminServiceTest {
         Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.empty());
         success = adminService.addAliquot(form);
         Assert.assertFalse(success);
+=======
+>>>>>>> update server back
 
+    for (int i=0;i<list.size();i++){
+      System.out.println(list.get(i).getMonth()+" - "+list.get(i).getWithdraw());
+      Assert.assertEquals(list.get(i).getMonth(),i+2);
+      if ((i+1)%2 == 0)
+        Assert.assertEquals(list.get(i).getWithdraw(),0);
+      else
+        Assert.assertEquals(list.get(i).getWithdraw(), 12);
     }
 
 

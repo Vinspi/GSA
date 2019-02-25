@@ -21,9 +21,17 @@ insert into product (target_pk, source_pk) values ('SHARK', 'WOLF');
 insert into product (target_pk, source_pk) values ('WOLF', 'GOAT');
 insert into product (target_pk, source_pk) values ('SPIDER', 'WOLF');
 -- aliquots --
+<<<<<<< HEAD
 insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (1, '2019-02-11 00:00:00', 0.167879443, 2,2, 'Dynabox', 'SHARK', 'WOLF');
 insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (2, '2019-02-11 00:00:00', 0.4369044297, 2,6, 'Linktype', 'SHARK', 'WOLF');
 insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (3, '2019-02-11 00:00:00', 2.0824829339, 13,14, 'Flipbug', 'SPIDER', 'WOLF');
+=======
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (1, '2019-02-11 00:00:00', 0.167879443, 2,2, 'Dynabox', 'shark', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (2, '2019-02-11 00:00:00', 0.4369044297, 2,6, 'Linktype', 'shark', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (3, '2019-02-11 00:00:00', 2.0824829339, 13,14, 'Flipbug', 'Spider', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (4, '2019-03-11 00:00:00', 2.0824829339, 13,14, 'Flipbug', 'Spider', 'WOLF');
+
+>>>>>>> update server back
 -- transaction --
 SET FOREIGN_KEY_CHECKS = 0;
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (1, '2019-04-10 08:00:01', 'TEAM_WITHDRAW', 1, 'WITHDRAW', 1, 1);
@@ -78,9 +86,13 @@ insert into transaction (transaction_id, transaction_date, transaction_motif, tr
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (50, '2019-11-14 02:24:41', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 1, 1);
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (51, '2018-11-14 02:24:41', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 1, 1);
 SET FOREIGN_KEY_CHECKS = 1;
+<<<<<<< HEAD
 DELETE FROM `transaction` WHERE (transaction_date > '2019-04-30 00:00:00' AND transaction_date < '2019-06-01 00:00:00');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('VISIBLE_STOCK', 10, 'WOLF', 'SHARK');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('HIDDEN_STOCK', 10, 'WOLF', 'SHARK');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 20, 'WOLF', 'SHARK');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'WOLF', 'SPIDER');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'GOAT', 'WOLF');
+=======
+DELETE FROM `transaction` WHERE (transaction_date > '2019-04-30 00:00:00' AND transaction_date < '2019-06-01 00:00:00');
+>>>>>>> update server back

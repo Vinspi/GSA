@@ -29,6 +29,7 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
                                             @Param("monthUpperBound") String monthUpperBound,
                                             @Param("source") String source,
                                             @Param("target") String target);
+<<<<<<< HEAD
   
 
   @Query(value = "SELECT source_pk, target_pk, SUM(aliquot.aliquot_quantity_visible_stock) as qte, seuil, alert_type\n"
@@ -62,5 +63,7 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
       + "GROUP BY source_pk, target_pk, alert_type\n"
       + "HAVING (qte < seuil AND alert_type LIKE 'GENERAL')", nativeQuery = true)
   List<Object[]> getTriggeredAlertsGeneral();
+=======
+>>>>>>> update server back
 
 }
