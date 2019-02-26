@@ -4,6 +4,7 @@ import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AliquotExpired;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
@@ -23,8 +24,8 @@ public class AdminServiceImpl implements AdminService {
 	AliquotRepository aliquotRepository;
 
 	@Override
-	public List<Aliquot> getAllAliquots() {
-		return (List<Aliquot>) aliquotRepository.getAliquots();
+	public List<AliquotExpired> getAllAliquots() {
+		return aliquotRepository.getAliquots();
 	}
 
 	@Override

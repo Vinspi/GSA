@@ -30,8 +30,8 @@ export class AliquotManagementComponent implements OnInit {
       // this.aliquoList = res.data;
       res.data.forEach(el => {
         const aliquot = new Aliquot();
-        aliquot.id = el[0];
-        aliquot.date = el[1];
+        aliquot.id = el.nlot;
+        aliquot.date = el.date;
         const expirationDate  = moment (el[1]);
         if(expirationDate > moment()){
           aliquot.expire = false;
