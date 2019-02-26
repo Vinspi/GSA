@@ -2,7 +2,9 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
@@ -66,4 +68,22 @@ public interface AdminService {
    */
   boolean removeAlert(long id);
 
+  /**
+   * This method adds a team trimestrial report in the database. 
+   * Used to archive trimestrial bills of each team.
+   * 
+   * @param form TeamTrimestrialReport attributes request body wrapper. Its attributes must not be null.
+   * 
+   * @return true if the adding process is successful, false otherwise.
+   */
+  boolean addTeamTrimestrialReport(TeamTrimestrialReportForm form);
+  
+  /**
+   * The method retrieves all transactions
+   *  
+   * @param id team id
+   * 
+   * @return a list of transactions
+   */
+  List<Transaction> getTransactionsByTeamAndQuarter(Long id, String quarter);
 }

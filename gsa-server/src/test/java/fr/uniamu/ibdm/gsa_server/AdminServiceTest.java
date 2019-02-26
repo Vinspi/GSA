@@ -1,53 +1,47 @@
 package fr.uniamu.ibdm.gsa_server;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-
-import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
-import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.models.Alert;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.Team;
+import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPK;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TeamTrimestrialReportForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -65,8 +59,17 @@ public class AdminServiceTest {
   @MockBean
   AliquotRepository aliquotRepository;
 
+  @MockBean
+  TeamRepository teamRepository;
+  
+  @MockBean
+  TeamTrimestrialReportRepository teamTrimestrialReportRepository;
+
+  
   @InjectMocks
   AdminServiceImpl adminService;
+  
+  
 
   @Before
   public void initMocks() {
@@ -286,6 +289,50 @@ public class AdminServiceTest {
       Assert.assertEquals("TARGET",tr.getTarget());
 
     }
+
+  }
+  
+  @Test
+  public void addTeamTrimestrialReport() {
+    Team team = new Team();
+    team.setTeamId(1L);
+    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(team));
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.any(TeamTrimestrialReportPK.class)))
+        .thenReturn(Optional.empty());
+    // Return type is ignored
+    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any())).thenReturn(null);
+
+    // Adding a report with a correct form should be added in the database.
+    TeamTrimestrialReportForm form = new TeamTrimestrialReportForm();
+    form.setFinalFlag(false);
+    form.setLosts(-100);
+    form.setQuarter("QUARTER_1");
+    form.setYear(2019);
+    form.setTeamId(1L);
+
+    Boolean success = adminService.addTeamTrimestrialReport(form);
+    Assert.assertEquals(true, success);
+
+    // Adding a report should fail when the specified team does not exist.
+    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.any(TeamTrimestrialReportPK.class)))
+        .thenReturn(Optional.empty());
+    success = adminService.addTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
+
+    // Adding a report should fail if the report is already in the database.
+    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(team));
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.any(TeamTrimestrialReportPK.class)))
+        .thenReturn(Optional.of(new TeamTrimestrialReport()));
+    success = adminService.addTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
+
+    // Adding a report should fail when the specified quarter does not match the values of Quarter enumeration.
+    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(team));
+    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
+    form.setQuarter("anyQuarter");
+    success = adminService.addTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
 
   }
 

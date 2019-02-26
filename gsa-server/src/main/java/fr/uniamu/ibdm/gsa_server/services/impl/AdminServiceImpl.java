@@ -1,56 +1,44 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.Team;
+import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
-
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.AdminService;
-import fr.uniamu.ibdm.gsa_server.util.DateConverter;
-
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.Alert;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -58,8 +46,9 @@ public class AdminServiceImpl implements AdminService {
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
   private AlertRepository alertRepository;
-
+  private TeamRepository teamRepository;
   private SpeciesRepository speciesRepository;
+  private TeamTrimestrialReportRepository teamTrimestrialReportRepository;
 
   /**
    * Constructor for the AdminService.
@@ -67,14 +56,18 @@ public class AdminServiceImpl implements AdminService {
    * @param productRepository Autowired repository.
    * @param aliquotRepository Autowired repository.
    * @param speciesRepository Autowired repository.
+   * @param teamRepository Autowired repository. 
    * @param alertRepository Autowired repository.
+   * @param teamTrimestrialReportRepository Autowired repository.
    */
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository) {
+  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, TeamRepository teamRepository, AlertRepository alertRepository, TeamTrimestrialReportRepository teamTrimestrialReportRepository) {
     this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
+    this.teamRepository = teamRepository;
     this.alertRepository = alertRepository;
+    this.teamTrimestrialReportRepository = teamTrimestrialReportRepository;
   }
 
   @Override
@@ -249,5 +242,54 @@ public class AdminServiceImpl implements AdminService {
       return false;
     }
 
+  }
+  
+  @Override
+  public boolean addTeamTrimestrialReport(TeamTrimestrialReportForm form) {
+    
+    // Checking that the stringified quarter is a valid value of Quarter Enum. 
+    if(!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet()).contains(form.getQuarter())) {
+      return false;
+    }
+    
+    Optional<Team> nullableTeam = teamRepository.findById(form.getTeamId());
+    Team team;
+
+    // Checking that the team is valid
+    if (nullableTeam.isPresent()) {
+      team = nullableTeam.get();
+    } else {
+      return false;
+    }
+
+    TeamTrimestrialReportPK teamTrimestrialReportPk = new TeamTrimestrialReportPK();
+    Quarter quarter = Quarter.valueOf(form.getQuarter());
+
+    teamTrimestrialReportPk.setTeam(form.getTeamId());
+    teamTrimestrialReportPk.setYear(form.getYear());
+    teamTrimestrialReportPk.setQuarter(quarter);
+
+    Optional<TeamTrimestrialReport> nullableReport = teamTrimestrialReportRepository.findById(teamTrimestrialReportPk);
+
+    if (nullableReport.isPresent()) {
+      return false;
+    }
+
+    TeamTrimestrialReport teamTrimestrialReport = new TeamTrimestrialReport();
+    teamTrimestrialReport.setFinalFlag(form.getFinalFlag());
+    teamTrimestrialReport.setLosts(form.getLosts());
+    teamTrimestrialReport.setQuarter(quarter);
+    teamTrimestrialReport.setTeam(team);
+    teamTrimestrialReport.setYear(form.getYear());
+
+    teamTrimestrialReportRepository.save(teamTrimestrialReport);
+    
+    return true;
+  }
+
+  @Override
+  public List<Transaction> getTransactionsByTeamAndQuarter(Long id, String quarter) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

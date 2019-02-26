@@ -1,27 +1,28 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
-import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.AdminService;
-import org.json.JSONObject;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpSession;
-import java.util.List;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
+import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TeamTrimestrialReportForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.AdminService;
 
 @RestController
 @RequestMapping("/admin")
@@ -145,6 +146,33 @@ public class AdminController {
       return new JsonResponse<>(RequestStatus.SUCCESS, true);
     } else {
       return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
+    }
+  }
+  
+  /**
+   * Endpoint enabling well-formatted POST requests to add a team trimestrial
+   * report.
+   * 
+   * @param form contains "losts", "finalFlag", "year", "quarter", "teamId" keys.
+   * 
+   * @return if successful, a JSON response with a success status, otherwise a
+   *         JSON response with a fail status and the sent form as data.
+   */
+  @PostMapping("/addreport")
+  public JsonResponse<TeamTrimestrialReportForm> addTeamTrimestrialReport(@RequestBody TeamTrimestrialReportForm form) {
+    JsonResponse<TeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+    failedRequestResponse.setData(form);
+
+    if (form.getQuarter() == null || form.getFinalFlag() == null || form.getTeamId() == null || form.getLosts() == null || form.getYear() == null) {
+      failedRequestResponse.setError("Missing attributes within request body");
+      return failedRequestResponse;
+    }
+
+    if (adminService.addTeamTrimestrialReport(form)) {
+      return new JsonResponse<>(RequestStatus.SUCCESS);
+    } else {
+      failedRequestResponse.setError("Report could not be added");
+      return failedRequestResponse;
     }
   }
 
