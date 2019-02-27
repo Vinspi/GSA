@@ -249,20 +249,29 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public boolean addAliquote(int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String source, String target) {
+  public boolean addAliquote(long aliquotNLot, int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String product) {
 
     Aliquot NewAliquot = new Aliquot();
+    NewAliquot.setAliquotNLot(aliquotNLot);
     NewAliquot.setAliquotExpirationDate(LocalDate.now().plusYears(1));
     NewAliquot.setAliquotQuantityVisibleStock(aliquotQuantityVisibleStock);
     NewAliquot.setAliquotQuantityHiddenStock(aliquotQuantityHiddenStock);
     NewAliquot.setAliquotPrice(aliquotPrice);
     NewAliquot.setProvider(provider);
 
-    ProductPK productPk = new ProductPK();
-    productPk.setSource(source);
-    productPk.setTarget(target);
-    Optional<Product> nullableProduct = productRepository.findById(productPk);
 
+    String[] fullName= product.split("_");
+
+    ProductPK productPk = new ProductPK();
+    productPk.setSource(fullName[0]);
+    productPk.setTarget(fullName[2]);
+    Optional<Product> nullableProduct = productRepository.findById(productPk);
+    /**
+    Optional<Aliquot> idExist = aliquotRepository.findById(aliquotNLot);
+
+    if (idExist.isPresent())
+        return false;
+*/
     if(nullableProduct.isPresent())
     {
       NewAliquot.setProduct(nullableProduct.get());

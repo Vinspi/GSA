@@ -11,6 +11,7 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import fr.uniamu.ibdm.gsa_server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,9 @@ public class AdminController {
 
   @Autowired
   AdminService adminService;
+
+  @Autowired
+  UserService userService;
 
   /**
    * REST endpoint for /stats call, return stats needed for building admin chart.
@@ -92,33 +96,38 @@ public class AdminController {
   }
 
   /**
-   *
-   * @param form
-   * @return
+   * Endpoint enabling well-formatted POST requests to add a aliquote.
+   * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
+   *             price & provider & source & target of aliquote.
+   * @return if successful, a JSON response with a success status, otherwise a
+   *         JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form){
+
     JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
     failedRequestResponse.setData(form);
 
-    int aliquotNLot = form.getAliquotNLot();
-    String aliquotExpirationDate = form.getAliquotExpirationDate();
+    long aliquotNLot = form.getAliquotNLot();
     int aliquotQuantityVisibleStock = form.getAliquotQuantityVisibleStock();
     int aliquotQuantityHiddenStock = form.getAliquotQuantityHiddenStock();
     float aliquotPrice = form.getAliquotPrice();
-    String provider = form.getProvider();
-    String source = form.getSource();
-    String target = form.getTarget();
+    String provider = form.getAliquoteProvider();
+    String product = form.getAliquoteproduct();
 
-
-    if (aliquotPrice == 0 || provider == null || source == null || target == null)
+    if (aliquotNLot == 0 || aliquotPrice == 0 || provider.length() ==0 || product.length() ==0 )
     {
-      failedRequestResponse.setError("Missing attributes within request body");
+      failedRequestResponse.setError("Missing values");
       return failedRequestResponse;
     }
 
-    boolean success = adminService.addAliquote(aliquotQuantityVisibleStock,
-            aliquotQuantityHiddenStock, aliquotPrice, provider, source,target );
+    if (aliquotNLot < 0 || aliquotQuantityVisibleStock < 0 || aliquotQuantityHiddenStock < 0 || aliquotPrice < 0){
+        failedRequestResponse.setError("values can not be negative");
+        return failedRequestResponse;
+    }
+
+    boolean success = adminService.addAliquote(aliquotNLot, aliquotQuantityVisibleStock,
+            aliquotQuantityHiddenStock, aliquotPrice, provider, product );
     if (success)
     {
       return new JsonResponse<>(RequestStatus.SUCCESS);
@@ -128,8 +137,20 @@ public class AdminController {
     }
   }
 
-
-
+  /**
+   * /Endpoint returning all of species names.
+   *
+   * @return JSON response containing all of species name.
+   */
+  @GetMapping("/allProducts")
+  public JsonResponse<List<String>> getAllProductsName() {
+    List<String> productsName = userService.getAllProductName();
+    if (productsName != null) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, productsName);
+    } else {
+      return new JsonResponse<>("Could not retrieve all of products names", RequestStatus.FAIL);
+    }
+  }
   /**
    * REST endpoint, return all triggered alerts.
    *

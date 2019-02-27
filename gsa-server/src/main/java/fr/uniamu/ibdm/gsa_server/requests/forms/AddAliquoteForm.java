@@ -7,23 +7,9 @@ public class AddAliquoteForm {
     private int aliquotQuantityVisibleStock;
     private int aliquotQuantityHiddenStock;
     private float aliquotPrice;
-    private String provider;
-    private String source;
-    private  String target;
+    private String aliquoteProvider;
+    private String aliquoteproduct;
 
-
-    public AddAliquoteForm(){}
-
-    public AddAliquoteForm(int aliquotNLot, String aliquotExpirationDate, int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String source, String target) {
-        this.aliquotNLot = aliquotNLot;
-        this.aliquotExpirationDate = aliquotExpirationDate;
-        this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
-        this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
-        this.aliquotPrice = aliquotPrice;
-        this.provider = provider;
-        this.source = source;
-        this.target = target;
-    }
 
     public int getAliquotNLot() {
         return aliquotNLot;
@@ -65,27 +51,19 @@ public class AddAliquoteForm {
         this.aliquotPrice = aliquotPrice;
     }
 
-    public String getProvider() {
-        return provider;
+    public String getAliquoteProvider() {
+        return aliquoteProvider;
     }
 
-    public void setProvider(String provider) {
-        this.provider = provider;
+    public void setAliquoteProvider(String aliquoteProvider) {
+        this.aliquoteProvider = aliquoteProvider;
     }
 
-    public String getSource() {
-        return source;
+    public String getAliquoteproduct() {
+        return aliquoteproduct;
     }
 
-    public void setSource(String source) {
-        this.source = source;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
+    public void setAliquoteproduct(String aliquoteproduct) {
+        this.aliquoteproduct = aliquoteproduct;
     }
 }

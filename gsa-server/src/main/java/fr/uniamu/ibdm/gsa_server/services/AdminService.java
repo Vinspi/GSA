@@ -37,8 +37,17 @@ public interface AdminService {
    */
   boolean addProduct(String sourceName, String targetName);
 
-  boolean addAliquote(int aliquotQuantityVisibleStock
-          , int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String source, String target);
+  /**
+   * This method adds a new aliquote.
+   * @param aliquotNLot long
+   * @param aliquotQuantityVisibleStock int
+   * @param aliquotQuantityHiddenStock int
+   * @param aliquotPrice int
+   * @param provider string
+   * @param product string
+   * @return true if adding the aliquote is successful, false otherwise.
+   */
+  boolean addAliquote(long aliquotNLot, int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String product);
 
   /**
    * This method retrieve all products on which an
