@@ -1,11 +1,15 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +28,7 @@ import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 public class AdminServiceImpl implements AdminService {
 
   private ProductRepository productRepository;
-
+  private TransactionRepository transactionRepository;
   private SpeciesRepository speciesRepository;
 
   @Autowired
@@ -116,5 +120,10 @@ public class AdminServiceImpl implements AdminService {
       return true;
     }
 
+  }
+
+  @Override
+  public List<Transaction> getWithdrawalHistory(LocalDate beginDate, LocalDate endDate) {
+    return transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualOrderByTransactionDateAsc(beginDate, endDate);
   }
 }

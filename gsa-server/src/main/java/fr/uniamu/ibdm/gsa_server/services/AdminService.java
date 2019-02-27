@@ -1,8 +1,10 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminService {
@@ -31,5 +33,15 @@ public interface AdminService {
    * @return true if adding the product is successful, false otherwise.
    */
   boolean addProduct(String sourceName, String targetName);
+
+  /**
+   * This method fetch all transactions in the database and return a list
+   * of all transactions.
+   *
+   * @param beginDate The begin of the period to take into account.
+   * @param endDate The end of the period to take into account.
+   * @return a list of transactions.
+   */
+  List<Transaction> getWithdrawalHistory(LocalDate beginDate, LocalDate endDate);
 
 }
