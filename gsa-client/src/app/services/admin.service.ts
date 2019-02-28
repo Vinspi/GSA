@@ -18,7 +18,7 @@ export class AdminService {
 
   constructor(private http: HttpClient) { }
 
-  public configureMessageAlert(type: string, message: string, time: number) {
+  public configureNotificationAlert(type: string, message: string, time: number) {
     this.typeAlert = type;
     this._success.subscribe((m) => this.messageAlert = m);
     this._success.pipe(

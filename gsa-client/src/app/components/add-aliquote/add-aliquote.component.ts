@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import {AdminService} from 'src/app/services/admin.service';
 import { Subject } from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
 import { Aliquote } from 'src/app/aliquote';
 import { FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
 import { AbstractControl, ValidatorFn ,ReactiveFormsModule} from '@angular/forms';
@@ -27,13 +26,12 @@ export class AddAliquoteComponent implements OnInit {
   dtTrigger: Subject<any> = new Subject();
   messageAlert: string;
   typeAlert: string;
-
   aliquoteForm :FormGroup
   model: any = {};
 
   constructor(private adminService: AdminService) {
     this.isViewable = false; 
-   }
+  }
    
   ngOnInit() {
     this.adminService.getAllProductsName().subscribe(response => {
@@ -42,6 +40,7 @@ export class AddAliquoteComponent implements OnInit {
       this.dtTrigger.next();
     });
   }
+
   public toggle(): void { 
     this.isViewable = !this.isViewable; 
    }
@@ -54,7 +53,6 @@ export class AddAliquoteComponent implements OnInit {
     this.SelectedProduct = this.model.product;
 
     if(this.isViewable){
-
       this.SelectedReserveQty = this.model.reserveQty;
     } else this.SelectedReserveQty =0;
   
@@ -74,16 +72,8 @@ export class AddAliquoteComponent implements OnInit {
         this.typeAlert = "danger";
         this.messageAlert = "An error occurred, this aliquote could not be added.";
       }
-      this.adminService.configureMessageAlert(this.typeAlert,this.messageAlert, 4000);
+      this.adminService.configureNotificationAlert(this.typeAlert,this.messageAlert, 4000);
     });
-
-    console.log('SelectedVisibleQty-------------> '+this.SelectedVisibleQty)
-    console.log('SelectedPrice-------------> '+this.SelectedPrice)
-    console.log('SelectedProvider-------------> '+this.SelectedProvider)
-    console.log('selectedProduct-------------> '+this.SelectedProduct)
-    console.log('SelectedReserveQty-------------> '+this.SelectedReserveQty)
-    console.log('Num-------------> '+this.SelectedNumLot)
-
   }
 }
 
