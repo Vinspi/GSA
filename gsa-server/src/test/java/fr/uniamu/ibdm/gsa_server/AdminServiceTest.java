@@ -35,10 +35,11 @@ import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPK;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TeamTrimestrialReportForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
@@ -61,15 +62,12 @@ public class AdminServiceTest {
 
   @MockBean
   TeamRepository teamRepository;
-  
+
   @MockBean
   TeamTrimestrialReportRepository teamTrimestrialReportRepository;
 
-  
   @InjectMocks
   AdminServiceImpl adminService;
-  
-  
 
   @Before
   public void initMocks() {
@@ -92,9 +90,7 @@ public class AdminServiceTest {
       }
     }
 
-    Mockito.when(
-        productRepository.getWithdrawStats(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
-        .thenReturn(returnQuery);
+    Mockito.when(productRepository.getWithdrawStats(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(returnQuery);
     WithdrawStatsForm form = new WithdrawStatsForm("fake team", "chicken_anti_donkey", "april", "may", 2019, 2019);
 
     List<StatsWithdrawQuery> list = adminService.getWithdrawStats(form);
@@ -156,12 +152,13 @@ public class AdminServiceTest {
     Assert.assertEquals(false, adminService.addProduct(sourceName, targetName));
   }
 
-  public void getAllAlerts(){
+  @Test
+  public void getAllAlerts() {
 
     List<Alert> alerts = new ArrayList<>();
     Alert tmp;
 
-    for (int i=0;i<10;i++){
+    for (int i = 0; i < 10; i++) {
       tmp = new Alert();
       tmp.setSeuil(10);
       tmp.setAlertId(i);
@@ -176,8 +173,8 @@ public class AdminServiceTest {
 
     Assert.assertEquals(10, alertsData.size());
 
-    for (int i=0;i<alertsData.size();i++){
-      Assert.assertEquals(i , alertsData.get(i).getAlertId());
+    for (int i = 0; i < alertsData.size(); i++) {
+      Assert.assertEquals(i, alertsData.get(i).getAlertId());
       Assert.assertEquals(10, alertsData.get(i).getSeuil());
       Assert.assertEquals(AlertType.VISIBLE_STOCK, alertsData.get(i).getAlertType());
       Assert.assertEquals("DONKEY_ANTI_MONKEY", alertsData.get(i).getProductName());
@@ -186,7 +183,7 @@ public class AdminServiceTest {
   }
 
   @Test
-  public void removeAlert(){
+  public void removeAlert() {
 
     Mockito.when(alertRepository.findById(1L)).thenReturn(Optional.of(new Alert()));
 
@@ -201,7 +198,7 @@ public class AdminServiceTest {
   }
 
   @Test
-  public void updateAlert(){
+  public void updateAlert() {
 
     Alert alert = new Alert();
     alert.setSeuil(10);
@@ -222,7 +219,7 @@ public class AdminServiceTest {
   }
 
   @Test
-  public void getTriggeredAlerts(){
+  public void getTriggeredAlerts() {
 
     Object[] queryVisible = new Object[6];
     Object[] queryHidden = new Object[6];
@@ -279,59 +276,63 @@ public class AdminServiceTest {
 
     Assert.assertEquals(3, triggeredAlertsQueries.size());
 
-
-    for (TriggeredAlertsQuery tr : triggeredAlertsQueries){
+    for (TriggeredAlertsQuery tr : triggeredAlertsQueries) {
       Assert.assertEquals(1, tr.getAliquots().size());
       Assert.assertEquals(triggeredAlertsQueries.indexOf(tr), tr.getAlertId());
       Assert.assertEquals(30, tr.getQte());
       Assert.assertTrue(40 == tr.getSeuil());
-      Assert.assertEquals("SOURCE",tr.getSource());
-      Assert.assertEquals("TARGET",tr.getTarget());
+      Assert.assertEquals("SOURCE", tr.getSource());
+      Assert.assertEquals("TARGET", tr.getTarget());
 
     }
 
   }
-  
-  @Test
-  public void addTeamTrimestrialReport() {
-    Team team = new Team();
-    team.setTeamId(1L);
-    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(team));
-    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.any(TeamTrimestrialReportPK.class)))
-        .thenReturn(Optional.empty());
-    // Return type is ignored
-    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any())).thenReturn(null);
 
-    // Adding a report with a correct form should be added in the database.
-    TeamTrimestrialReportForm form = new TeamTrimestrialReportForm();
+  @Test
+  public void saveTeamTrimestrialReport() {
+    AddTeamTrimestrialReportForm form = new AddTeamTrimestrialReportForm();
     form.setFinalFlag(false);
     form.setLosts(-100);
     form.setQuarter("QUARTER_1");
     form.setYear(2019);
     form.setTeamId(1L);
 
-    Boolean success = adminService.addTeamTrimestrialReport(form);
+    Team team = new Team();
+    team.setTeamId(1L);
+    Mockito.when(teamRepository.findById(Mockito.eq(1L))).thenReturn(Optional.of(team));
+
+    TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
+    teamTrimestrialReportPk.setQuarter(Quarter.QUARTER_1);
+    teamTrimestrialReportPk.setTeam(1L);
+    teamTrimestrialReportPk.setYear(2019);
+
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk))).thenReturn(Optional.empty());
+    // Return type is ignored
+    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any())).thenReturn(null);
+
+    // Saving a new report with a correct form should be added in the database.
+    Boolean success = adminService.saveTeamTrimestrialReport(form);
     Assert.assertEquals(true, success);
 
-    // Adding a report should fail when the specified team does not exist.
-    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
-    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.any(TeamTrimestrialReportPK.class)))
-        .thenReturn(Optional.empty());
-    success = adminService.addTeamTrimestrialReport(form);
+    // Saving an existing report with a correct form should be updated in the database.
+    TeamTrimestrialReport currentReport = new TeamTrimestrialReport();
+    currentReport.setFinalFlag(false);
+
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk))).thenReturn(Optional.of(currentReport));
+    success = adminService.saveTeamTrimestrialReport(form);
+    Assert.assertEquals(true, success);
+
+    // Saving a non-editable report should not be updated.
+    currentReport.setFinalFlag(true);
+
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk))).thenReturn(Optional.of(currentReport));
+    success = adminService.saveTeamTrimestrialReport(form);
     Assert.assertEquals(false, success);
 
-    // Adding a report should fail if the report is already in the database.
-    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(team));
-    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.any(TeamTrimestrialReportPK.class)))
-        .thenReturn(Optional.of(new TeamTrimestrialReport()));
-    success = adminService.addTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
-
-    // Adding a report should fail when the specified quarter does not match the values of Quarter enumeration.
-    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(team));
+    // Saving a report should fail when the specified quarter does not match the values of the Quarter enumeration.
     Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
     form.setQuarter("anyQuarter");
-    success = adminService.addTeamTrimestrialReport(form);
+    success = adminService.saveTeamTrimestrialReport(form);
     Assert.assertEquals(false, success);
 
   }

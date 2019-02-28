@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 
-public class TeamTrimestrialReportForm {
+public class AddTeamTrimestrialReportForm {
 
   private Integer losts;
   private Boolean finalFlag;
@@ -53,12 +53,4 @@ public class TeamTrimestrialReportForm {
     this.teamId = teamId;
   }
 
-  //Should be part of a Form interface.
-  public boolean isValid() {
-    if (quarter == null || finalFlag == null || teamId == null || losts == null || year == null) {
-      return false;
-    }
-
-    return Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet()).contains(quarter);
-  }
 }

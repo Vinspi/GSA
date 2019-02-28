@@ -1,6 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,12 +18,13 @@ public class Team implements Serializable {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long teamId;
 
+  @Column(unique = true, nullable = false)
   private String teamName;
 
-  @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OneToMany(mappedBy = "team", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
   private Collection<Member> members;
 
-  @OneToMany(mappedBy = "team", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+  @OneToMany(mappedBy = "team", cascade = { CascadeType.PERSIST, CascadeType.MERGE })
   private Collection<TeamTrimestrialReport> reports;
 
   public Team() {

@@ -10,23 +10,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.GetTransactionByTeamAndQuarterForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
+@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200" })
 public class AdminController {
 
   @Autowired
@@ -48,7 +51,6 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
 
-
   /**
    * /Endpoint returning all of species names.
    *
@@ -68,8 +70,7 @@ public class AdminController {
    * Endpoint enabling well-formatted POST requests to add a product.
    *
    * @param form contains "targetName" and "sourceName" keys.
-   * @return if successful, a JSON response with a success status, otherwise a
-   *     JSON response with a fail status and the sent form as data.
+   * @return if successful, a JSON response with a success status, otherwise a JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -102,7 +103,6 @@ public class AdminController {
   public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts() {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
   }
-
 
   /**
    * REST endpoint, return all alerts present in the database.
@@ -148,19 +148,17 @@ public class AdminController {
       return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
     }
   }
-  
+
   /**
-   * Endpoint enabling well-formatted POST requests to add a team trimestrial
-   * report.
+   * Endpoint enabling well-formatted POST requests to add a team trimestrial report.
    * 
    * @param form contains "losts", "finalFlag", "year", "quarter", "teamId" keys.
    * 
-   * @return if successful, a JSON response with a success status, otherwise a
-   *         JSON response with a fail status and the sent form as data.
+   * @return if successful, a JSON response with a success status, otherwise a JSON response with a fail status and the sent form as data.
    */
-  @PostMapping("/addreport")
-  public JsonResponse<TeamTrimestrialReportForm> addTeamTrimestrialReport(@RequestBody TeamTrimestrialReportForm form) {
-    JsonResponse<TeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+  @PostMapping("/saveReport")
+  public JsonResponse<AddTeamTrimestrialReportForm> addTeamTrimestrialReport(@RequestBody AddTeamTrimestrialReportForm form) {
+    JsonResponse<AddTeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
     failedRequestResponse.setData(form);
 
     if (form.getQuarter() == null || form.getFinalFlag() == null || form.getTeamId() == null || form.getLosts() == null || form.getYear() == null) {
@@ -168,11 +166,27 @@ public class AdminController {
       return failedRequestResponse;
     }
 
-    if (adminService.addTeamTrimestrialReport(form)) {
+    if (adminService.saveTeamTrimestrialReport(form)) {
       return new JsonResponse<>(RequestStatus.SUCCESS);
     } else {
-      failedRequestResponse.setError("Report could not be added");
+      failedRequestResponse.setError("Report could not be saved");
       return failedRequestResponse;
+    }
+  }
+
+  /**
+   * REST endpoint returning all withdraw transactions made by a team in a quarter.
+   *
+   * @return JSON response containing all associated transactions.
+   */
+  @GetMapping("/transactions")
+  public JsonResponse<List<Transaction>> getAllTransactionsByTeamAndQuarter(@RequestParam String teamName, @RequestParam String quarter) {
+    List<Transaction> transactions = adminService.getTransactionsByTeamAndQuarter(teamName, quarter);
+    
+    if (transactions != null) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, transactions);
+    } else {
+      return new JsonResponse<>("Could not retrieve a list of transactions", RequestStatus.FAIL);
     }
   }
 

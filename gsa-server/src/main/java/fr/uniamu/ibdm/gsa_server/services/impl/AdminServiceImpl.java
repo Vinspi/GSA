@@ -19,6 +19,7 @@ import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
@@ -32,9 +33,9 @@ import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPK;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TeamTrimestrialReportForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
@@ -49,6 +50,7 @@ public class AdminServiceImpl implements AdminService {
   private TeamRepository teamRepository;
   private SpeciesRepository speciesRepository;
   private TeamTrimestrialReportRepository teamTrimestrialReportRepository;
+  private TransactionRepository transactionRepository;
 
   /**
    * Constructor for the AdminService.
@@ -56,18 +58,20 @@ public class AdminServiceImpl implements AdminService {
    * @param productRepository Autowired repository.
    * @param aliquotRepository Autowired repository.
    * @param speciesRepository Autowired repository.
-   * @param teamRepository Autowired repository. 
+   * @param teamRepository Autowired repository.
    * @param alertRepository Autowired repository.
    * @param teamTrimestrialReportRepository Autowired repository.
    */
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, TeamRepository teamRepository, AlertRepository alertRepository, TeamTrimestrialReportRepository teamTrimestrialReportRepository) {
+  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, TeamRepository teamRepository, AlertRepository alertRepository, TeamTrimestrialReportRepository teamTrimestrialReportRepository,
+      TransactionRepository transactionRepository) {
     this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
     this.teamRepository = teamRepository;
     this.alertRepository = alertRepository;
     this.teamTrimestrialReportRepository = teamTrimestrialReportRepository;
+    this.transactionRepository = transactionRepository;
   }
 
   @Override
@@ -82,23 +86,18 @@ public class AdminServiceImpl implements AdminService {
     String lowerBound;
     String upperBound;
 
-    lowerBound = form.getYearLowerBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthLowerBound())
-        + "-01 00:00:00";
+    lowerBound = form.getYearLowerBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthLowerBound()) + "-01 00:00:00";
 
-    upperBound = form.getYearUpperBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound())
-        + "-31 00:00:00";
+    upperBound = form.getYearUpperBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound()) + "-31 00:00:00";
 
     System.out.println("lower bound : " + lowerBound);
 
-    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0],
-        shards[2]);
+    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0], shards[2]);
     List<StatsWithdrawQuery> returnValue = new ArrayList<>();
 
     for (int i = 0; i < result.size(); i++) {
 
-      returnValue
-          .add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
-
+      returnValue.add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
 
     }
 
@@ -176,7 +175,6 @@ public class AdminServiceImpl implements AdminService {
 
       type = AlertType.valueOf((String) o[4]);
 
-
       for (Object[] a : aliquotsNativeQuery) {
         qteHidden = ((BigInteger) a[3]).intValue();
         qteVisible = ((BigInteger) a[2]).intValue();
@@ -190,13 +188,7 @@ public class AdminServiceImpl implements AdminService {
         alertAliquots.add(new AlertAliquot(((BigInteger) a[0]).longValue(), ((Timestamp) a[1]).toLocalDateTime().toLocalDate(), qte));
       }
 
-      returnValue.add(new TriggeredAlertsQuery(
-          (String) o[0],
-          (String) o[1],
-          ((BigDecimal) o[2]).intValue(),
-          (int) o[3], type,
-          alertAliquots,
-          ((BigInteger) o[5]).longValue()));
+      returnValue.add(new TriggeredAlertsQuery((String) o[0], (String) o[1], ((BigDecimal) o[2]).intValue(), (int) o[3], type, alertAliquots, ((BigInteger) o[5]).longValue()));
 
     }
     return returnValue;
@@ -243,15 +235,15 @@ public class AdminServiceImpl implements AdminService {
     }
 
   }
-  
+
   @Override
-  public boolean addTeamTrimestrialReport(TeamTrimestrialReportForm form) {
-    
-    // Checking that the stringified quarter is a valid value of Quarter Enum. 
-    if(!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet()).contains(form.getQuarter())) {
+  public boolean saveTeamTrimestrialReport(AddTeamTrimestrialReportForm form) {
+
+    // Checking that the stringified quarter is a valid value of Quarter Enum.
+    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet()).contains(form.getQuarter())) {
       return false;
     }
-    
+
     Optional<Team> nullableTeam = teamRepository.findById(form.getTeamId());
     Team team;
 
@@ -262,7 +254,7 @@ public class AdminServiceImpl implements AdminService {
       return false;
     }
 
-    TeamTrimestrialReportPK teamTrimestrialReportPk = new TeamTrimestrialReportPK();
+    TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
     Quarter quarter = Quarter.valueOf(form.getQuarter());
 
     teamTrimestrialReportPk.setTeam(form.getTeamId());
@@ -271,8 +263,12 @@ public class AdminServiceImpl implements AdminService {
 
     Optional<TeamTrimestrialReport> nullableReport = teamTrimestrialReportRepository.findById(teamTrimestrialReportPk);
 
+    // Checking that the report is still editable
     if (nullableReport.isPresent()) {
-      return false;
+      TeamTrimestrialReport currentReport = nullableReport.get();
+      if (currentReport.isFinalFlag()) {
+        return false;
+      }
     }
 
     TeamTrimestrialReport teamTrimestrialReport = new TeamTrimestrialReport();
@@ -283,13 +279,21 @@ public class AdminServiceImpl implements AdminService {
     teamTrimestrialReport.setYear(form.getYear());
 
     teamTrimestrialReportRepository.save(teamTrimestrialReport);
-    
+
     return true;
   }
 
   @Override
-  public List<Transaction> getTransactionsByTeamAndQuarter(Long id, String quarter) {
-    // TODO Auto-generated method stub
-    return null;
+  public List<Transaction> getTransactionsByTeamAndQuarter(String teamName, String quarter) {
+    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet()).contains(quarter)) {
+      return null;
+    }
+
+    List<Transaction> transactions = new ArrayList<>();
+    // Great JSON infinite loop Product -> Aliquot -> Product -> ...
+    /*
+     * transactionRepository.findAll().forEach(transaction -> { transactions.add(transaction); });
+     */
+    return transactions;
   }
 }

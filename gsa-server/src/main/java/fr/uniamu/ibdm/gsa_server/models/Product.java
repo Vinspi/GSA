@@ -16,12 +16,10 @@ import java.util.Collection;
 @IdClass(ProductPK.class)
 public class Product implements Serializable {
 
-
   @Id
   @ManyToOne
   @JoinColumn(name = "target_pk", columnDefinition = "varchar(30)")
   private Species target;
-
 
   @Id
   @ManyToOne
@@ -36,6 +34,7 @@ public class Product implements Serializable {
 
   /**
    * Constructor for product object.
+   * 
    * @param target Target of the product.
    * @param source Source of the product.
    * @param aliquots List of aliquot for this product.
