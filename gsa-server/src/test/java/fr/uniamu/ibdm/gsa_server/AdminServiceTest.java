@@ -172,12 +172,14 @@ public class AdminServiceTest {
                 new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 6, 10), 10, aliquot, member)
         );
 
+        System.out.println(transactionRepository.findAll());
+
         Mockito.when(transactionRepository.saveAll(transactions)).thenReturn(transactions);
         Mockito.when(transactionRepository.findAll()).thenReturn(transactions);
         Assert.assertEquals(transactions, transactionRepository.findAll());
 
-        Mockito.when(transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualOrderByTransactionDateAsc(Mockito.any(), Mockito.any())).thenReturn(transactionResult);
-        Assert.assertEquals(transactionResult, adminService.getWithdrawalHistory(begin, end));
+        Mockito.when(transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLikeOrderByTransactionDateAsc(begin, end, TransactionType.WITHDRAW)).thenReturn(transactionResult);
+        Assert.assertEquals(transactionResult, adminService.getWithdrawalsHistoryBetween(begin, end));
     }
 
 }
