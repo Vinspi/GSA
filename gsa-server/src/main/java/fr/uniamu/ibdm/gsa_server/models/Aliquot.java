@@ -15,7 +15,6 @@ import java.time.LocalDate;
 public class Aliquot implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY) /* changer pour la prod */
   private long aliquotNLot;
 
 

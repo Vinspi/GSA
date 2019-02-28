@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -36,6 +35,8 @@ public class AdminController {
 
   @Autowired
   UserService userService;
+
+  final double minPrice = 0.0001;
 
   /**
    * REST endpoint for /stats call, return stats needed for building admin chart.
@@ -98,12 +99,12 @@ public class AdminController {
   /**
    * Endpoint enabling well-formatted POST requests to add a aliquote.
    * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
-   *             price & provider & source & target of aliquote.
+   *             price & provider & product of aliquote.
    * @return if successful, a JSON response with a success status, otherwise a
    *         JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addAliquote")
-  public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form){
+  public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
 
     JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
     failedRequestResponse.setData(form);
@@ -115,19 +116,28 @@ public class AdminController {
     String provider = form.getAliquoteProvider();
     String product = form.getAliquoteproduct();
 
-    if (aliquotNLot == 0 || aliquotPrice == 0 || provider.length() ==0 || product.length() ==0 )
-    {
+    if (aliquotNLot == 0 || aliquotPrice == 0 || provider.length() == 0 || product.length() == 0) {
       failedRequestResponse.setError("Missing values");
       return failedRequestResponse;
     }
 
-    if (aliquotNLot < 0 || aliquotQuantityVisibleStock < 0 || aliquotQuantityHiddenStock < 0 || aliquotPrice < 0){
+    if (aliquotNLot < 0 || aliquotQuantityVisibleStock < 0 || aliquotQuantityHiddenStock < 0 || aliquotPrice < 0) {
         failedRequestResponse.setError("values can not be negative");
         return failedRequestResponse;
     }
 
+    if (aliquotPrice < minPrice) {
+        failedRequestResponse.setError("");
+        return failedRequestResponse;
+    }
+
+    if (aliquotQuantityVisibleStock + aliquotQuantityHiddenStock <= 0) {
+        failedRequestResponse.setError("Missing quantity");
+        return failedRequestResponse;
+    }
+
     boolean success = adminService.addAliquote(aliquotNLot, aliquotQuantityVisibleStock,
-            aliquotQuantityHiddenStock, aliquotPrice, provider, product );
+            aliquotQuantityHiddenStock, aliquotPrice, provider, product);
     if (success)
     {
       return new JsonResponse<>(RequestStatus.SUCCESS);
