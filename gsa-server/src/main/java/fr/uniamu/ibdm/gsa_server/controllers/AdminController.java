@@ -21,7 +21,6 @@ import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.GetTransactionByTeamAndQuarterForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
@@ -182,7 +181,7 @@ public class AdminController {
   @GetMapping("/transactions")
   public JsonResponse<List<Transaction>> getAllTransactionsByTeamAndQuarter(@RequestParam String teamName, @RequestParam String quarter) {
     List<Transaction> transactions = adminService.getTransactionsByTeamAndQuarter(teamName, quarter);
-    
+
     if (transactions != null) {
       return new JsonResponse<>(RequestStatus.SUCCESS, transactions);
     } else {
