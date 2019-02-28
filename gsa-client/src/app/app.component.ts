@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
             this.localStorage.setItem("user", response.data).subscribe(() => {});
             window.location.reload();
           }
-        }); 
+        });
       }
     });
   }

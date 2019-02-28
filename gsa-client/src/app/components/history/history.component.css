@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+  width: 100%;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+
+.history-container {
+  /*text-align: center;*/
+  width: 100%;
+}
+
+.history_form {
+  /*display: inline;*/
+  width: 100%;
+}
+

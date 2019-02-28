@@ -11,20 +11,21 @@ export class AdminService {
 
   constructor(private http: HttpClient) { }
 
-  private BASE_URL: String = environment.API_URL+environment.API_ADMIN;
+  private BASE_URL: String = environment.API_URL + environment.API_ADMIN;
 
   getWithdrawStats(data: any): Observable<JsonResponse> {
-
-    return this.http.post<JsonResponse>(this.BASE_URL+'/stats', data, {withCredentials: true})
+    return this.http.post<JsonResponse>(this.BASE_URL + '/stats', data, {withCredentials: true});
   }
 
   getAllSpeciesName(): Observable<JsonResponse> {
-
-    return this.http.get<JsonResponse>(this.BASE_URL+'/allspeciesnames', {withCredentials: true})
+    return this.http.get<JsonResponse>(this.BASE_URL + '/allspeciesnames', {withCredentials: true});
   }
 
   addProduct(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL + '/addproduct', data, {withCredentials: true});
+  }
 
-    return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true})
+  getWithdrawalsHistory(): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL + '/history', {withCredentials: true});
   }
 }

@@ -5,7 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,6 +17,7 @@ import { StockOverviewComponent } from './components/stock-overview/stock-overvi
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { AddProductComponent } from './components/add-product/add-product.component';
+import { HistoryComponent } from './components/history/history.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { AddProductComponent } from './components/add-product/add-product.compon
     StockOverviewComponent,
     WithdrawComponent,
     StatsComponent,
-    AddProductComponent
+    AddProductComponent,
+    HistoryComponent
   ],
   imports: [
     BrowserModule,
