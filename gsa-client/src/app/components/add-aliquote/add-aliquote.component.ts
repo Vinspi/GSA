@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {AdminService} from 'src/app/services/admin.service';
-import { aliquoteOverview } from '../../aliquoteOverview';
 import { Subject } from 'rxjs';
 import {debounceTime} from 'rxjs/operators';
+import { Aliquote } from 'src/app/aliquote';
+import { FormGroup, FormControl, Validators, NgForm } from '@angular/forms';
+import { AbstractControl, ValidatorFn ,ReactiveFormsModule} from '@angular/forms';
+
 
 
 @Component({
@@ -13,74 +16,74 @@ import {debounceTime} from 'rxjs/operators';
 export class AddAliquoteComponent implements OnInit {
 
   public isViewable: boolean;
-  private SelectedPrice : string;
-  private SelectedReserveQty : string;
-  private SelectedVisibleQty : string;
+  private SelectedNumLot : number 
+  private SelectedPrice : number;
+  private SelectedReserveQty : number;
+  private SelectedVisibleQty : number;
   private SelectedProvider : string;
-  private selectedSource : string;
-  private selectedTarget : string;
-  private defaultOption: String = 'Choose';
-
-  data: Array<aliquoteOverview>;
+  private SelectedProduct : string;
+  private _success = new Subject<string>();
+  data: Array<Aliquote>;
   dtTrigger: Subject<any> = new Subject();
-
   messageAlert: string;
   typeAlert: string;
-  private _success = new Subject<string>();
+
+  aliquoteForm :FormGroup
+  model: any = {};
 
   constructor(private adminService: AdminService) {
     this.isViewable = false; 
    }
    
   ngOnInit() {
-    this.adminService.getAllSpeciesName().subscribe(response => {
-      this.data = <Array<aliquoteOverview>> response.data;
+    this.adminService.getAllProductsName().subscribe(response => {
+      this.data = <Array<Aliquote>> response.data;
       console.log("data : "+JSON.stringify(this.data[0]));
       this.dtTrigger.next();
     });
   }
   public toggle(): void { 
     this.isViewable = !this.isViewable; 
-    console.log('---->' +this.isViewable);
-  }
+   }
 
   addAliquote(){
-    this.SelectedVisibleQty =(<HTMLInputElement>document.getElementById("visibleQty")).value;
-    this.SelectedPrice = (<HTMLInputElement>document.getElementById("price")).value;
-    this.SelectedProvider = (<HTMLInputElement>document.getElementById("provider")).value;
-    this.selectedSource = $('#source option:selected').text();
-    this.selectedTarget = $('#target option:selected').text();
+    this.SelectedNumLot =this.model.Nlot;
+    this.SelectedVisibleQty =this.model.visibleQty;
+    this.SelectedPrice = this.model.price;
+    this.SelectedProvider = this.model.provider;
+    this.SelectedProduct = this.model.product;
 
     if(this.isViewable){
 
-      this.SelectedReserveQty = (<HTMLInputElement>document.getElementById("reserveStock")).value;
-    } else this.SelectedReserveQty ="";
+      this.SelectedReserveQty = this.model.reserveQty;
+    } else this.SelectedReserveQty =0;
   
-    if (this.SelectedPrice === null ||this.SelectedProvider === null || this.selectedSource === this.defaultOption || this.selectedTarget === this.defaultOption){
-      this.typeAlert = "danger";
-      this.messageAlert = "Fields with * are required ";
-      this.adminService.configureMessageAlert(this.typeAlert,this.messageAlert, 4000);
-      return;
-    }
-
     this.adminService.addAliquote({
+      aliquotNLot : this.SelectedNumLot,
       aliquotQuantityVisibleStock : this.SelectedVisibleQty,
       aliquotQuantityHiddenStock :this.SelectedReserveQty,
       aliquotPrice  : this.SelectedPrice,
-      provider : this.SelectedProvider,
-      source : this.selectedSource,
-      target : this.selectedTarget,
+      aliquoteProvider : this.SelectedProvider,
+      aliquoteproduct : this.SelectedProduct,
     }).subscribe(res => {
       if (res.status === 'SUCCESS') {
         this.typeAlert = "success";
-        this.messageAlert = "The product was successfully added.";
+        this.messageAlert = "The aliquote was successfully added.";
 
       } else if (res.status === 'FAIL') {
         this.typeAlert = "danger";
-        this.messageAlert = "An error occurred, this product could not be added.";
+        this.messageAlert = "An error occurred, this aliquote could not be added.";
       }
       this.adminService.configureMessageAlert(this.typeAlert,this.messageAlert, 4000);
     });
+
+    console.log('SelectedVisibleQty-------------> '+this.SelectedVisibleQty)
+    console.log('SelectedPrice-------------> '+this.SelectedPrice)
+    console.log('SelectedProvider-------------> '+this.SelectedProvider)
+    console.log('selectedProduct-------------> '+this.SelectedProduct)
+    console.log('SelectedReserveQty-------------> '+this.SelectedReserveQty)
+    console.log('Num-------------> '+this.SelectedNumLot)
+
   }
 }
 

@@ -11,6 +11,13 @@ public class AlertAliquot {
   public AlertAliquot() {
   }
 
+  /**
+   * Constructor for AlertAliquot object.
+   *
+   * @param nlot Nlot of current aliquot.
+   * @param expirationDate Expiration date of current aliquot.
+   * @param qte Quantity left for this aliquot.
+   */
   public AlertAliquot(long nlot, LocalDate expirationDate, int qte) {
     this.nlot = nlot;
     this.expirationDate = expirationDate;

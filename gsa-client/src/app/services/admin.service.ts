@@ -58,9 +58,15 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/updateAlert', {alertId: id, seuil: seuil}, {withCredentials: true});
   }
 
-
   addAliquote(data: any): Observable<JsonResponse> {
 
     return this.http.post<JsonResponse>(this.BASE_URL+'/addAliquote', data, {withCredentials: true})
   }
+
+  getAllProductsName(): Observable<JsonResponse> {
+
+    return this.http.get<JsonResponse>(this.BASE_URL+'/allProducts', {withCredentials: true})
+  }
+  
+
 }

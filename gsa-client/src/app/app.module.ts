@@ -2,7 +2,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -47,7 +47,8 @@ import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-al
     FormsModule,
     DataTablesModule,
     ChartsModule,
-    NgbModule
+    NgbModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -25,7 +25,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200" })
+@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
 public class AdminController {
 
   @Autowired
@@ -50,6 +50,7 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
 
+
   /**
    * /Endpoint returning all of species names.
    *
@@ -68,10 +69,9 @@ public class AdminController {
   /**
    * Endpoint enabling well-formatted POST requests to add a product.
    *
-   * @param form
-   *          contains "targetName" and "sourceName" keys.
+   * @param form contains "targetName" and "sourceName" keys.
    * @return if successful, a JSON response with a success status, otherwise a
-   *         JSON response with a fail status and the sent form as data.
+   *     JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -157,7 +157,7 @@ public class AdminController {
    * @return a list of triggered alerts with their corresponding aliquots.
    */
   @GetMapping("/triggeredAlerts")
-  public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts(){
+  public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts() {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
   }
 
@@ -168,7 +168,7 @@ public class AdminController {
    * @return a list of wrappers containing product name, seuil and type of the alert.
    */
   @GetMapping("/getAllAlerts")
-  public JsonResponse<List<AlertsData>> getAllAlerts(){
+  public JsonResponse<List<AlertsData>> getAllAlerts() {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAlerts());
   }
 
@@ -179,12 +179,11 @@ public class AdminController {
    * @return SUCCESS status if the product exist, FAIL status otherwise.
    */
   @PostMapping("/removeAlert")
-  public JsonResponse<Boolean> removeAlert(@RequestBody RemoveAlertForm form){
+  public JsonResponse<Boolean> removeAlert(@RequestBody RemoveAlertForm form) {
     if (adminService.removeAlert(form.getAlertId())) {
       return new JsonResponse<>(RequestStatus.SUCCESS, true);
-    }
-    else {
-      return new JsonResponse<>("This alert doesn't exists or has already been removed",RequestStatus.FAIL);
+    } else {
+      return new JsonResponse<>("This alert doesn't exists or has already been removed", RequestStatus.FAIL);
     }
   }
 
@@ -197,10 +196,13 @@ public class AdminController {
   @PostMapping("/updateAlert")
   public JsonResponse<Boolean> updateAlert(@RequestBody UpdateAlertForm form) {
 
-    if(adminService.updateAlertSeuil(form)) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, true);
+    if (form.getSeuil() < 1) {
+      return new JsonResponse<>("Seuil must be > 0", RequestStatus.FAIL);
     }
-    else {
+
+    if (adminService.updateAlertSeuil(form)) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, true);
+    } else {
       return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
     }
   }

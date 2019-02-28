@@ -1,13 +1,11 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public interface AdminService {
@@ -19,18 +17,18 @@ public interface AdminService {
    * @return a list of months, years, and withdrawals
    */
   List<StatsWithdrawQuery> getWithdrawStats(WithdrawStatsForm form);
-  
+
   /**
    * This method retrieves the name of all species found in the database.
-   *   
+   *
    * @return a list of names or null if an error occurred.
    */
   List<String> getAllSpeciesNames();
-  
+
 
   /**
    * This method adds a new product named after the source and target species name.
-   * 
+   *
    * @param sourceName string
    * @param targetName string
    * @return true if adding the product is successful, false otherwise.
@@ -54,7 +52,7 @@ public interface AdminService {
    * alert has been triggered.
    *
    * @return A list of wrapper containing product names, the quantity left
-   * and the threshold of the alert.
+   *     and the threshold of the alert.
    */
   List<TriggeredAlertsQuery> getTriggeredAlerts();
 

@@ -15,6 +15,17 @@ public class TriggeredAlertsQuery {
   private List<AlertAliquot> aliquots;
   private long alertId;
 
+  /**
+   * Constructor for triggered alert object.
+   *
+   * @param source Source of the product on which the alert if for.
+   * @param target Source of the product on which the alert if for.
+   * @param qte Quantity left for the current product in the current stock.
+   * @param seuil Seuil of the alert.
+   * @param alertType Type of the alert.
+   * @param aliquots All aliquots linked to the current product.
+   * @param alertId Id of the alert.
+   */
   public TriggeredAlertsQuery(String source, String target, int qte, int seuil, AlertType alertType, List<AlertAliquot> aliquots, long alertId) {
     this.source = source;
     this.target = target;
@@ -58,10 +69,6 @@ public class TriggeredAlertsQuery {
 
   public void setQte(int qte) {
     this.qte = qte;
-  }
-
-  public void setSeuil(int seuil) {
-    this.seuil = seuil;
   }
 
   public Integer getSeuil() {
