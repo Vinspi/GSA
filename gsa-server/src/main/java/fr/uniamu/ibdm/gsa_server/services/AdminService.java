@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
@@ -35,6 +36,13 @@ public interface AdminService {
    */
   boolean addProduct(String sourceName, String targetName);
 
+  /**
+   * This method adds a new aliquote.
+   *
+   * @param  form Wrapper containing informations about the aliquot.
+   * @return true if adding the aliquote is successful, false otherwise.
+   */
+  boolean addAliquot(AddAliquoteForm form);
 
   /**
    * This method retrieve all products on which an

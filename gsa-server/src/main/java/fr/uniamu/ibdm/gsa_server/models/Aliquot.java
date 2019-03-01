@@ -15,7 +15,6 @@ import java.time.LocalDate;
 public class Aliquot implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY) /* changer pour la prod */
   private long aliquotNLot;
 
 
@@ -27,8 +26,8 @@ public class Aliquot implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumns({
-      @JoinColumn(name = "source", nullable = false),
-      @JoinColumn(name = "target", nullable = false)
+          @JoinColumn(name = "source", nullable = false),
+          @JoinColumn(name = "target", nullable = false)
   })
   private Product product;
 

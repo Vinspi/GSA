@@ -5,15 +5,15 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
-import org.json.JSONObject;
+import fr.uniamu.ibdm.gsa_server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +33,11 @@ public class AdminController {
 
   @Autowired
   AdminService adminService;
+
+  @Autowired
+  UserService userService;
+
+  final double minPrice = 0.0001;
 
   /**
    * REST endpoint for /stats call, return stats needed for building admin chart.
@@ -68,7 +73,7 @@ public class AdminController {
    *
    * @param form contains "targetName" and "sourceName" keys.
    * @return if successful, a JSON response with a success status, otherwise a
-   *     JSON response with a fail status and the sent form as data.
+   *      JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -89,6 +94,52 @@ public class AdminController {
     } else {
       failedRequestResponse.setError("Could not add the product");
       return failedRequestResponse;
+    }
+  }
+
+  /**
+   * Endpoint enabling well-formatted POST requests to add an aliquot.
+   *
+   * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
+   *             price & provider & product of aliquote.
+   * @return if successful, a JSON response with a success status, otherwise a
+   *      JSON response with a fail status and the sent form as data.
+   */
+  @PostMapping("/addAliquote")
+  public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
+
+    JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+    failedRequestResponse.setData(form);
+
+    /* form validation */
+
+    if (form.validate()) {
+      boolean success = adminService.addAliquot(form);
+      if (success) {
+        return new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        failedRequestResponse.setError("Could not add the aliquote");
+        return failedRequestResponse;
+      }
+    } else {
+      failedRequestResponse.setError("Could not add the aliquote");
+      return failedRequestResponse;
+    }
+
+  }
+
+  /**
+   * /Endpoint returning all of species names.
+   *
+   * @return JSON response containing all of species name.
+   */
+  @GetMapping("/allProducts")
+  public JsonResponse<List<String>> getAllProductsName() {
+    List<String> productsName = userService.getAllProductName();
+    if (productsName != null) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, productsName);
+    } else {
+      return new JsonResponse<>("Could not retrieve all of products names", RequestStatus.FAIL);
     }
   }
 

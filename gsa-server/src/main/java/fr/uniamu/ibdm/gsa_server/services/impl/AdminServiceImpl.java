@@ -1,54 +1,32 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
-
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.AdminService;
-import fr.uniamu.ibdm.gsa_server.util.DateConverter;
-
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.Alert;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -249,5 +227,39 @@ public class AdminServiceImpl implements AdminService {
       return false;
     }
 
+  }
+
+  @Override
+  public boolean addAliquot(AddAliquoteForm form) {
+
+    Aliquot newAliquot = new Aliquot();
+    newAliquot.setAliquotNLot(form.getAliquotNLot());
+    newAliquot.setAliquotExpirationDate(LocalDate.now().plusYears(1));
+    newAliquot.setAliquotQuantityVisibleStock(form.getAliquotQuantityVisibleStock());
+    newAliquot.setAliquotQuantityHiddenStock(form.getAliquotQuantityHiddenStock());
+    newAliquot.setAliquotPrice(form.getAliquotPrice());
+    newAliquot.setProvider(form.getAliquotProvider());
+
+    String[] fullName = form.getAliquotProduct().split("_");
+
+
+    ProductPK productPk = new ProductPK();
+    productPk.setSource(fullName[0]);
+    productPk.setTarget(fullName[2]);
+    Optional<Product> nullableProduct = productRepository.findById(productPk);
+
+    Optional<Aliquot> idExist = aliquotRepository.findById(form.getAliquotNLot());
+
+    if (idExist.isPresent()) {
+      return false;
+    }
+
+    if (nullableProduct.isPresent()) {
+      newAliquot.setProduct(nullableProduct.get());
+      aliquotRepository.save(newAliquot);
+      return true;
+    } else {
+      return false;
+    }
   }
 }
