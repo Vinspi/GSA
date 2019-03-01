@@ -1,10 +1,20 @@
+:host {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
-/* Space out content a bit */
-body {
-  padding-bottom: 200px;
-  padding-right: 10%;
-  padding-left: 10%;
-  overflow:scroll
+h1 {
+  text-align: center;
+}
+
+.button-countainer button {
+  background-color: #242939;
+}
+
+.btn:disabled:hover {
+  background-color: white !important;
+  color: #242939 !important;
 }
 
 .ng-valid[required], .ng-valid.required  {
