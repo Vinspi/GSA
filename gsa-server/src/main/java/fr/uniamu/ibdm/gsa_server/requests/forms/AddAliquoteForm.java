@@ -1,15 +1,47 @@
 package fr.uniamu.ibdm.gsa_server.requests.forms;
 
-public class AddAliquoteForm {
+import java.util.regex.Pattern;
+
+public class AddAliquoteForm implements Form{
 
     private int aliquotNLot;
-    private String aliquotExpirationDate;
     private int aliquotQuantityVisibleStock;
     private int aliquotQuantityHiddenStock;
     private float aliquotPrice;
-    private String aliquoteProvider;
-    private String aliquoteproduct;
+    private String aliquotProvider;
+    private String aliquotProduct;
 
+    public AddAliquoteForm(int aliquotNLot, int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String aliquotProvider, String aliquotProduct) {
+        this.aliquotNLot = aliquotNLot;
+        this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
+        this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
+        this.aliquotPrice = aliquotPrice;
+        this.aliquotProvider = aliquotProvider;
+        this.aliquotProduct = aliquotProduct;
+    }
+
+    public AddAliquoteForm() {
+    }
+
+    @Override
+    public boolean validate() {
+
+        Pattern patternProductName = Pattern.compile("^[A-Z]*_ANTI_[A-Z]*");
+
+        if(
+            aliquotNLot >= 0
+            && (aliquotQuantityVisibleStock + aliquotQuantityHiddenStock) > 0
+            && aliquotQuantityHiddenStock >= 0
+            && aliquotQuantityVisibleStock >= 0
+            && aliquotPrice > 0
+            && aliquotProvider.length() > 0
+            && patternProductName.matcher(aliquotProduct).matches()
+        ) {
+            return true;
+        }
+
+        return false;
+    }
 
     public int getAliquotNLot() {
         return aliquotNLot;
@@ -17,14 +49,6 @@ public class AddAliquoteForm {
 
     public void setAliquotNLot(int aliquotNLot) {
         this.aliquotNLot = aliquotNLot;
-    }
-
-    public String getAliquotExpirationDate() {
-        return aliquotExpirationDate;
-    }
-
-    public void setAliquotExpirationDate(String aliquotExpirationDate) {
-        this.aliquotExpirationDate = aliquotExpirationDate;
     }
 
     public int getAliquotQuantityVisibleStock() {
@@ -51,19 +75,19 @@ public class AddAliquoteForm {
         this.aliquotPrice = aliquotPrice;
     }
 
-    public String getAliquoteProvider() {
-        return aliquoteProvider;
+    public String getAliquotProvider() {
+        return aliquotProvider;
     }
 
-    public void setAliquoteProvider(String aliquoteProvider) {
-        this.aliquoteProvider = aliquoteProvider;
+    public void setAliquotProvider(String aliquotProvider) {
+        this.aliquotProvider = aliquotProvider;
     }
 
-    public String getAliquoteproduct() {
-        return aliquoteproduct;
+    public String getAliquotProduct() {
+        return aliquotProduct;
     }
 
-    public void setAliquoteproduct(String aliquoteproduct) {
-        this.aliquoteproduct = aliquoteproduct;
+    public void setAliquotProduct(String aliquotProduct) {
+        this.aliquotProduct = aliquotProduct;
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class AdminController {
    *
    * @param form contains "targetName" and "sourceName" keys.
    * @return if successful, a JSON response with a success status, otherwise a
-   *     JSON response with a fail status and the sent form as data.
+   * JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -98,10 +99,11 @@ public class AdminController {
 
   /**
    * Endpoint enabling well-formatted POST requests to add a aliquote.
+   *
    * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
    *             price & provider & product of aliquote.
    * @return if successful, a JSON response with a success status, otherwise a
-   *         JSON response with a fail status and the sent form as data.
+   * JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
@@ -113,38 +115,26 @@ public class AdminController {
     int aliquotQuantityVisibleStock = form.getAliquotQuantityVisibleStock();
     int aliquotQuantityHiddenStock = form.getAliquotQuantityHiddenStock();
     float aliquotPrice = form.getAliquotPrice();
-    String provider = form.getAliquoteProvider();
-    String product = form.getAliquoteproduct();
+    String provider = form.getAliquotProvider();
+    String product = form.getAliquotProduct();
 
-    if (aliquotNLot == 0 || aliquotPrice == 0 || provider.length() == 0 || product.length() == 0) {
-      failedRequestResponse.setError("Missing values");
-      return failedRequestResponse;
-    }
+    /* form validation */
 
-    if (aliquotNLot < 0 || aliquotQuantityVisibleStock < 0 || aliquotQuantityHiddenStock < 0 || aliquotPrice < 0) {
-        failedRequestResponse.setError("values can not be negative");
+    if (form.validate()) {
+      boolean success = adminService.addAliquote(aliquotNLot, aliquotQuantityVisibleStock,
+          aliquotQuantityHiddenStock, aliquotPrice, provider, product);
+      if (success) {
+        return new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        failedRequestResponse.setError("Could not add the aliquote");
         return failedRequestResponse;
-    }
-
-    if (aliquotPrice < minPrice) {
-        failedRequestResponse.setError("");
-        return failedRequestResponse;
-    }
-
-    if (aliquotQuantityVisibleStock + aliquotQuantityHiddenStock <= 0) {
-        failedRequestResponse.setError("Missing quantity");
-        return failedRequestResponse;
-    }
-
-    boolean success = adminService.addAliquote(aliquotNLot, aliquotQuantityVisibleStock,
-            aliquotQuantityHiddenStock, aliquotPrice, provider, product);
-    if (success)
-    {
-      return new JsonResponse<>(RequestStatus.SUCCESS);
+      }
     } else {
       failedRequestResponse.setError("Could not add the aliquote");
       return failedRequestResponse;
     }
+
+
   }
 
   /**
@@ -161,6 +151,7 @@ public class AdminController {
       return new JsonResponse<>("Could not retrieve all of products names", RequestStatus.FAIL);
     }
   }
+
   /**
    * REST endpoint, return all triggered alerts.
    *
