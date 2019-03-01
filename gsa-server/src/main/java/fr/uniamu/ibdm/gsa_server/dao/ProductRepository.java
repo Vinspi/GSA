@@ -29,6 +29,8 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
                                             @Param("monthUpperBound") String monthUpperBound,
                                             @Param("source") String source,
                                             @Param("target") String target);
+  
+  
 
 
   @Query(value = "SELECT source_pk, target_pk, SUM(aliquot.aliquot_quantity_visible_stock) as qte, seuil, alert_type, alert_id\n"

@@ -3,6 +3,7 @@
     <thead>
       <tr>
         <th>Numero</th>
+        <th>Name aliquot</th>
         <th>Expiration date</th>
         <th></th>
       </tr>
@@ -11,6 +12,7 @@
       <ng-container *ngFor="let item of aliquoList">
           <tr *ngIf="item.expire">
               <td>{{item.id}}</td>
+              <td></td>
               <td>{{item.date}}</td>
               <td>
                   <button title="delete aliquot" type="button" class="btn btn-xs btn-danger" (click)="deleteAliquot(item.id)">
