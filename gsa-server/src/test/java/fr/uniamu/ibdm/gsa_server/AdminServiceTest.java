@@ -1,24 +1,19 @@
 package fr.uniamu.ibdm.gsa_server;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
-
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
@@ -27,27 +22,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -295,11 +282,14 @@ public class AdminServiceTest {
     public void addAliquote() {
 
         long id = 33;
-        int priceValue1 = 4;
+        float priceValue1 = 4.56F;
         int qtyHiddenValue1 = 6;
         int qtyVisibleValue1 = 2;
         String providerValue1 = "Provider x";
         String productValue1 = "GOAT_ANTI_WOLF";
+
+
+        AddAliquoteForm form = new AddAliquoteForm(id, qtyVisibleValue1, qtyHiddenValue1, priceValue1, providerValue1, productValue1);
 
         final Aliquot aliquotX = new Aliquot();
         aliquotX.setAliquotExpirationDate(LocalDate.now().plusYears(1));
@@ -308,35 +298,24 @@ public class AdminServiceTest {
         aliquotX.setAliquotPrice(priceValue1);
         aliquotX.setProvider(providerValue1);
 
-        // MISSING QUANTITY
-        long id2 = 33;
-        int priceValue2 = 4;
-        int qtyHiddenValue2 = 0;
-        int qtyVisibleValue2 = 0;
-        String providerValue2 = "Provider x";
-        String productValue2 = "GOAT_ANTI_WOLF";
+        Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.of(new Product()));
+        Mockito.when(aliquotRepository.findById(40L)).thenReturn(Optional.of(new Aliquot()));
+        Mockito.when(aliquotRepository.findById(id)).thenReturn(Optional.empty());
 
-        // NEGATIVE VALUES
-        long id3 = 33;
-        int priceValue3 = -4;
-        int qtyHiddenValue3 = 0;
-        int qtyVisibleValue3 = 0;
-        String providerValue3 = "Provider x";
-        String productValue3 = "GOAT_ANTI_WOLF";
+        boolean success = adminService.addAliquote(form);
 
-        // NOT EXISTING PRODUCT
-        long id4 = 33;
-        int priceValue4 = -4;
-        int qtyHiddenValue4 = 0;
-        int qtyVisibleValue4 = 0;
-        String providerValue4 = "Provider x";
-        String productValue4 = "TOTO_ANTI_TATA";
+        Assert.assertTrue(success);
 
-        Mockito.when(aliquotRepository.save(aliquotX)).thenReturn(aliquotX);
-        Assert.assertEquals(true, adminService.addAliquote(id, qtyVisibleValue1, qtyHiddenValue1, priceValue1, providerValue1, productValue1));
-        Assert.assertEquals(false, adminService.addAliquote(id2, qtyVisibleValue2, qtyHiddenValue2, priceValue2, providerValue2, productValue2));
-        Assert.assertEquals(false, adminService.addAliquote(id3, qtyVisibleValue3, qtyHiddenValue3, priceValue3, providerValue3, productValue3));
-        Assert.assertEquals(false, adminService.addAliquote(id4, qtyVisibleValue4, qtyHiddenValue4, priceValue4, providerValue4, productValue4));
+        form.setAliquotNLot(40);
+        success = adminService.addAliquote(form);
+        Assert.assertFalse(success);
+
+
+        form.setAliquotNLot(id);
+        Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.empty());
+        success = adminService.addAliquote(form);
+        Assert.assertFalse(success);
+
 
 
     }

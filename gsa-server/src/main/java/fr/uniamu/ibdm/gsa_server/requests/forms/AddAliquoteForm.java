@@ -4,14 +4,20 @@ import java.util.regex.Pattern;
 
 public class AddAliquoteForm implements Form{
 
-    private int aliquotNLot;
+    private long aliquotNLot;
     private int aliquotQuantityVisibleStock;
     private int aliquotQuantityHiddenStock;
     private float aliquotPrice;
     private String aliquotProvider;
     private String aliquotProduct;
 
-    public AddAliquoteForm(int aliquotNLot, int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String aliquotProvider, String aliquotProduct) {
+    public AddAliquoteForm(long aliquotNLot,
+                           int aliquotQuantityVisibleStock,
+                           int aliquotQuantityHiddenStock,
+                           float aliquotPrice,
+                           String aliquotProvider,
+                           String aliquotProduct) {
+
         this.aliquotNLot = aliquotNLot;
         this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
         this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
@@ -43,11 +49,11 @@ public class AddAliquoteForm implements Form{
         return false;
     }
 
-    public int getAliquotNLot() {
+    public long getAliquotNLot() {
         return aliquotNLot;
     }
 
-    public void setAliquotNLot(int aliquotNLot) {
+    public void setAliquotNLot(long aliquotNLot) {
         this.aliquotNLot = aliquotNLot;
     }
 

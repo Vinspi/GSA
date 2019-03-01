@@ -98,7 +98,7 @@ public class AdminController {
   }
 
   /**
-   * Endpoint enabling well-formatted POST requests to add a aliquote.
+   * Endpoint enabling well-formatted POST requests to add an aliquot.
    *
    * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
    *             price & provider & product of aliquote.
@@ -111,18 +111,10 @@ public class AdminController {
     JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
     failedRequestResponse.setData(form);
 
-    long aliquotNLot = form.getAliquotNLot();
-    int aliquotQuantityVisibleStock = form.getAliquotQuantityVisibleStock();
-    int aliquotQuantityHiddenStock = form.getAliquotQuantityHiddenStock();
-    float aliquotPrice = form.getAliquotPrice();
-    String provider = form.getAliquotProvider();
-    String product = form.getAliquotProduct();
-
     /* form validation */
 
     if (form.validate()) {
-      boolean success = adminService.addAliquote(aliquotNLot, aliquotQuantityVisibleStock,
-          aliquotQuantityHiddenStock, aliquotPrice, provider, product);
+      boolean success = adminService.addAliquote(form);
       if (success) {
         return new JsonResponse<>(RequestStatus.SUCCESS);
       } else {
@@ -133,7 +125,6 @@ public class AdminController {
       failedRequestResponse.setError("Could not add the aliquote");
       return failedRequestResponse;
     }
-
 
   }
 

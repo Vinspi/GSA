@@ -14,6 +14,7 @@ import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
@@ -229,26 +230,28 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public boolean addAliquote(long aliquotNLot, int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String product) {
+  public boolean addAliquote(AddAliquoteForm form) {
 
     Aliquot newAliquot = new Aliquot();
-    newAliquot.setAliquotNLot(aliquotNLot);
+    newAliquot.setAliquotNLot(form.getAliquotNLot());
     newAliquot.setAliquotExpirationDate(LocalDate.now().plusYears(1));
-    newAliquot.setAliquotQuantityVisibleStock(aliquotQuantityVisibleStock);
-    newAliquot.setAliquotQuantityHiddenStock(aliquotQuantityHiddenStock);
-    newAliquot.setAliquotPrice(aliquotPrice);
-    newAliquot.setProvider(provider);
+    newAliquot.setAliquotQuantityVisibleStock(form.getAliquotQuantityVisibleStock());
+    newAliquot.setAliquotQuantityHiddenStock(form.getAliquotQuantityHiddenStock());
+    newAliquot.setAliquotPrice(form.getAliquotPrice());
+    newAliquot.setProvider(form.getAliquotProvider());
 
-    String[] fullName = product.split("_");
+    String[] fullName = form.getAliquotProduct().split("_");
+
 
     ProductPK productPk = new ProductPK();
     productPk.setSource(fullName[0]);
     productPk.setTarget(fullName[2]);
     Optional<Product> nullableProduct = productRepository.findById(productPk);
 
-    Optional<Aliquot> idExist = aliquotRepository.findById(aliquotNLot);
+    Optional<Aliquot> idExist = aliquotRepository.findById(form.getAliquotNLot());
 
     if (idExist.isPresent()) {
+      System.out.println("Aliquot est présent");
       return false;
     }
 
@@ -257,6 +260,7 @@ public class AdminServiceImpl implements AdminService {
       aliquotRepository.save(newAliquot);
       return true;
     } else {
+      System.out.println("product is null");
       return false;
     }
   }

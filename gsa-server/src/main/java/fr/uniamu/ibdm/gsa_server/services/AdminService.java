@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
@@ -37,15 +38,11 @@ public interface AdminService {
 
   /**
    * This method adds a new aliquote.
-   * @param aliquotNLot long
-   * @param aliquotQuantityVisibleStock int
-   * @param aliquotQuantityHiddenStock int
-   * @param aliquotPrice int
-   * @param provider string
-   * @param product string
+   *
+   * @param  form Wrapper containing informations about the aliquot.
    * @return true if adding the aliquote is successful, false otherwise.
    */
-  boolean addAliquote(long aliquotNLot, int aliquotQuantityVisibleStock, int aliquotQuantityHiddenStock, float aliquotPrice, String provider, String product);
+  boolean addAliquote(AddAliquoteForm form);
 
   /**
    * This method retrieve all products on which an
