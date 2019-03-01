@@ -1,14 +1,15 @@
 <div class="container">
-	<h1 class="well">Add a new aliquot</h1>
-	
-	<form #aliquoteForm="ngForm">
-		<div class="col-sm-12 form-group">
-			<div class="custom-control custom-switch">
-				<input type="checkbox" id="reserveInput" class="custom-control-input" (click)="toggle()"
-					id="customSwitches">
-				<label class="custom-control-label" for="customSwitches">Reserve</label>
-			</div>
+	<h1 *ngIf="!isViewable" class="well">Add a new aliquot</h1>
+	<h1 *ngIf="isViewable">Transfert aliquot</h1>
+	<div class="col-sm-12 form-group">
+		<div class="custom-control custom-switch">
+			<input type="checkbox" id="reserveInput" class="custom-control-input" (click)="toggle()"
+				id="customSwitches">
+			<label class="custom-control-label" for="customSwitches">transfert</label>
 		</div>
+	</div>
+
+	<form *ngIf="!isViewable" #aliquoteForm="ngForm">
 		<div class="col-sm-12 form-group">
 			<div id="numLot-container" class="form-group">
 				<label>N°Lot</label>
@@ -50,7 +51,7 @@
 						Quantity is a positive number
 					</div>
 				</div>
-				<div *ngIf="isViewable" id="reserveQty-container" class="col-sm-6 form-group">
+				<div id="reserveQty-container" class="col-sm-6 form-group">
 					<label>Quantity in hidden stock</label>
 					<input type="text" class="form-control" id="reserveQty" [(ngModel)]="model.reserveQty"
 						pattern="[0-9]*" placeholder="Enter Quantity in hidden stock Here.."
@@ -76,6 +77,30 @@
 			<div class="form-group button-container">
 				<button (click)="addAliquote()" class="btn btn-outlined-custom" type="button"
 					[disabled]="!aliquoteForm.form.valid">Add Aliquote</button>
+			</div>
+		</div>
+	</form>
+	<form *ngIf="isViewable" #transfertForm>
+		<div class="col-md-12">
+			<div class="row">
+				<div id="product-container" class="col-md-4 form-group">
+					<label for="from">From</label>
+					<select id="from" class="form-control" name="from">
+						<option>Reserve</option>
+						<option>Stock</option>
+					</select>
+				</div>
+				<div id="product-container" class="col-md-4 form-group">
+					<label for="to">To</label>
+					<select id="to" class="form-control" name="from">
+						<option>Stock</option>
+						<option>Reserve</option>
+					</select>
+				</div>
+				<div id="product-container" class="col-md-4 form-group">
+					<label for="qteTransfert">Quantity</label>
+					<input id="qteTransfert" type="number" required placeholder="Quantity" class="form-control" name="qteTransfert" #qteTransfert="ngModel" pattern="[0-9]*" [(ngModel)]="modelTransfert.qte">
+				</div>
 			</div>
 		</div>
 	</form>

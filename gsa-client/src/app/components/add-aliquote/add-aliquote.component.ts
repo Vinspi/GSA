@@ -15,6 +15,7 @@ export class AddAliquoteComponent implements OnInit {
   messageAlert: string;
   typeAlert: string;
   model: any = {};
+  modelTransfert: any = {};
 
   constructor(private adminService: AdminService) {
     this.isViewable = false; 
