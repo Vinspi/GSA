@@ -30,9 +30,12 @@ export class AliquotManagementComponent implements OnInit {
       // this.aliquoList = res.data;
       res.data.forEach(el => {
         const aliquot = new Aliquot();
-        aliquot.id = el.nlot;
-        aliquot.date = el.date;
-        const expirationDate  = moment (el[1]);
+        aliquot.id = el.aliquotNLot;
+        aliquot.date = el.aliquotExpirationDate;
+        aliquot.quantityVisible = el.aliquotQuantityVisibleStock;
+        aliquot.quatityHidden = el.aliquotQuantityHiddenStock;
+        const expirationDate  = el.aliquotExpirationDate;
+       // console.log(expirationDate);
         if(expirationDate > moment()){
           aliquot.expire = false;
         } else {
@@ -40,6 +43,7 @@ export class AliquotManagementComponent implements OnInit {
         }
         this.aliquoList.push(aliquot)
        });
+     //  console.log(this.aliquoList);
       });
   }
 

@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.AliquotExpired;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -41,13 +40,13 @@ public class AliquotController {
    * @return a JSON formatted response.
    */
     @GetMapping("/get-aliquots")
-  public JsonResponse<List<AliquotExpired>> getAliquots() {
+  public JsonResponse<List<Aliquot>> getAliquots() {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAliquots());
   }
   
   @DeleteMapping("/delete-aliquot/{id}")
   public void deleteAliquot(@PathVariable long id) {
-	  adminService.deleteAliquot(id);
+	  adminService.makeQuantityZero(id);
   }
 
 }

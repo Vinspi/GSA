@@ -4,21 +4,24 @@
       <tr>
         <th>Numero</th>
         <th>Expiration date</th>
+        <th>quantity Visible</th>
+        <th>quantity Hidden</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
       <ng-container *ngFor="let item of aliquoList">
-          <tr *ngIf="item.expire">
+          <tr>
               <td>{{item.id}}</td>
               <td>{{item.date}}</td>
-              <td>
+              <td>{{item.quantityVisible}}</td>
+              <td>{{item.quatityHidden}}</td>
+              <td ng-if="item.expire"> 
                   <button title="delete aliquot" type="button" class="btn btn-xs btn-danger" (click)="deleteAliquot(item.id)">
-                      <i>Delete</i>
+                      <i>Expire</i>
                   </button>
               </td>
             </tr>
-            
       </ng-container>
     </tbody>
   </table>
