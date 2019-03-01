@@ -3,6 +3,7 @@
     <thead>
       <tr>
         <th>Numero</th>
+        <th>Name aliquot</th>
         <th>Expiration date</th>
         <th>quantity Visible</th>
         <th>quantity Hidden</th>
@@ -13,6 +14,7 @@
       <ng-container *ngFor="let item of aliquoList">
           <tr>
               <td>{{item.id}}</td>
+              <td></td>
               <td>{{item.date}}</td>
               <td>{{item.quantityVisible}}</td>
               <td>{{item.quatityHidden}}</td>
