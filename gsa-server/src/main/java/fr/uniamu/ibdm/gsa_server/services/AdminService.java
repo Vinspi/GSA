@@ -42,7 +42,7 @@ public interface AdminService {
    * @param  form Wrapper containing informations about the aliquot.
    * @return true if adding the aliquote is successful, false otherwise.
    */
-  boolean addAliquote(AddAliquoteForm form);
+  boolean addAliquot(AddAliquoteForm form);
 
   /**
    * This method retrieve all products on which an

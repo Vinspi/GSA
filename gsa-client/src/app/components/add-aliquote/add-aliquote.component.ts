@@ -41,8 +41,8 @@ export class AddAliquoteComponent implements OnInit {
       aliquotQuantityVisibleStock : this.model.visibleQty,
       aliquotQuantityHiddenStock : this.isViewable?this.model.reserveQty:0,
       aliquotPrice  : this.model.price,
-      aliquoteProvider : this.model.provider,
-      aliquoteproduct : this.model.product,
+      aliquotProvider : this.model.provider,
+      aliquotProduct : this.model.product,
     }).subscribe(res => {
       if (res.status === 'SUCCESS') {
         this.typeAlert = "success";
@@ -52,9 +52,7 @@ export class AddAliquoteComponent implements OnInit {
         this.typeAlert = "danger";
         this.messageAlert = "An error occurred, this aliquot could not be added.";
       }
-      setTimeout(() => {
-        console.log("coucou");
-        
+      setTimeout(() => {        
         this.messageAlert = null;
       }, 4000);
     });

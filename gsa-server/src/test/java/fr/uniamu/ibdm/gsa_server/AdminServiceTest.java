@@ -302,21 +302,19 @@ public class AdminServiceTest {
         Mockito.when(aliquotRepository.findById(40L)).thenReturn(Optional.of(new Aliquot()));
         Mockito.when(aliquotRepository.findById(id)).thenReturn(Optional.empty());
 
-        boolean success = adminService.addAliquote(form);
+        boolean success = adminService.addAliquot(form);
 
         Assert.assertTrue(success);
 
         form.setAliquotNLot(40);
-        success = adminService.addAliquote(form);
+        success = adminService.addAliquot(form);
         Assert.assertFalse(success);
 
 
         form.setAliquotNLot(id);
         Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.empty());
-        success = adminService.addAliquote(form);
+        success = adminService.addAliquot(form);
         Assert.assertFalse(success);
-
-
 
     }
 

@@ -230,7 +230,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public boolean addAliquote(AddAliquoteForm form) {
+  public boolean addAliquot(AddAliquoteForm form) {
 
     Aliquot newAliquot = new Aliquot();
     newAliquot.setAliquotNLot(form.getAliquotNLot());
@@ -251,7 +251,6 @@ public class AdminServiceImpl implements AdminService {
     Optional<Aliquot> idExist = aliquotRepository.findById(form.getAliquotNLot());
 
     if (idExist.isPresent()) {
-      System.out.println("Aliquot est présent");
       return false;
     }
 
@@ -260,7 +259,6 @@ public class AdminServiceImpl implements AdminService {
       aliquotRepository.save(newAliquot);
       return true;
     } else {
-      System.out.println("product is null");
       return false;
     }
   }

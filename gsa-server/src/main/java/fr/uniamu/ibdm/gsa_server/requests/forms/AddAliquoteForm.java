@@ -2,98 +2,109 @@ package fr.uniamu.ibdm.gsa_server.requests.forms;
 
 import java.util.regex.Pattern;
 
-public class AddAliquoteForm implements Form{
+public class AddAliquoteForm implements Form {
 
-    private long aliquotNLot;
-    private int aliquotQuantityVisibleStock;
-    private int aliquotQuantityHiddenStock;
-    private float aliquotPrice;
-    private String aliquotProvider;
-    private String aliquotProduct;
+  private long aliquotNLot;
+  private int aliquotQuantityVisibleStock;
+  private int aliquotQuantityHiddenStock;
+  private float aliquotPrice;
+  private String aliquotProvider;
+  private String aliquotProduct;
 
-    public AddAliquoteForm(long aliquotNLot,
-                           int aliquotQuantityVisibleStock,
-                           int aliquotQuantityHiddenStock,
-                           float aliquotPrice,
-                           String aliquotProvider,
-                           String aliquotProduct) {
+  /**
+   * Constructor for AddAliquoteForm.
+   *
+   * @param aliquotNLot Id of the aliquot.
+   * @param aliquotQuantityVisibleStock Visible quantity of the aliquot.
+   * @param aliquotQuantityHiddenStock Hidden quantity of the aliquot.
+   * @param aliquotPrice Price of the aliquot.
+   * @param aliquotProvider Provider of the aliquot.
+   * @param aliquotProduct Product for the aliquot.
+   */
+  public AddAliquoteForm(long aliquotNLot,
+                         int aliquotQuantityVisibleStock,
+                         int aliquotQuantityHiddenStock,
+                         float aliquotPrice,
+                         String aliquotProvider,
+                         String aliquotProduct) {
 
-        this.aliquotNLot = aliquotNLot;
-        this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
-        this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
-        this.aliquotPrice = aliquotPrice;
-        this.aliquotProvider = aliquotProvider;
-        this.aliquotProduct = aliquotProduct;
-    }
+    this.aliquotNLot = aliquotNLot;
+    this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
+    this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
+    this.aliquotPrice = aliquotPrice;
+    this.aliquotProvider = aliquotProvider;
+    this.aliquotProduct = aliquotProduct;
+  }
 
-    public AddAliquoteForm() {
-    }
+  public AddAliquoteForm() {
+  }
 
-    @Override
-    public boolean validate() {
+  @Override
+  public boolean validate() {
 
-        Pattern patternProductName = Pattern.compile("^[A-Z]*_ANTI_[A-Z]*");
+    Pattern patternProductName = Pattern.compile("^[A-Z]*_ANTI_[A-Z]*");
 
-        if(
-            aliquotNLot >= 0
+    /* validation for every input */
+    if (
+        aliquotNLot >= 0
             && (aliquotQuantityVisibleStock + aliquotQuantityHiddenStock) > 0
             && aliquotQuantityHiddenStock >= 0
             && aliquotQuantityVisibleStock >= 0
             && aliquotPrice > 0
             && aliquotProvider.length() > 0
             && patternProductName.matcher(aliquotProduct).matches()
-        ) {
-            return true;
-        }
-
-        return false;
+    ) {
+      return true;
     }
 
-    public long getAliquotNLot() {
-        return aliquotNLot;
-    }
+    return false;
+  }
 
-    public void setAliquotNLot(long aliquotNLot) {
-        this.aliquotNLot = aliquotNLot;
-    }
+  public long getAliquotNLot() {
+    return aliquotNLot;
+  }
 
-    public int getAliquotQuantityVisibleStock() {
-        return aliquotQuantityVisibleStock;
-    }
+  public void setAliquotNLot(long aliquotNLot) {
+    this.aliquotNLot = aliquotNLot;
+  }
 
-    public void setAliquotQuantityVisibleStock(int aliquotQuantityVisibleStock) {
-        this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
-    }
+  public int getAliquotQuantityVisibleStock() {
+    return aliquotQuantityVisibleStock;
+  }
 
-    public int getAliquotQuantityHiddenStock() {
-        return aliquotQuantityHiddenStock;
-    }
+  public void setAliquotQuantityVisibleStock(int aliquotQuantityVisibleStock) {
+    this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;
+  }
 
-    public void setAliquotQuantityHiddenStock(int aliquotQuantityHiddenStock) {
-        this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
-    }
+  public int getAliquotQuantityHiddenStock() {
+    return aliquotQuantityHiddenStock;
+  }
 
-    public float getAliquotPrice() {
-        return aliquotPrice;
-    }
+  public void setAliquotQuantityHiddenStock(int aliquotQuantityHiddenStock) {
+    this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
+  }
 
-    public void setAliquotPrice(float aliquotPrice) {
-        this.aliquotPrice = aliquotPrice;
-    }
+  public float getAliquotPrice() {
+    return aliquotPrice;
+  }
 
-    public String getAliquotProvider() {
-        return aliquotProvider;
-    }
+  public void setAliquotPrice(float aliquotPrice) {
+    this.aliquotPrice = aliquotPrice;
+  }
 
-    public void setAliquotProvider(String aliquotProvider) {
-        this.aliquotProvider = aliquotProvider;
-    }
+  public String getAliquotProvider() {
+    return aliquotProvider;
+  }
 
-    public String getAliquotProduct() {
-        return aliquotProduct;
-    }
+  public void setAliquotProvider(String aliquotProvider) {
+    this.aliquotProvider = aliquotProvider;
+  }
 
-    public void setAliquotProduct(String aliquotProduct) {
-        this.aliquotProduct = aliquotProduct;
-    }
+  public String getAliquotProduct() {
+    return aliquotProduct;
+  }
+
+  public void setAliquotProduct(String aliquotProduct) {
+    this.aliquotProduct = aliquotProduct;
+  }
 }

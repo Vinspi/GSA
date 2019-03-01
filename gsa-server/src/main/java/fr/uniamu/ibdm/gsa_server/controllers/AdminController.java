@@ -73,7 +73,7 @@ public class AdminController {
    *
    * @param form contains "targetName" and "sourceName" keys.
    * @return if successful, a JSON response with a success status, otherwise a
-   * JSON response with a fail status and the sent form as data.
+   *      JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -103,7 +103,7 @@ public class AdminController {
    * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
    *             price & provider & product of aliquote.
    * @return if successful, a JSON response with a success status, otherwise a
-   * JSON response with a fail status and the sent form as data.
+   *      JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
@@ -114,7 +114,7 @@ public class AdminController {
     /* form validation */
 
     if (form.validate()) {
-      boolean success = adminService.addAliquote(form);
+      boolean success = adminService.addAliquot(form);
       if (success) {
         return new JsonResponse<>(RequestStatus.SUCCESS);
       } else {

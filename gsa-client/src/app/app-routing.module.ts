@@ -18,7 +18,7 @@ const routes: Routes = [
   {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', component: StockOverviewComponent},
   {path: 'withdraw', canActivate: [AuthGuard],component: WithdrawComponent},
-  {path: 'add-aliquote', component: AddAliquoteComponent},
+  {path: 'add-aliquote',canActivate:[AdminGuard], component: AddAliquoteComponent},
   {path: 'stats', canActivate: [AdminGuard], component: StatsComponent},
   {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent},
   {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent}
