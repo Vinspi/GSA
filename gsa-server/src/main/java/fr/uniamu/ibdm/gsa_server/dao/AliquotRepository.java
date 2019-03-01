@@ -22,12 +22,17 @@ public interface AliquotRepository extends JpaRepository<Aliquot, Long> {
 	 * float aliquotPrice; private String provider;
 	 */
 
-	@Query("select new fr.uniamu.ibdm.gsa_server.models.Aliquot(a.aliquotNLot, a.aliquotExpirationDate, a.aliquotQuantityVisibleStock, a.aliquotQuantityHiddenStock) from Aliquot a")
+	@Query("select new fr.uniamu.ibdm.gsa_server.models.Aliquot(a.aliquotNLot, a.aliquotExpirationDate,"
+			+ " a.aliquotQuantityVisibleStock, a.aliquotQuantityHiddenStock) from Aliquot a")
 	List<Aliquot> getAliquots();
 	
+//	@Modifying
+//	@Query("update fr.uniamu.ibdm.gsa_server.models.Aliquot a set a.aliquotQuantityVisibleStock =:zero where a.aliquotNLot =:aliquotNLot")
+//	void makeQuantityZero(@Param("aliquotNLot") Long aliquotNLot, @Param("zero") Long zero);
+//	
 	@Modifying
-	@Query("update fr.uniamu.ibdm.gsa_server.models.Aliquot a set a.aliquotQuantityVisibleStock =:zero where a.aliquotNLot =:aliquotNLot")
-	void makeQuantityZero(@Param("aliquotNLot") Long aliquotNLot, @Param("zero") Long zero);
+	@Query(value="update fr.uniamu.ibdm.gsa_server.models.Aliquot a set a.aliquotQuantityVisibleStock = ? where a.aliquotNLot = ?", nativeQuery = true)
+	void makeQuantityZeroNative(Long aliquotNLot, Long aliquotQuantityVisibleStock);
 	
 	
 

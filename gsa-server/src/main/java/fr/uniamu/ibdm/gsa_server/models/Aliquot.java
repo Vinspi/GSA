@@ -33,7 +33,7 @@ public class Aliquot implements Serializable {
 	}
 
 	public Aliquot(long aliquotNLot, LocalDate aliquotExpirationDate, long aliquotQuantityVisibleStock,
-			long aliquotQuantityHiddenStock) {
+			long aliquotQuantityHiddenStock, String nameAliquot) {
 		this.aliquotNLot = aliquotNLot;
 		this.aliquotExpirationDate = aliquotExpirationDate;
 		this.aliquotQuantityVisibleStock = aliquotQuantityVisibleStock;

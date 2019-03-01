@@ -24,7 +24,6 @@ export class AliquotManagementComponent implements OnInit {
 
   ngOnInit() {
     console.log('aliqot');
-    
     // this.aliquotService.getAliquots();
     this.aliquotService.getAliquots().subscribe(res => {
       // this.aliquoList = res.data;
