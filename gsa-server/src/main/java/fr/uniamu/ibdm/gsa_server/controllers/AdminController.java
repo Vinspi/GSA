@@ -19,6 +19,7 @@ import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
@@ -44,7 +45,8 @@ public class AdminController {
    * @return a JSON formatted response.
    */
   @PostMapping("/stats")
-  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form) {
+  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(
+      @RequestBody WithdrawStatsForm form) {
 
     System.out.println(form.getProductName());
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
@@ -69,7 +71,8 @@ public class AdminController {
    * Endpoint enabling well-formatted POST requests to add a product.
    *
    * @param form contains "targetName" and "sourceName" keys.
-   * @return if successful, a JSON response with a success status, otherwise a JSON response with a fail status and the sent form as data.
+   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
+   *         fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -124,7 +127,8 @@ public class AdminController {
     if (adminService.removeAlert(form.getAlertId())) {
       return new JsonResponse<>(RequestStatus.SUCCESS, true);
     } else {
-      return new JsonResponse<>("This alert doesn't exists or has already been removed", RequestStatus.FAIL);
+      return new JsonResponse<>("This alert doesn't exists or has already been removed",
+          RequestStatus.FAIL);
     }
   }
 
@@ -153,14 +157,18 @@ public class AdminController {
    * 
    * @param form contains "losts", "finalFlag", "year", "quarter", "teamId" keys.
    * 
-   * @return if successful, a JSON response with a success status, otherwise a JSON response with a fail status and the sent form as data.
+   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
+   *         fail status and the sent form as data.
    */
   @PostMapping("/saveReport")
-  public JsonResponse<AddTeamTrimestrialReportForm> addTeamTrimestrialReport(@RequestBody AddTeamTrimestrialReportForm form) {
-    JsonResponse<AddTeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+  public JsonResponse<AddTeamTrimestrialReportForm> addTeamTrimestrialReport(
+      @RequestBody AddTeamTrimestrialReportForm form) {
+    JsonResponse<AddTeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(
+        RequestStatus.FAIL);
     failedRequestResponse.setData(form);
 
-    if (form.getQuarter() == null || form.getFinalFlag() == null || form.getTeamId() == null || form.getLosts() == null || form.getYear() == null) {
+    if (form.getQuarter() == null || form.getFinalFlag() == null || form.getTeamId() == null
+        || form.getLosses() == null || form.getYear() == null) {
       failedRequestResponse.setError("Missing attributes within request body");
       return failedRequestResponse;
     }
@@ -174,16 +182,19 @@ public class AdminController {
   }
 
   /**
-   * REST endpoint returning all withdraw transactions made by a team in a quarter.
+   * REST endpoint returning all relevant information about withdraw transactions made by a team in
+   * a specific year's quarter.
    *
-   * @return JSON response containing all associated transactions.
+   * @return JSON response containing all relevant information.
    */
   @GetMapping("/transactions")
-  public JsonResponse<List<Transaction>> getAllTransactionsByTeamAndQuarter(@RequestParam String teamName, @RequestParam String quarter) {
-    List<Transaction> transactions = adminService.getTransactionsByTeamAndQuarter(teamName, quarter);
+  public JsonResponse<List<TransactionReportData>> getAllTransactionsByTeamAndQuarter(
+      @RequestParam String teamName, @RequestParam String quarter, @RequestParam int year) {
+    List<TransactionReportData> reportTransactions = adminService
+        .getTransactionsByTeamAndQuarterAndYear(teamName, quarter, year);
 
-    if (transactions != null) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, transactions);
+    if (reportTransactions != null) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, reportTransactions);
     } else {
       return new JsonResponse<>("Could not retrieve a list of transactions", RequestStatus.FAIL);
     }

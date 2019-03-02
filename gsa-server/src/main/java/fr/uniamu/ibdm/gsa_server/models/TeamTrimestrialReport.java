@@ -18,7 +18,7 @@ import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 @IdClass(TeamTrimestrialReportPk.class)
 public class TeamTrimestrialReport implements Serializable {
 
-  private int losts;
+  private float losses;
 
   /* if final flag is up, the report can't be modified */
   private boolean finalFlag;
@@ -40,12 +40,12 @@ public class TeamTrimestrialReport implements Serializable {
   }
 
 
-  public int getLosts() {
-    return losts;
+  public float getLosses() {
+    return losses;
   }
 
-  public void setLosts(int losts) {
-    this.losts = losts;
+  public void setLosses(float losses) {
+    this.losses = losses;
   }
 
   public boolean isFinalFlag() {

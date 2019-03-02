@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.services.impl;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -29,12 +30,12 @@ import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
-import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
@@ -63,7 +64,10 @@ public class AdminServiceImpl implements AdminService {
    * @param teamTrimestrialReportRepository Autowired repository.
    */
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, TeamRepository teamRepository, AlertRepository alertRepository, TeamTrimestrialReportRepository teamTrimestrialReportRepository,
+  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository,
+      SpeciesRepository speciesRepository, TeamRepository teamRepository,
+      AlertRepository alertRepository,
+      TeamTrimestrialReportRepository teamTrimestrialReportRepository,
       TransactionRepository transactionRepository) {
     this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
@@ -86,18 +90,22 @@ public class AdminServiceImpl implements AdminService {
     String lowerBound;
     String upperBound;
 
-    lowerBound = form.getYearLowerBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthLowerBound()) + "-01 00:00:00";
+    lowerBound = form.getYearLowerBound() + "-"
+        + DateConverter.monthToNumberConvertor(form.getMonthLowerBound()) + "-01 00:00:00";
 
-    upperBound = form.getYearUpperBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound()) + "-31 00:00:00";
+    upperBound = form.getYearUpperBound() + "-"
+        + DateConverter.monthToNumberConvertor(form.getMonthUpperBound()) + "-31 00:00:00";
 
     System.out.println("lower bound : " + lowerBound);
 
-    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0], shards[2]);
+    List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound,
+        upperBound, shards[0], shards[2]);
     List<StatsWithdrawQuery> returnValue = new ArrayList<>();
 
     for (int i = 0; i < result.size(); i++) {
 
-      returnValue.add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1], (BigDecimal) result.get(i)[2]));
+      returnValue.add(new StatsWithdrawQuery((int) result.get(i)[0], (int) result.get(i)[1],
+          (BigDecimal) result.get(i)[2]));
 
     }
 
@@ -109,7 +117,8 @@ public class AdminServiceImpl implements AdminService {
 
       if (tmp.getMonth() == 12 && returnValue.get(i + 1).getMonth() != 1) {
         returnValue.add(i + 1, new StatsWithdrawQuery(1, tmp.getYear(), 0));
-      } else if (returnValue.get(i + 1).getMonth() != returnValue.get(i).getMonth() + 1 && tmp.getMonth() != 12) {
+      } else if (returnValue.get(i + 1).getMonth() != returnValue.get(i).getMonth() + 1
+          && tmp.getMonth() != 12) {
         returnValue.add(i + 1, new StatsWithdrawQuery(tmp.getMonth() + 1, tmp.getYear(), 0));
       }
     }
@@ -170,7 +179,8 @@ public class AdminServiceImpl implements AdminService {
     int qteVisible;
 
     for (Object[] o : queryResult) {
-      aliquotsNativeQuery = aliquotRepository.findAllBySourceAndTargetQuery((String) o[0], (String) o[1]);
+      aliquotsNativeQuery = aliquotRepository.findAllBySourceAndTargetQuery((String) o[0],
+          (String) o[1]);
       alertAliquots = new ArrayList<>();
 
       type = AlertType.valueOf((String) o[4]);
@@ -185,10 +195,13 @@ public class AdminServiceImpl implements AdminService {
         } else {
           qte = qteVisible + qteHidden;
         }
-        alertAliquots.add(new AlertAliquot(((BigInteger) a[0]).longValue(), ((Timestamp) a[1]).toLocalDateTime().toLocalDate(), qte));
+        alertAliquots.add(new AlertAliquot(((BigInteger) a[0]).longValue(),
+            ((Timestamp) a[1]).toLocalDateTime().toLocalDate(), qte));
       }
 
-      returnValue.add(new TriggeredAlertsQuery((String) o[0], (String) o[1], ((BigDecimal) o[2]).intValue(), (int) o[3], type, alertAliquots, ((BigInteger) o[5]).longValue()));
+      returnValue.add(
+          new TriggeredAlertsQuery((String) o[0], (String) o[1], ((BigDecimal) o[2]).intValue(),
+              (int) o[3], type, alertAliquots, ((BigInteger) o[5]).longValue()));
 
     }
     return returnValue;
@@ -200,7 +213,8 @@ public class AdminServiceImpl implements AdminService {
     List<AlertsData> data = new ArrayList<>();
 
     alertRepository.findAll().forEach(alert -> {
-      data.add(new AlertsData(alert.getProduct().getProductName(), alert.getSeuil(), alert.getAlertType(), alert.getAlertId()));
+      data.add(new AlertsData(alert.getProduct().getProductName(), alert.getSeuil(),
+          alert.getAlertType(), alert.getAlertId()));
     });
 
     return data;
@@ -209,7 +223,8 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public boolean updateAlertSeuil(UpdateAlertForm form) {
 
-    Optional<fr.uniamu.ibdm.gsa_server.models.Alert> optAlert = alertRepository.findById(form.getAlertId());
+    Optional<fr.uniamu.ibdm.gsa_server.models.Alert> optAlert = alertRepository
+        .findById(form.getAlertId());
 
     if (optAlert.isPresent()) {
       fr.uniamu.ibdm.gsa_server.models.Alert a = optAlert.get();
@@ -240,7 +255,8 @@ public class AdminServiceImpl implements AdminService {
   public boolean saveTeamTrimestrialReport(AddTeamTrimestrialReportForm form) {
 
     // Checking that the stringified quarter is a valid value of Quarter Enum.
-    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet()).contains(form.getQuarter())) {
+    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet())
+        .contains(form.getQuarter())) {
       return false;
     }
 
@@ -261,7 +277,8 @@ public class AdminServiceImpl implements AdminService {
     teamTrimestrialReportPk.setYear(form.getYear());
     teamTrimestrialReportPk.setQuarter(quarter);
 
-    Optional<TeamTrimestrialReport> nullableReport = teamTrimestrialReportRepository.findById(teamTrimestrialReportPk);
+    Optional<TeamTrimestrialReport> nullableReport = teamTrimestrialReportRepository
+        .findById(teamTrimestrialReportPk);
 
     // Checking that the report is still editable
     if (nullableReport.isPresent()) {
@@ -273,7 +290,7 @@ public class AdminServiceImpl implements AdminService {
 
     TeamTrimestrialReport teamTrimestrialReport = new TeamTrimestrialReport();
     teamTrimestrialReport.setFinalFlag(form.getFinalFlag());
-    teamTrimestrialReport.setLosts(form.getLosts());
+    teamTrimestrialReport.setLosses(form.getLosses());
     teamTrimestrialReport.setQuarter(quarter);
     teamTrimestrialReport.setTeam(team);
     teamTrimestrialReport.setYear(form.getYear());
@@ -284,16 +301,55 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public List<Transaction> getTransactionsByTeamAndQuarter(String teamName, String quarter) {
-    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet()).contains(quarter)) {
+  public List<TransactionReportData> getTransactionsByTeamAndQuarterAndYear(String teamName,
+      String quarter, int year) {
+    if (teamName == null || quarter == null) {
       return null;
     }
 
-    List<Transaction> transactions = new ArrayList<>();
-    // Great JSON infinite loop Product -> Aliquot -> Product -> ...
-    /*
-     * transactionRepository.findAll().forEach(transaction -> { transactions.add(transaction); });
-     */
-    return transactions;
+    LocalDate firstDay;
+    LocalDate lastDay;
+
+    if (quarter.equals(Quarter.QUARTER_1.name())) {
+      firstDay = LocalDate.of(year, 1, 1);
+      lastDay = LocalDate.of(year, 3, 31);
+    } else if (quarter.equals(Quarter.QUARTER_2.name())) {
+      firstDay = LocalDate.of(year, 4, 1);
+      lastDay = LocalDate.of(year, 6, 30);
+    } else if (quarter.equals(Quarter.QUARTER_3.name())) {
+      firstDay = LocalDate.of(year, 7, 1);
+      lastDay = LocalDate.of(year, 9, 30);
+    } else if (quarter.equals(Quarter.QUARTER_4.name())) {
+      firstDay = LocalDate.of(year, 10, 1);
+      lastDay = LocalDate.of(year, 12, 31);
+    } else {
+      return null;
+    }
+
+    List<Object[]> resultQuery = transactionRepository.getReportTransactionsByTeamNameAndQuarter(
+        teamName, firstDay.toString(), lastDay.toString());
+
+    List<TransactionReportData> reportTransactions = new ArrayList<>();
+    resultQuery.forEach(o -> {
+
+      TransactionReportData data = new TransactionReportData();
+      data.setAliquotPrice((Float) o[0]);
+      data.setTransactionDate((String) o[1].toString());
+      data.setTransactionQuantity((Integer) o[2]);
+      data.setUserName((String) o[3]);
+      String source = (String) o[4];
+      String target = (String) o[5];
+      ProductPK productPk = new ProductPK();
+      productPk.setSource(source);
+      productPk.setTarget(target);
+
+      // get() function won't return null as the source and the target are well-defined in the
+      // aliquot table.
+      data.setProductName(productRepository.findById(productPk).get().getProductName());
+
+      reportTransactions.add(data);
+    });
+
+    return reportTransactions;
   }
 }

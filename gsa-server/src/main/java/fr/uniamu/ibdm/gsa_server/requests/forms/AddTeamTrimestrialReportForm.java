@@ -7,18 +7,18 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 
 public class AddTeamTrimestrialReportForm {
 
-  private Integer losts;
+  private Float losses;
   private Boolean finalFlag;
   private Integer year;
   private String quarter;
   private Long teamId;
 
-  public Integer getLosts() {
-    return losts;
+  public Float getLosses() {
+    return losses;
   }
 
-  public void setLosts(Integer losts) {
-    this.losts = losts;
+  public void setLosses(Float losses) {
+    this.losses = losses;
   }
 
   public Boolean getFinalFlag() {

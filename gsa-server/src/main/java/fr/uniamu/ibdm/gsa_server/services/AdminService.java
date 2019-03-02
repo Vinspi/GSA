@@ -1,14 +1,15 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
+import java.util.List;
+
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.models.Transaction;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-
-import java.util.List;
 
 public interface AdminService {
 
@@ -65,19 +66,22 @@ public interface AdminService {
   boolean removeAlert(long id);
 
   /**
-   * The method retrieves all transactions made by a team in a quarter.
+   * The method retrieves all transactions made by a team in a quarter of a given year.
    * 
    * @param teamName String
-   * @param quarter String matching the values of Quarter enumeration
+   * @param quarter value of Quarter enumeration
+   * @param year int
    * 
-   * @return a list of transactions or null if an error occurred.
+   * @return a list of transactions with only relevant data to billing or null if an error occurred.
    */
-  List<Transaction> getTransactionsByTeamAndQuarter(String teamName, String quarter);
+  List<TransactionReportData> getTransactionsByTeamAndQuarterAndYear(String teamName, String quarter, int year);
 
   /**
-   * This method saves a team trimestrial report in the database if it is still editable. Used to archive trimestrial bills of each team.
+   * This method saves a team trimestrial report in the database if it is still editable. Used to
+   * archive trimestrial bills of each team.
    * 
-   * @param form TeamTrimestrialReport attributes request body wrapper. Its attributes must not be null.
+   * @param form TeamTrimestrialReport attributes request body wrapper. Its attributes must not be
+   *          null.
    * 
    * @return true if the saving process is successful, false otherwise.
    */
