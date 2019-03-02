@@ -1,15 +1,15 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
-import java.util.List;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+
+import java.util.List;
 
 public interface AdminService {
 
@@ -28,6 +28,7 @@ public interface AdminService {
    */
   List<String> getAllSpeciesNames();
 
+
   /**
    * This method adds a new product named after the source and target species name.
    *
@@ -38,9 +39,19 @@ public interface AdminService {
   boolean addProduct(String sourceName, String targetName);
 
   /**
-   * This method retrieve all products on which an alert has been triggered.
+   * This method adds a new aliquote.
    *
-   * @return A list of wrapper containing product names, the quantity left and the threshold of the alert.
+   * @param  form Wrapper containing informations about the aliquot.
+   * @return true if adding the aliquote is successful, false otherwise.
+   */
+  boolean addAliquot(AddAliquoteForm form);
+
+  /**
+   * This method retrieve all products on which an
+   * alert has been triggered.
+   *
+   * @return A list of wrapper containing product names, the quantity left
+   *     and the threshold of the alert.
    */
   List<TriggeredAlertsQuery> getTriggeredAlerts();
 

@@ -23,7 +23,7 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
 
-  @Query(value = "", nativeQuery = true)
+  /*@Query(value = "", nativeQuery = true)
   Float getLossesByQuarterAndYear(@Param("firstDayOfQuarter") String firstDayOfQuarter,
-      @Param("lastDayOfQuarter") String lastDayOfQuarter);
+      @Param("lastDayOfQuarter") String lastDayOfQuarter);*/
 }

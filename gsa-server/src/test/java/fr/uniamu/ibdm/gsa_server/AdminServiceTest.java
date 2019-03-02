@@ -1,51 +1,63 @@
 package fr.uniamu.ibdm.gsa_server;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -298,6 +310,47 @@ public class AdminServiceTest {
   }
 
   @Test
+  public void addAliquote() {
+
+    long id = 33;
+    float priceValue1 = 4.56F;
+    int qtyHiddenValue1 = 6;
+    int qtyVisibleValue1 = 2;
+    String providerValue1 = "Provider x";
+    String productValue1 = "GOAT_ANTI_WOLF";
+
+    AddAliquoteForm form = new AddAliquoteForm(id, qtyVisibleValue1, qtyHiddenValue1, priceValue1,
+        providerValue1, productValue1);
+
+    final Aliquot aliquotX = new Aliquot();
+    aliquotX.setAliquotExpirationDate(LocalDate.now().plusYears(1));
+    aliquotX.setAliquotQuantityVisibleStock(qtyHiddenValue1);
+    aliquotX.setAliquotQuantityHiddenStock(qtyVisibleValue1);
+    aliquotX.setAliquotPrice(priceValue1);
+    aliquotX.setProvider(providerValue1);
+
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class)))
+        .thenReturn(Optional.of(new Product()));
+    Mockito.when(aliquotRepository.findById(40L)).thenReturn(Optional.of(new Aliquot()));
+    Mockito.when(aliquotRepository.findById(id)).thenReturn(Optional.empty());
+
+    boolean success = adminService.addAliquot(form);
+
+    Assert.assertTrue(success);
+
+    form.setAliquotNLot(40);
+    success = adminService.addAliquot(form);
+    Assert.assertFalse(success);
+
+    form.setAliquotNLot(id);
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class)))
+        .thenReturn(Optional.empty());
+    success = adminService.addAliquot(form);
+    Assert.assertFalse(success);
+
+  }
+
+  @Test
   public void saveTeamTrimestrialReport() {
     AddTeamTrimestrialReportForm form = new AddTeamTrimestrialReportForm();
     form.setFinalFlag(false);
@@ -355,15 +408,15 @@ public class AdminServiceTest {
     List<TransactionReportData> reportTransactions = adminService
         .getTransactionsByTeamAndQuarterAndYear(null, Quarter.QUARTER_1.name(), 2019);
     Assert.assertNull(reportTransactions);
-    
-    reportTransactions = adminService
-        .getTransactionsByTeamAndQuarterAndYear("Best team", null, 2019);
+
+    reportTransactions = adminService.getTransactionsByTeamAndQuarterAndYear("Best team", null,
+        2019);
     Assert.assertNull(reportTransactions);
 
-    reportTransactions = adminService
-        .getTransactionsByTeamAndQuarterAndYear("Best team", "anyQuarter", 2019);
+    reportTransactions = adminService.getTransactionsByTeamAndQuarterAndYear("Best team",
+        "anyQuarter", 2019);
     Assert.assertNull(reportTransactions);
-    
+
   }
 
 }

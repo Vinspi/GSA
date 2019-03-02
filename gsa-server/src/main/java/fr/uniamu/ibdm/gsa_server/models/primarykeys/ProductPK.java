@@ -12,6 +12,10 @@ public class ProductPK implements Serializable {
   public ProductPK() {
   }
 
+  public ProductPK(String target, String source) {
+    this.target = target;
+    this.source = source;
+  }
 
   public String getTarget() {
     return target;

@@ -15,8 +15,8 @@ import java.time.LocalDate;
 public class Aliquot implements Serializable {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY) /* changer pour la prod */
   private long aliquotNLot;
+
 
   private LocalDate aliquotExpirationDate;
   private long aliquotQuantityVisibleStock;
@@ -25,7 +25,10 @@ public class Aliquot implements Serializable {
   private String provider;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumns({ @JoinColumn(name = "source", nullable = false), @JoinColumn(name = "target", nullable = false) })
+  @JoinColumns({
+      @JoinColumn(name = "source", nullable = false),
+      @JoinColumn(name = "target", nullable = false)
+  })
   private Product product;
 
   public Aliquot() {
@@ -37,7 +40,8 @@ public class Aliquot implements Serializable {
   }
 
   /**
-   * The method withdraw a quantity of the visible stock, if the quantity is higher than the actual, set the quantity of the aliquot to 0.
+   * The method withdraw a quantity of the visible stock,
+   * if the quantity is higher than the actual, set the quantity of the aliquot to 0.
    *
    * @param q quantity to withdraw
    */
@@ -109,5 +113,6 @@ public class Aliquot implements Serializable {
   public void setProvider(String provider) {
     this.provider = provider;
   }
+
 
 }

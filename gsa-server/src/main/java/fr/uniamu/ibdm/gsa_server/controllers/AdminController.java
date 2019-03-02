@@ -15,21 +15,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import fr.uniamu.ibdm.gsa_server.services.UserService;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200" })
+@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
 public class AdminController {
 
   @Autowired
@@ -38,6 +39,11 @@ public class AdminController {
   @Autowired
   AdminService adminService;
 
+  @Autowired
+  UserService userService;
+
+  final double minPrice = 0.0001;
+
   /**
    * REST endpoint for /stats call, return stats needed for building admin chart.
    *
@@ -45,12 +51,12 @@ public class AdminController {
    * @return a JSON formatted response.
    */
   @PostMapping("/stats")
-  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(
-      @RequestBody WithdrawStatsForm form) {
+  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form) {
 
     System.out.println(form.getProductName());
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
+
 
   /**
    * /Endpoint returning all of species names.
@@ -71,8 +77,8 @@ public class AdminController {
    * Endpoint enabling well-formatted POST requests to add a product.
    *
    * @param form contains "targetName" and "sourceName" keys.
-   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
-   *         fail status and the sent form as data.
+   * @return if successful, a JSON response with a success status, otherwise a
+   *     JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -97,6 +103,52 @@ public class AdminController {
   }
 
   /**
+   * Endpoint enabling well-formatted POST requests to add an aliquot.
+   *
+   * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
+   *             price & provider & product of aliquote.
+   * @return if successful, a JSON response with a success status, otherwise a
+   *      JSON response with a fail status and the sent form as data.
+   */
+  @PostMapping("/addAliquote")
+  public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
+
+    JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+    failedRequestResponse.setData(form);
+
+    /* form validation */
+
+    if (form.validate()) {
+      boolean success = adminService.addAliquot(form);
+      if (success) {
+        return new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        failedRequestResponse.setError("Could not add the aliquote");
+        return failedRequestResponse;
+      }
+    } else {
+      failedRequestResponse.setError("Could not add the aliquote");
+      return failedRequestResponse;
+    }
+
+  }
+
+  /**
+   * /Endpoint returning all of species names.
+   *
+   * @return JSON response containing all of species name.
+   */
+  @GetMapping("/allProducts")
+  public JsonResponse<List<String>> getAllProductsName() {
+    List<String> productsName = userService.getAllProductName();
+    if (productsName != null) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, productsName);
+    } else {
+      return new JsonResponse<>("Could not retrieve all of products names", RequestStatus.FAIL);
+    }
+  }
+
+  /**
    * REST endpoint, return all triggered alerts.
    *
    * @return a list of triggered alerts with their corresponding aliquots.
@@ -105,6 +157,7 @@ public class AdminController {
   public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts() {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
   }
+
 
   /**
    * REST endpoint, return all alerts present in the database.
@@ -127,8 +180,7 @@ public class AdminController {
     if (adminService.removeAlert(form.getAlertId())) {
       return new JsonResponse<>(RequestStatus.SUCCESS, true);
     } else {
-      return new JsonResponse<>("This alert doesn't exists or has already been removed",
-          RequestStatus.FAIL);
+      return new JsonResponse<>("This alert doesn't exists or has already been removed", RequestStatus.FAIL);
     }
   }
 

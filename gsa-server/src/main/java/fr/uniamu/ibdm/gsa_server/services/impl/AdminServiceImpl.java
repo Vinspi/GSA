@@ -1,9 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,33 +11,56 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
-import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
+import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
+
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.models.Alert;
+
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import fr.uniamu.ibdm.gsa_server.util.DateConverter;
+
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -48,32 +68,33 @@ public class AdminServiceImpl implements AdminService {
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
   private AlertRepository alertRepository;
-  private TeamRepository teamRepository;
   private SpeciesRepository speciesRepository;
+  private TeamRepository teamRepository;
   private TeamTrimestrialReportRepository teamTrimestrialReportRepository;
   private TransactionRepository transactionRepository;
 
   /**
    * Constructor for the AdminService.
-   *
-   * @param productRepository Autowired repository.
-   * @param aliquotRepository Autowired repository.
-   * @param speciesRepository Autowired repository.
-   * @param teamRepository Autowired repository.
-   * @param alertRepository Autowired repository.
-   * @param teamTrimestrialReportRepository Autowired repository.
+   * 
+   * @param productRepository
+   * @param aliquotRepository
+   * @param speciesRepository
+   * @param alertRepository
+   * @param teamRepository
+   * @param teamTrimestrialReportRepository
+   * @param transactionRepository
    */
   @Autowired
   public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository,
-      SpeciesRepository speciesRepository, TeamRepository teamRepository,
-      AlertRepository alertRepository,
+      SpeciesRepository speciesRepository, AlertRepository alertRepository,
+      TeamRepository teamRepository,
       TeamTrimestrialReportRepository teamTrimestrialReportRepository,
       TransactionRepository transactionRepository) {
     this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
-    this.teamRepository = teamRepository;
     this.alertRepository = alertRepository;
+    this.teamRepository = teamRepository;
     this.teamTrimestrialReportRepository = teamTrimestrialReportRepository;
     this.transactionRepository = transactionRepository;
   }
@@ -249,6 +270,39 @@ public class AdminServiceImpl implements AdminService {
       return false;
     }
 
+  }
+
+  @Override
+  public boolean addAliquot(AddAliquoteForm form) {
+
+    Aliquot newAliquot = new Aliquot();
+    newAliquot.setAliquotNLot(form.getAliquotNLot());
+    newAliquot.setAliquotExpirationDate(LocalDate.now().plusYears(1));
+    newAliquot.setAliquotQuantityVisibleStock(form.getAliquotQuantityVisibleStock());
+    newAliquot.setAliquotQuantityHiddenStock(form.getAliquotQuantityHiddenStock());
+    newAliquot.setAliquotPrice(form.getAliquotPrice());
+    newAliquot.setProvider(form.getAliquotProvider());
+
+    String[] fullName = form.getAliquotProduct().split("_");
+
+    ProductPK productPk = new ProductPK();
+    productPk.setSource(fullName[0]);
+    productPk.setTarget(fullName[2]);
+    Optional<Product> nullableProduct = productRepository.findById(productPk);
+
+    Optional<Aliquot> idExist = aliquotRepository.findById(form.getAliquotNLot());
+
+    if (idExist.isPresent()) {
+      return false;
+    }
+
+    if (nullableProduct.isPresent()) {
+      newAliquot.setProduct(nullableProduct.get());
+      aliquotRepository.save(newAliquot);
+      return true;
+    } else {
+      return false;
+    }
   }
 
   @Override

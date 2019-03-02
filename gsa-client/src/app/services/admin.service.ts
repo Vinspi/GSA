@@ -3,6 +3,9 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JsonResponse } from './request-interfaces/json-response';
 import { environment } from '../../environments/environment';
+import { Subject } from 'rxjs';
+import {debounceTime} from 'rxjs/operators';
+
 
 @Injectable({
   providedIn: 'root'
@@ -41,5 +44,16 @@ export class AdminService {
   updateAlert(id: number, seuil: number): Observable<JsonResponse> {
     return this.http.post<JsonResponse>(this.BASE_URL+'/updateAlert', {alertId: id, seuil: seuil}, {withCredentials: true});
   }
+
+  addAliquote(data: any): Observable<JsonResponse> {
+
+    return this.http.post<JsonResponse>(this.BASE_URL+'/addAliquote', data, {withCredentials: true})
+  }
+
+  getAllProductsName(): Observable<JsonResponse> {
+
+    return this.http.get<JsonResponse>(this.BASE_URL+'/allProducts', {withCredentials: true})
+  }
+  
 
 }
