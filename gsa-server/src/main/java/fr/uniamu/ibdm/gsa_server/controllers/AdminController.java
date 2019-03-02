@@ -1,7 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.models.Transaction;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -83,12 +83,32 @@ public class AdminController {
         }
     }
 
+    /**
+     * Endpoint for /history. Return a list of withdrawals depending of the period given in argument.
+     *
+     * @param form the form containing the date of begin and the date of end of the period.
+     * @return if successful, a JSON response with a success status, otherwise a
+     * JSON response with a fail status and an error message.
+     */
     @PostMapping("/history")
-    public JsonResponse<List<Transaction>> getWithdrawalsHistory(@RequestBody PeriodForm form) {
-        List<Transaction> withdrawalsList = adminService.getWithdrawalsHistoryBetween(form.getBegin(), form.getEnd());
+    public JsonResponse<List<TransactionData>> getWithdrawalsHistory(@RequestBody PeriodForm form) {
+        List<TransactionData> withdrawalsHistory;
+        
+        if(form.getBegin() != null && form.getEnd() != null) {
+            withdrawalsHistory = adminService.getWithdrawalsHistoryBetween(form.getBegin(), form.getEnd());
+        }
+        else if(form.getBegin() != null && form.getEnd() == null) {
+            withdrawalsHistory = adminService.getWithdrawalsHistorySince(form.getBegin());
+        }
+        else if(form.getBegin() == null && form.getEnd() != null) {
+            withdrawalsHistory = adminService.getWithdrawalsHistoryUpTo(form.getEnd());
+        }
+        else {
+            withdrawalsHistory = adminService.getWithdrawalsHistory();
+        }
 
-        if (withdrawalsList != null) {
-            return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsList);
+        if (withdrawalsHistory != null) {
+            return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsHistory);
         }
         else {
             return new JsonResponse<>("Could not find all withdrawals", RequestStatus.FAIL);

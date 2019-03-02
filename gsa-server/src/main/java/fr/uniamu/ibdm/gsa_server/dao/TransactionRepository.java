@@ -11,10 +11,10 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
 
-    List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLikeOrderByTransactionDateAsc(LocalDate begin, LocalDate end, TransactionType transactionType);
+    List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate begin, LocalDate end, TransactionType transactionType);
 
-    List<Transaction> findAllByTransactionDateGreaterThanEqualOrderByTransactionDateAsc(LocalDate begin);
+    List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(LocalDate begin, TransactionType transactionType);
 
-    List<Transaction> findAllByTransactionDateLessThanEqualOrderByTransactionDateAsc(LocalDate end);
+    List<Transaction> findAllByTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate end, TransactionType transactionType);
 
 }

@@ -8,17 +8,15 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
-import fr.uniamu.ibdm.gsa_server.models.Transaction;
+import fr.uniamu.ibdm.gsa_server.models.*;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
@@ -32,8 +30,9 @@ public class AdminServiceImpl implements AdminService {
     private SpeciesRepository speciesRepository;
 
     @Autowired
-    public AdminServiceImpl(ProductRepository productRepository, SpeciesRepository speciesRepository) {
+    public AdminServiceImpl(ProductRepository productRepository, TransactionRepository transactionRepository, SpeciesRepository speciesRepository) {
         this.productRepository = productRepository;
+        this.transactionRepository = transactionRepository;
         this.speciesRepository = speciesRepository;
     }
 
@@ -123,15 +122,44 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Transaction> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
-        return transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLikeOrderByTransactionDateAsc(begin, end, TransactionType.WITHDRAW);
+    public List<TransactionData> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(begin, end, TransactionType.WITHDRAW).forEach(elem ->
+            history.add(new TransactionData(elem))
+        );
+         return history;
     }
 
     @Override
-    public List<Transaction> getWithdrawalsHistory() {
-        /*List<Transaction> trans;
-        return transactionstransactionRepository.findAll();*/
-        return null;
+    public List<TransactionData> getWithdrawalsHistorySince(LocalDate begin) {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(begin, TransactionType.WITHDRAW).forEach(elem ->
+                history.add(new TransactionData(elem))
+        );
+        return history;
+    }
+
+    @Override
+    public List<TransactionData> getWithdrawalsHistoryUpTo(LocalDate end) {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionTypeLike(end, TransactionType.WITHDRAW).forEach(elem ->
+                history.add(new TransactionData(elem))
+        );
+        return history;
+    }
+
+    @Override
+    public List<TransactionData> getWithdrawalsHistory() {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAll().forEach(elem ->
+            history.add(new TransactionData(elem))
+        );
+
+        return history;
     }
 
 }
