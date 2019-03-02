@@ -1,11 +1,10 @@
 export class Transaction {
-  id: number;
-  date: Date;
-  motif: string;
+  date: string;
+  userName: string;
+  aliquotName: string;
+  teamName: string;
   quantity: number;
-  type: string;
-  aliquotId: number;
-  memberId: number;
+  price: number;
 
   constructor() {
   }

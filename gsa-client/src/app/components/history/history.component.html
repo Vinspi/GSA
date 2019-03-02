@@ -1,75 +1,50 @@
 <div class="history-container justify-content-center col-lg-12">
   <h1>Withdrawals history</h1>
+
+  <ngb-datepicker #dp (select)="onDateSelection($event)" [displayMonths]="2" [dayTemplate]="t" outsideDays="hidden"></ngb-datepicker>
+  <ng-template #t let-date let-focused="focused">
+    <span class="custom-day"
+          [class.focused]="focused"
+          [class.range]="isRange(date)"
+          [class.faded]="isHovered(date) || isInside(date)"
+          (mouseenter)="hoveredDate = date"
+          (mouseleave)="hoveredDate = null">
+      {{ date.day }}
+    </span>
+  </ng-template>
+
   <form>
     <div class="history-form form-group">
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group">
-                <div class="input-group date" id="datetimepicker">
-                    <label for="beginDate">Begin date</label>
-                    <input class="form-control" id="beginDate" type="text" name="begin" placeholder="dd-MM-yyyy" required/>
-                    <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-            </div>
+      <div class="col-md-6 col-xs-12">
+        <div class="form-group">
+          <input type="text" class="form_control" id="beginDate" name="begin" ngbDatepicker #d="ngbDatepicker" placeholder="Begin date" required/>
+          <input type="text" class="form-control" id="endDate" name="end" ngbDatepicker #d="ngbDatepicker" placeholder="End date" required/>
         </div>
-        <div class="col-md-6 col-xs-12">
-            <div class="form-group">
-                <div class="input-group date" id="datetimepicker2">
-                    <label for="endDate">End date</label>
-                    <input class="form-control" id="endDate" type="text" name="end" placeholder="dd-MM-yyyy" required/>
-                    <span class="input-group-addon">
-                        <span class="fa fa-calendar-"></span>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-      <!--<label for="beginDate">Begin date</label>
-      <input class="form-control" id="beginDate" type="text" name="begin" placeholder="dd-MM-yyyy" required/>
-      <label for="endDate">End date</label>
-      <input class="form-control" id="endDate" type="text" name="end" placeholder="dd-MM-yyyy" required/>-->
+      </div>
     </div>
   </form>
   <div>
-    <table datatable data-paging="false" [dtTrigger]="dtTrigger" data-info="false" class="custom-table" style="width: 100%;">
+    <table datatable data-paging="true" data-info="false" class="custom-table" style="width: 100%;">
       <thead>
         <tr>
-          <th>Id</th>
           <th>Date</th>
-          <th>Motif</th>
+          <th>User</th>
+          <th>Aliquot</th>
+          <th>Team</th>
           <th>Quantity</th>
-          <th>Type</th>
-          <th>AliquotId</th>
-          <th>MemberId</th>
+          <th>Price</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of transactionList">
-          <td>{{item.id}}</td>
+        <tr *ngFor="let item of history">
           <td>{{item.date}}</td>
-          <td>{{item.motif}}</td>
+          <td>{{item.userName}}</td>
+          <td>{{item.aliquotName}}</td>
+          <td>{{item.teamName}}</td>
           <td>{{item.quantity}}</td>
-          <td>{{item.type}}</td>
-          <td>{{item.aliquotId}}</td>
-          <td>{{item.memberId}}</td>
+          <td>{{item.price}}</td>
         </tr>
       </tbody>
     </table>
   </div>
 </div>
-
-<script type="text/javascript">
-  $(function () {
-    $('#datetimepicker').datetimepicker();
-    $('#datetimepicker').datetimepicker({
-        useCurrent: false
-    });
-    $("#datetimepicker").on("dp.change", function (e) {
-        $('#datetimepicker2').data("DateTimePicker").minDate(e.date);
-    });
-    $("#datetimepicker2").on("dp.change", function (e) {
-        $('#datetimepicker').data("DateTimePicker").maxDate(e.date);
-    });
-  });
-</script>

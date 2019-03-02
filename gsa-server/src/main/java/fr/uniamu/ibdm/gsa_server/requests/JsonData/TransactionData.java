@@ -8,8 +8,8 @@ public class TransactionData {
     private LocalDate date;
     private String userName;
     private String aliquotName;
-    private int quantity;
     private String teamName;
+    private int quantity;
     private float price;
 
     public TransactionData() {
