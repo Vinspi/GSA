@@ -25,7 +25,7 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL + '/addproduct', data, {withCredentials: true});
   }
 
-  getWithdrawalsHistory(): Observable<JsonResponse> {
-    return this.http.post<JsonResponse>(this.BASE_URL + '/history', {withCredentials: true});
+  getWithdrawalsHistoryBetween(begin: string, end: string): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL + '/history', {'begin': '', 'end': ''}, {withCredentials: true});
   }
 }

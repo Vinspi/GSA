@@ -10,43 +10,25 @@ import { NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 export class HistoryComponent implements OnInit {
 
   history: Array<Transaction>;
+  beginDate = '';
+  endDate = '';
 
-  hoveredDate: NgbDate;
-  fromDate: NgbDate;
-  toDate: NgbDate;
-
-  constructor(private adminService: AdminService, private calendar: NgbCalendar) {
-    this.fromDate = calendar.getToday();
-    this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
+  constructor(private adminService: AdminService) {
   }
 
   ngOnInit() {
-    this.adminService.getWithdrawalsHistory().subscribe(res => {
+    this.adminService.getWithdrawalsHistoryBetween(this.beginDate, this.endDate).subscribe(res => {
       this.history = <Array<Transaction>> res.data;
       console.log('data : ' + JSON.stringify(this.history));
     });
   }
 
-  onDateSelection(date: NgbDate) {
-    if (!this.fromDate && !this.toDate) {
-      this.fromDate = date;
-    } else if (this.fromDate && !this.toDate && date.after(this.fromDate)) {
-      this.toDate = date;
-    } else {
-      this.toDate = null;
-      this.fromDate = date;
-    }
+  sendData() {
+    this.adminService.getWithdrawalsHistoryBetween(this.beginDate, this.endDate);
   }
 
-  isHovered(date: NgbDate) {
-    return this.fromDate && !this.toDate && this.hoveredDate && date.after(this.fromDate) && date.before(this.hoveredDate);
+  print(data: any) {
+    console.log('print : ' + data);
   }
 
-  isInside(date: NgbDate) {
-    return date.after(this.fromDate) && date.before(this.toDate);
-  }
-
-  isRange(date: NgbDate) {
-    return date.equals(this.fromDate) || date.equals(this.toDate) || this.isInside(date) || this.isHovered(date);
-  }
 }
