@@ -30,7 +30,7 @@ import fr.uniamu.ibdm.gsa_server.services.UserService;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
+@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200" })
 public class AdminController {
 
   @Autowired
@@ -51,12 +51,12 @@ public class AdminController {
    * @return a JSON formatted response.
    */
   @PostMapping("/stats")
-  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form) {
+  public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(
+      @RequestBody WithdrawStatsForm form) {
 
     System.out.println(form.getProductName());
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
-
 
   /**
    * /Endpoint returning all of species names.
@@ -77,8 +77,8 @@ public class AdminController {
    * Endpoint enabling well-formatted POST requests to add a product.
    *
    * @param form contains "targetName" and "sourceName" keys.
-   * @return if successful, a JSON response with a success status, otherwise a
-   *     JSON response with a fail status and the sent form as data.
+   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
+   *         fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -105,10 +105,10 @@ public class AdminController {
   /**
    * Endpoint enabling well-formatted POST requests to add an aliquot.
    *
-   * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
-   *             price & provider & product of aliquote.
-   * @return if successful, a JSON response with a success status, otherwise a
-   *      JSON response with a fail status and the sent form as data.
+   * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock price &
+   *          provider & product of aliquote.
+   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
+   *         fail status and the sent form as data.
    */
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
@@ -158,7 +158,6 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
   }
 
-
   /**
    * REST endpoint, return all alerts present in the database.
    *
@@ -180,7 +179,8 @@ public class AdminController {
     if (adminService.removeAlert(form.getAlertId())) {
       return new JsonResponse<>(RequestStatus.SUCCESS, true);
     } else {
-      return new JsonResponse<>("This alert doesn't exists or has already been removed", RequestStatus.FAIL);
+      return new JsonResponse<>("This alert doesn't exists or has already been removed",
+          RequestStatus.FAIL);
     }
   }
 
@@ -207,7 +207,7 @@ public class AdminController {
   /**
    * Endpoint enabling well-formatted POST requests to add a team trimestrial report.
    * 
-   * @param form contains "losts", "finalFlag", "year", "quarter", "teamId" keys.
+   * @param form contains "losses", "finalFlag", "year", "quarter", "teamName" keys.
    * 
    * @return if successful, a JSON response with a success status, otherwise a JSON response with a
    *         fail status and the sent form as data.
@@ -219,8 +219,7 @@ public class AdminController {
         RequestStatus.FAIL);
     failedRequestResponse.setData(form);
 
-    if (form.getQuarter() == null || form.getFinalFlag() == null || form.getTeamId() == null
-        || form.getLosses() == null || form.getYear() == null) {
+    if (!form.validate()) {
       failedRequestResponse.setError("Missing attributes within request body");
       return failedRequestResponse;
     }
@@ -240,16 +239,29 @@ public class AdminController {
    * @return JSON response containing all relevant information.
    */
   @GetMapping("/transactions")
-  public JsonResponse<List<TransactionReportData>> getAllTransactionsByTeamAndQuarter(
+  public JsonResponse<List<TransactionReportData>> getAllTransactionsByTeamAndQuarterAndYear(
       @RequestParam String teamName, @RequestParam String quarter, @RequestParam int year) {
     List<TransactionReportData> reportTransactions = adminService
-        .getTransactionsByTeamAndQuarterAndYear(teamName, quarter, year);
+        .getTransactionsByTeamNameAndQuarterAndYear(teamName, quarter, year);
 
     if (reportTransactions != null) {
       return new JsonResponse<>(RequestStatus.SUCCESS, reportTransactions);
     } else {
       return new JsonResponse<>("Could not retrieve a list of transactions", RequestStatus.FAIL);
     }
+  }
+
+  /**
+   * REST endpoint returning the total price of outdated transactions in a specific year's quarter.
+   *
+   * @return JSON response containing a value.
+   */
+  @GetMapping("/transactionLosses")
+  public JsonResponse<Float> getTransactionLossesByQuarterAndYear(@RequestParam String quarter,
+      @RequestParam Integer year) {
+    Float losses = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
+
+    return new JsonResponse<>(RequestStatus.SUCCESS, losses);
   }
 
 }

@@ -1,6 +1,9 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -11,38 +14,26 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
-import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
-import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.AdminService;
-import fr.uniamu.ibdm.gsa_server.util.DateConverter;
-
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.Alert;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -51,16 +42,7 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -76,13 +58,13 @@ public class AdminServiceImpl implements AdminService {
   /**
    * Constructor for the AdminService.
    * 
-   * @param productRepository
-   * @param aliquotRepository
-   * @param speciesRepository
-   * @param alertRepository
-   * @param teamRepository
-   * @param teamTrimestrialReportRepository
-   * @param transactionRepository
+   * @param productRepository Autowired repository
+   * @param aliquotRepository Autowired repository
+   * @param speciesRepository Autowired repository
+   * @param alertRepository Autowired repository
+   * @param teamRepository Autowired repository
+   * @param teamTrimestrialReportRepository Autowired repository
+   * @param transactionRepository Autowired repository
    */
   @Autowired
   public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository,
@@ -314,20 +296,20 @@ public class AdminServiceImpl implements AdminService {
       return false;
     }
 
-    Optional<Team> nullableTeam = teamRepository.findById(form.getTeamId());
-    Team team;
+    //Optional<Team> nullableTeam = teamRepository.findById(form.getTeamId());
+    Team team = teamRepository.findByTeamName(form.getTeamName());
 
     // Checking that the team is valid
-    if (nullableTeam.isPresent()) {
-      team = nullableTeam.get();
-    } else {
+    if (team == null) {
       return false;
     }
 
     TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
     Quarter quarter = Quarter.valueOf(form.getQuarter());
-
-    teamTrimestrialReportPk.setTeam(form.getTeamId());
+    
+    
+    
+    teamTrimestrialReportPk.setTeam(team.getTeamId());
     teamTrimestrialReportPk.setYear(form.getYear());
     teamTrimestrialReportPk.setQuarter(quarter);
 
@@ -355,7 +337,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public List<TransactionReportData> getTransactionsByTeamAndQuarterAndYear(String teamName,
+  public List<TransactionReportData> getTransactionsByTeamNameAndQuarterAndYear(String teamName,
       String quarter, int year) {
     if (teamName == null || quarter == null) {
       return null;
@@ -364,18 +346,11 @@ public class AdminServiceImpl implements AdminService {
     LocalDate firstDay;
     LocalDate lastDay;
 
-    if (quarter.equals(Quarter.QUARTER_1.name())) {
-      firstDay = LocalDate.of(year, 1, 1);
-      lastDay = LocalDate.of(year, 3, 31);
-    } else if (quarter.equals(Quarter.QUARTER_2.name())) {
-      firstDay = LocalDate.of(year, 4, 1);
-      lastDay = LocalDate.of(year, 6, 30);
-    } else if (quarter.equals(Quarter.QUARTER_3.name())) {
-      firstDay = LocalDate.of(year, 7, 1);
-      lastDay = LocalDate.of(year, 9, 30);
-    } else if (quarter.equals(Quarter.QUARTER_4.name())) {
-      firstDay = LocalDate.of(year, 10, 1);
-      lastDay = LocalDate.of(year, 12, 31);
+    QuarterDateConverter dates = new QuarterDateConverter();
+    if (dates.setQuarterDates(quarter, year)) {
+      firstDay = dates.getFirstDay();
+      lastDay = dates.getLastDay();
+
     } else {
       return null;
     }
@@ -406,4 +381,23 @@ public class AdminServiceImpl implements AdminService {
 
     return reportTransactions;
   }
+
+  //Only outdated aliquots for now 
+  @Override
+  public Float getTransactionLossesByQuarterAndYear(String quarter, int year) {
+    LocalDate firstDay;
+    LocalDate lastDay;
+
+    QuarterDateConverter dates = new QuarterDateConverter();
+    if(!dates.setQuarterDates(quarter, year)) {
+      return null;
+    }
+    
+    firstDay = dates.getFirstDay();
+    lastDay = dates.getLastDay();
+
+    return transactionRepository.getTransactionLossesByQuarterAndYear(firstDay.toString(),
+        lastDay.toString());
+  }
+
 }

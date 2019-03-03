@@ -1,18 +1,34 @@
 package fr.uniamu.ibdm.gsa_server.requests.forms;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
-
-public class AddTeamTrimestrialReportForm {
+public class AddTeamTrimestrialReportForm implements Form {
 
   private Float losses;
   private Boolean finalFlag;
   private Integer year;
   private String quarter;
-  private Long teamId;
+  private String teamName;
 
+  public AddTeamTrimestrialReportForm() {
+  }
+  
+  /**
+   * Constructor for AddTeamTrimestrialReportForm object.
+   * 
+   * @param losses bill 
+   * @param finalFlag is editable flag
+   * @param year report year
+   * @param quarter value of Quarter enumeration
+   * @param teamName String
+   */
+  public AddTeamTrimestrialReportForm(Float losses, Boolean finalFlag, Integer year, String quarter,
+      String teamName) {
+    this.losses = losses;
+    this.finalFlag = finalFlag;
+    this.year = year;
+    this.quarter = quarter;
+    this.teamName = teamName;
+  }  
+  
   public Float getLosses() {
     return losses;
   }
@@ -45,12 +61,20 @@ public class AddTeamTrimestrialReportForm {
     this.quarter = quarter;
   }
 
-  public Long getTeamId() {
-    return teamId;
+  public String getTeamName() {
+    return teamName;
   }
 
-  public void setTeamId(Long teamId) {
-    this.teamId = teamId;
+  public void setTeamName(String teamName) {
+    this.teamName = teamName;
+  }
+
+  @Override
+  public boolean validate() {
+    if (quarter == null || finalFlag == null || teamName == null || losses == null || year == null) {
+      return false;
+    }
+    return true;
   }
 
 }

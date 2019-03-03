@@ -18,12 +18,16 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
       + "JOIN aliquot ON (aliquot_id = aliquot.aliquotNLot)\n"
       + "WHERE (team.team_name LIKE :teamName\n"
       + "AND transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
-      + "AND transaction.transaction_type LIKE 'WITHDRAW')", nativeQuery = true)
+      + "AND transaction.transaction_motif LIKE 'TEAM_WITHDRAW')", nativeQuery = true)
   List<Object[]> getReportTransactionsByTeamNameAndQuarter(@Param("teamName") String teamName,
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
 
-  /*@Query(value = "", nativeQuery = true)
-  Float getLossesByQuarterAndYear(@Param("firstDayOfQuarter") String firstDayOfQuarter,
-      @Param("lastDayOfQuarter") String lastDayOfQuarter);*/
+  @Query(value = "SELECT COALESCE(SUM(aliquot_price * transaction_quantity), 0)\n"
+      + "FROM transaction\n" + "JOIN aliquot ON (aliquot_id = aliquot.aliquotNLot)\n"
+      + "WHERE transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
+      + "AND transaction.member_id IS NULL\n"
+      + "AND transaction.transaction_motif LIKE 'OUTDATED'", nativeQuery = true)
+  Float getTransactionLossesByQuarterAndYear(@Param("firstDayOfQuarter") String firstDayOfQuarter,
+      @Param("lastDayOfQuarter") String lastDayOfQuarter);
 }

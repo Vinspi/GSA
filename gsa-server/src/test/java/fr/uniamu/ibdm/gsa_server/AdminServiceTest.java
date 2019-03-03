@@ -1,24 +1,45 @@
 package fr.uniamu.ibdm.gsa_server;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -26,38 +47,6 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -357,11 +346,11 @@ public class AdminServiceTest {
     form.setLosses(100F);
     form.setQuarter("QUARTER_1");
     form.setYear(2019);
-    form.setTeamId(1L);
+    form.setTeamName("Some team");
 
     Team team = new Team();
     team.setTeamId(1L);
-    Mockito.when(teamRepository.findById(Mockito.eq(1L))).thenReturn(Optional.of(team));
+    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(team);
 
     TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
     teamTrimestrialReportPk.setQuarter(Quarter.QUARTER_1);
@@ -396,27 +385,39 @@ public class AdminServiceTest {
 
     // Saving a report should fail when the specified quarter does not match the values of the
     // Quarter enumeration.
-    Mockito.when(teamRepository.findById(Mockito.anyLong())).thenReturn(Optional.empty());
     form.setQuarter("anyQuarter");
+    success = adminService.saveTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
+    
+    // Saving a report with an invalid team name should not be saved
+    form.setQuarter("QUARTER_1");
+    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(null);
     success = adminService.saveTeamTrimestrialReport(form);
     Assert.assertEquals(false, success);
 
   }
 
   @Test
-  public void getTransactionsByTeamAndQuarterAndYear() {
+  public void getTransactionsByTeamNameAndQuarterAndYear() {
     List<TransactionReportData> reportTransactions = adminService
-        .getTransactionsByTeamAndQuarterAndYear(null, Quarter.QUARTER_1.name(), 2019);
+        .getTransactionsByTeamNameAndQuarterAndYear(null, Quarter.QUARTER_1.name(), 2019);
     Assert.assertNull(reportTransactions);
 
-    reportTransactions = adminService.getTransactionsByTeamAndQuarterAndYear("Best team", null,
+    reportTransactions = adminService.getTransactionsByTeamNameAndQuarterAndYear("Best team", null,
         2019);
     Assert.assertNull(reportTransactions);
 
-    reportTransactions = adminService.getTransactionsByTeamAndQuarterAndYear("Best team",
+    reportTransactions = adminService.getTransactionsByTeamNameAndQuarterAndYear("Best team",
         "anyQuarter", 2019);
     Assert.assertNull(reportTransactions);
-
+    
   }
 
+  @Test
+  public void getTransactionsLossesByQuarterAndYear() {
+    Float losses = adminService
+        .getTransactionLossesByQuarterAndYear("anyQuarter", 2019);
+
+    Assert.assertNull(losses);
+  }
 }

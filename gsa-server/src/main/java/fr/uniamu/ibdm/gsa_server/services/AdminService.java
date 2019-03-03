@@ -28,7 +28,6 @@ public interface AdminService {
    */
   List<String> getAllSpeciesNames();
 
-
   /**
    * This method adds a new product named after the source and target species name.
    *
@@ -41,17 +40,16 @@ public interface AdminService {
   /**
    * This method adds a new aliquote.
    *
-   * @param  form Wrapper containing informations about the aliquot.
+   * @param form Wrapper containing informations about the aliquot.
    * @return true if adding the aliquote is successful, false otherwise.
    */
   boolean addAliquot(AddAliquoteForm form);
 
   /**
-   * This method retrieve all products on which an
-   * alert has been triggered.
+   * This method retrieve all products on which an alert has been triggered.
    *
-   * @return A list of wrapper containing product names, the quantity left
-   *     and the threshold of the alert.
+   * @return A list of wrapper containing product names, the quantity left and the threshold of the
+   *         alert.
    */
   List<TriggeredAlertsQuery> getTriggeredAlerts();
 
@@ -77,7 +75,7 @@ public interface AdminService {
   boolean removeAlert(long id);
 
   /**
-   * The method retrieves all transactions made by a team in a quarter of a given year.
+   * This method retrieves all transactions made by a team in a quarter of a given year.
    * 
    * @param teamName String
    * @param quarter value of Quarter enumeration
@@ -85,7 +83,8 @@ public interface AdminService {
    * 
    * @return a list of transactions with only relevant data to billing or null if an error occurred.
    */
-  List<TransactionReportData> getTransactionsByTeamAndQuarterAndYear(String teamName, String quarter, int year);
+  List<TransactionReportData> getTransactionsByTeamNameAndQuarterAndYear(String teamName,
+      String quarter, int year);
 
   /**
    * This method saves a team trimestrial report in the database if it is still editable. Used to
@@ -97,4 +96,14 @@ public interface AdminService {
    * @return true if the saving process is successful, false otherwise.
    */
   boolean saveTeamTrimestrialReport(AddTeamTrimestrialReportForm form);
+  
+  /**
+   * This method returns the sum of prices of outdated aliquots.
+   * 
+   * @param quarter value of Quarter enumeration
+   * @param year year value
+   * 
+   * @return total price losses.
+   */
+  Float getTransactionLossesByQuarterAndYear(String quarter, int year);
 }
