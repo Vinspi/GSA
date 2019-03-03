@@ -1,7 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.models.enumerations;
 
 public enum AlertType {
-  GENRAL,
+  GENERAL,
   VISIBLE_STOCK,
   HIDDEN_STOCK
 }

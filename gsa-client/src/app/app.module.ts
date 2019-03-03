@@ -2,11 +2,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DataTablesModule } from 'angular-datatables';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -18,6 +17,10 @@ import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { AddProductComponent } from './components/add-product/add-product.component';
 import { HistoryComponent } from './components/history/history.component';
+import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.component';
+import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
+import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
+import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
 
 
 @NgModule({
@@ -32,6 +35,11 @@ import { HistoryComponent } from './components/history/history.component';
     StatsComponent,
     AddProductComponent,
     HistoryComponent
+    StatsComponent,
+    AddAliquoteComponent,
+    AlertsPanelComponent,
+    EditAlertsComponent,
+    TriggeredAlertsComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +49,8 @@ import { HistoryComponent } from './components/history/history.component';
     FormsModule,
     DataTablesModule,
     ChartsModule,
-    NgbModule
+    NgbModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

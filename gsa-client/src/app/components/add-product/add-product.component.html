@@ -4,18 +4,16 @@
     <div id="select-container" class="form-group">
       <div id="source-container" class="form-group">
         <label for="source">Select the source :</label>
-        <select id="source" class="form-control">
-          <option value="" selected disabled hidden>{{defaultOption}}</option>
+        <select [(ngModel)]="selectedSource" id="source" class="form-control" name="source">
           <option *ngFor="let name of speciesNames">{{name}}</option>
         </select>
       </div>
       <div id="target-container" class="form-group">
         <label for="target">Select the target :</label>
-        <select id="target" class="form-control">
-          <option value="" selected disabled hidden>Choose</option>
+        <select [(ngModel)]="selectedTarget" id="target" class="form-control" name="target">
           <option *ngFor="let name of speciesNames">{{name}}</option>
         </select>
-    </div>
+      </div>
     </div>
     <div id="button-container" class="form-group">
       <button (click)="addProduct()" type="submit" class="btn btn-primary">Add product</button>

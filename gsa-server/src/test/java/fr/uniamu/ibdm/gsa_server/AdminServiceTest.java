@@ -1,17 +1,23 @@
 package fr.uniamu.ibdm.gsa_server;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 
-import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
-import fr.uniamu.ibdm.gsa_server.models.*;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,12 +30,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.CALLS_REAL_METHODS;
 
@@ -44,16 +53,13 @@ public class AdminServiceTest {
     SpeciesRepository speciesRepository;
 
     @MockBean
-    TransactionRepository transactionRepository;
+    AlertRepository alertRepository;
+
+    @MockBean
+    AliquotRepository aliquotRepository;
 
     @InjectMocks
     AdminServiceImpl adminService;
-
-    @Mock
-    Aliquot aliquot;
-
-    @Mock
-    Member member;
 
     @Before
     public void initMocks() {
@@ -138,48 +144,182 @@ public class AdminServiceTest {
         Mockito.when(speciesRepository.findById(targetName)).thenReturn(nullableTargetSpecies);
         Mockito.when(productRepository.findById(productPk)).thenReturn(Optional.of(newProduct));
         Assert.assertEquals(false, adminService.addProduct(sourceName, targetName));
+    }
+
+    @Test
+    public void getAllAlerts() {
+
+        List<Alert> alerts = new ArrayList<>();
+        Alert tmp;
+
+        for (int i = 0; i < 10; i++) {
+            tmp = new Alert();
+            tmp.setSeuil(10);
+            tmp.setAlertId(i);
+            tmp.setAlertType(AlertType.VISIBLE_STOCK);
+            tmp.setProduct(new Product(new Species("MONKEY"), new Species("DONKEY"), null));
+            alerts.add(tmp);
+        }
+
+        Mockito.when(alertRepository.findAll()).thenReturn(alerts);
+
+        List<AlertsData> alertsData = adminService.getAllAlerts();
+
+        Assert.assertEquals(10, alertsData.size());
+
+        for (int i = 0; i < alertsData.size(); i++) {
+            Assert.assertEquals(i, alertsData.get(i).getAlertId());
+            Assert.assertEquals(10, alertsData.get(i).getSeuil());
+            Assert.assertEquals(AlertType.VISIBLE_STOCK, alertsData.get(i).getAlertType());
+            Assert.assertEquals("DONKEY_ANTI_MONKEY", alertsData.get(i).getProductName());
+        }
 
     }
 
     @Test
-    public void getWithdrawalHistory() {
-        /*List<Transaction> transactions = Arrays.asList(
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 1, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 2, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 3, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 4, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 5, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 6, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 7, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 8, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 9, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 10, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 11, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 12, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.ADD, LocalDate.of(2019, 3, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.ADD, LocalDate.of(2019, 4, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.ADD, LocalDate.of(2019, 5, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.ADD, LocalDate.of(2019, 6, 10), 10, aliquot, member)
-        );
+    public void removeAlert() {
 
-        LocalDate begin = LocalDate.of(2019, 3, 1);
-        LocalDate end = LocalDate.of(2019, 6, 30);
+        Mockito.when(alertRepository.findById(1L)).thenReturn(Optional.of(new Alert()));
 
-        List<Transaction> transactionResult = Arrays.asList(
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 3, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 4, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 5, 10), 10, aliquot, member),
-                new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.of(2019, 6, 10), 10, aliquot, member)
-        );
+        boolean success = adminService.removeAlert(0);
 
-        System.out.println(transactionRepository.findAll());
+        Assert.assertEquals(false, success);
 
-        Mockito.when(transactionRepository.saveAll(transactions)).thenReturn(transactions);
-        Mockito.when(transactionRepository.findAll()).thenReturn(transactions);
-        Assert.assertEquals(transactions, transactionRepository.findAll());
+        success = adminService.removeAlert(1);
 
-        Mockito.when(transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(begin, end, TransactionType.WITHDRAW)).thenReturn(transactionResult);
-        Assert.assertEquals(transactionResult, adminService.getWithdrawalsHistoryBetween(begin, end));*/
+        Assert.assertEquals(true, success);
+
+    }
+
+    @Test
+    public void updateAlert() {
+
+        Alert alert = new Alert();
+        alert.setSeuil(10);
+
+        UpdateAlertForm form = new UpdateAlertForm(1, 50);
+        UpdateAlertForm formFail = new UpdateAlertForm(0, 50);
+
+        Mockito.when(alertRepository.findById(1L)).thenReturn(Optional.of(alert));
+
+        boolean success = adminService.updateAlertSeuil(formFail);
+
+        Assert.assertEquals(false, success);
+
+        success = adminService.updateAlertSeuil(form);
+
+        Assert.assertEquals(true, success);
+
+    }
+
+    @Test
+    public void getTriggeredAlerts() {
+
+        Object[] queryVisible = new Object[6];
+        Object[] queryHidden = new Object[6];
+        Object[] queryGeneral = new Object[6];
+
+        queryVisible[0] = "SOURCE";
+        queryVisible[1] = "TARGET";
+        queryVisible[2] = BigDecimal.valueOf(30);
+        queryVisible[3] = 40;
+        queryVisible[4] = "VISIBLE_STOCK";
+        queryVisible[5] = BigInteger.valueOf(0);
+
+        queryHidden[0] = "SOURCE";
+        queryHidden[1] = "TARGET";
+        queryHidden[2] = BigDecimal.valueOf(30);
+        queryHidden[3] = 40;
+        queryHidden[4] = "HIDDEN_STOCK";
+        queryHidden[5] = BigInteger.valueOf(1);
+
+        queryGeneral[0] = "SOURCE";
+        queryGeneral[1] = "TARGET";
+        queryGeneral[2] = BigDecimal.valueOf(30);
+        queryGeneral[3] = 40;
+        queryGeneral[4] = "GENERAL";
+        queryGeneral[5] = BigInteger.valueOf(2);
+
+        List<Object[]> listQueryVisible = new ArrayList<>();
+        listQueryVisible.add(queryVisible);
+
+        List<Object[]> listQueryHidden = new ArrayList<>();
+        listQueryHidden.add(queryHidden);
+
+        List<Object[]> listQueryGeneral = new ArrayList<>();
+        listQueryGeneral.add(queryGeneral);
+
+        Mockito.when(productRepository.getTriggeredAlertsVisible()).thenReturn(listQueryVisible);
+        Mockito.when(productRepository.getTriggeredAlertsHidden()).thenReturn(listQueryHidden);
+        Mockito.when(productRepository.getTriggeredAlertsGeneral()).thenReturn(listQueryGeneral);
+
+        Object[] aliquotQuery = new Object[4];
+
+        aliquotQuery[0] = BigInteger.valueOf(5);
+        aliquotQuery[1] = new Timestamp(1254891);
+        aliquotQuery[2] = BigInteger.valueOf(30);
+        aliquotQuery[3] = BigInteger.valueOf(30);
+
+        List<Object[]> listAliquotQuery = new ArrayList<>();
+
+        listAliquotQuery.add(aliquotQuery);
+
+        Mockito.when(aliquotRepository.findAllBySourceAndTargetQuery("SOURCE", "TARGET")).thenReturn(listAliquotQuery);
+
+        List<TriggeredAlertsQuery> triggeredAlertsQueries = adminService.getTriggeredAlerts();
+
+        Assert.assertEquals(3, triggeredAlertsQueries.size());
+
+
+        for (TriggeredAlertsQuery tr : triggeredAlertsQueries) {
+            Assert.assertEquals(1, tr.getAliquots().size());
+            Assert.assertEquals(triggeredAlertsQueries.indexOf(tr), tr.getAlertId());
+            Assert.assertEquals(30, tr.getQte());
+            Assert.assertTrue(40 == tr.getSeuil());
+            Assert.assertEquals("SOURCE", tr.getSource());
+            Assert.assertEquals("TARGET", tr.getTarget());
+        }
+
+    }
+
+    @Test
+    public void addAliquote() {
+
+        long id = 33;
+        float priceValue1 = 4.56F;
+        int qtyHiddenValue1 = 6;
+        int qtyVisibleValue1 = 2;
+        String providerValue1 = "Provider x";
+        String productValue1 = "GOAT_ANTI_WOLF";
+
+
+        AddAliquoteForm form = new AddAliquoteForm(id, qtyVisibleValue1, qtyHiddenValue1, priceValue1, providerValue1, productValue1);
+
+        final Aliquot aliquotX = new Aliquot();
+        aliquotX.setAliquotExpirationDate(LocalDate.now().plusYears(1));
+        aliquotX.setAliquotQuantityVisibleStock(qtyHiddenValue1);
+        aliquotX.setAliquotQuantityHiddenStock(qtyVisibleValue1);
+        aliquotX.setAliquotPrice(priceValue1);
+        aliquotX.setProvider(providerValue1);
+
+        Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.of(new Product()));
+        Mockito.when(aliquotRepository.findById(40L)).thenReturn(Optional.of(new Aliquot()));
+        Mockito.when(aliquotRepository.findById(id)).thenReturn(Optional.empty());
+
+        boolean success = adminService.addAliquot(form);
+
+        Assert.assertTrue(success);
+
+        form.setAliquotNLot(40);
+        success = adminService.addAliquot(form);
+        Assert.assertFalse(success);
+
+
+        form.setAliquotNLot(id);
+        Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.empty());
+        success = adminService.addAliquot(form);
+        Assert.assertFalse(success);
+
     }
 
 }

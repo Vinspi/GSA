@@ -24,6 +24,8 @@ export class AddProductComponent implements OnInit {
 
     this.adminService.getAllSpeciesName().subscribe(res => {
       this.speciesNames = res.data;
+      this.selectedSource = this.speciesNames[0];
+      this.selectedTarget = this.speciesNames[0];
     });
   }
 
@@ -37,8 +39,11 @@ export class AddProductComponent implements OnInit {
   }
 
   addProduct() {
-    this.selectedSource = $('#source option:selected').text();
-    this.selectedTarget = $('#target option:selected').text();
+    // this.selectedSource = $('#source option:selected').text();
+    // this.selectedTarget = $('#target option:selected').text();
+
+    console.log(this.selectedSource);
+    
 
     if (this.selectedSource === this.defaultOption || this.selectedTarget === this.defaultOption){
       this.configureMessageAlert('danger', 'Both fields are required.', 4000);
