@@ -19,7 +19,7 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
       + "WHERE (team.team_name LIKE :teamName\n"
       + "AND transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
       + "AND transaction.transaction_motif LIKE 'TEAM_WITHDRAW')", nativeQuery = true)
-  List<Object[]> getReportTransactionsByTeamNameAndQuarter(@Param("teamName") String teamName,
+  List<Object[]> getWithdrawnTransactionsByTeamNameAndQuarter(@Param("teamName") String teamName,
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
 

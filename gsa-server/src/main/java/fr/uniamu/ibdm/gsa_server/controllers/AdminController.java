@@ -18,7 +18,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
@@ -233,16 +233,16 @@ public class AdminController {
   }
 
   /**
-   * REST endpoint returning all relevant information about withdraw transactions made by a team in
+   * REST endpoint returning all relevant information about withdrawn transactions made by a team in
    * a specific year's quarter.
    *
    * @return JSON response containing all relevant information.
    */
-  @GetMapping("/transactions")
-  public JsonResponse<List<TransactionReportData>> getAllTransactionsByTeamAndQuarterAndYear(
+  @GetMapping("/withdrawnTransactions")
+  public JsonResponse<ReportData> getWithdrawnTransactionsByTeamAndQuarterAndYear(
       @RequestParam String teamName, @RequestParam String quarter, @RequestParam int year) {
-    List<TransactionReportData> reportTransactions = adminService
-        .getTransactionsByTeamNameAndQuarterAndYear(teamName, quarter, year);
+    ReportData reportTransactions = adminService
+        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(teamName, quarter, year);
 
     if (reportTransactions != null) {
       return new JsonResponse<>(RequestStatus.SUCCESS, reportTransactions);
@@ -261,6 +261,9 @@ public class AdminController {
       @RequestParam Integer year) {
     Float losses = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
 
+    if (losses == null) {
+      return new JsonResponse<>("Could not retrieve any transaction losses", RequestStatus.FAIL);
+    }
     return new JsonResponse<>(RequestStatus.SUCCESS, losses);
   }
 

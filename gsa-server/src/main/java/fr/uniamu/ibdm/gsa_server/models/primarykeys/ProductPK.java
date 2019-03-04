@@ -41,10 +41,10 @@ public class ProductPK implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ProductPK productPK = (ProductPK) o;
-    return Objects.equals(target, productPK.target)
+    ProductPK productPk = (ProductPK) o;
+    return Objects.equals(target, productPk.target)
         &&
-        Objects.equals(source, productPK.source);
+        Objects.equals(source, productPk.source);
   }
 
   @Override

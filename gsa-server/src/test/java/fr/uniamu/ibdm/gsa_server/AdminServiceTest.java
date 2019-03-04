@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,16 +42,19 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AdminServiceTest {
+  @Mock
+  TimeFactory clock;
 
   @MockBean
   ProductRepository productRepository;
@@ -344,13 +348,32 @@ public class AdminServiceTest {
     AddTeamTrimestrialReportForm form = new AddTeamTrimestrialReportForm();
     form.setFinalFlag(false);
     form.setLosses(100F);
-    form.setQuarter("QUARTER_1");
     form.setYear(2019);
     form.setTeamName("Some team");
 
-    Team team = new Team();
-    team.setTeamId(1L);
-    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(team);
+    // Saving a report should fail when the specified quarter does not match the values of the
+    // Quarter enumeration.
+    form.setQuarter("anyQuarter");
+    Boolean success = adminService.saveTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
+
+    // Saving a report when the quarter is not over should fail
+    form.setQuarter("QUARTER_1");
+    LocalDate now = LocalDate.of(2019, 3, 31);
+    Mockito.when(clock.now()).thenReturn(now);
+    success = adminService.saveTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
+
+    now = LocalDate.of(2019, 4, 1);
+
+    // Saving a report should fail when the team name does not match a team.
+    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(null);
+    success = adminService.saveTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
+
+    // Saving a non-editable report should not be updated.
+    TeamTrimestrialReport currentReport = new TeamTrimestrialReport();
+    currentReport.setFinalFlag(true);
 
     TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
     teamTrimestrialReportPk.setQuarter(Quarter.QUARTER_1);
@@ -358,65 +381,47 @@ public class AdminServiceTest {
     teamTrimestrialReportPk.setYear(2019);
 
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
-        .thenReturn(Optional.empty());
-    // Return type is ignored
-    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any())).thenReturn(null);
-
-    // Saving a new report with a correct form should be added in the database.
-    Boolean success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(true, success);
+        .thenReturn(Optional.of(currentReport));
+    success = adminService.saveTeamTrimestrialReport(form);
+    Assert.assertEquals(false, success);
 
     // Saving an existing report with a correct form should be updated in the database.
-    TeamTrimestrialReport currentReport = new TeamTrimestrialReport();
     currentReport.setFinalFlag(false);
-
+    Team team = new Team();
+    team.setTeamId(1L);
+    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(team);
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
         .thenReturn(Optional.of(currentReport));
     success = adminService.saveTeamTrimestrialReport(form);
     Assert.assertEquals(true, success);
 
-    // Saving a non-editable report should not be updated.
-    currentReport.setFinalFlag(true);
-
+    // Saving a new report with a correct form should be added in the database.
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
-        .thenReturn(Optional.of(currentReport));
+        .thenReturn(Optional.empty());
     success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
-
-    // Saving a report should fail when the specified quarter does not match the values of the
-    // Quarter enumeration.
-    form.setQuarter("anyQuarter");
-    success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
-    
-    // Saving a report with an invalid team name should not be saved
-    form.setQuarter("QUARTER_1");
-    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(null);
-    success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
+    Assert.assertEquals(true, success);
 
   }
 
   @Test
-  public void getTransactionsByTeamNameAndQuarterAndYear() {
-    List<TransactionReportData> reportTransactions = adminService
-        .getTransactionsByTeamNameAndQuarterAndYear(null, Quarter.QUARTER_1.name(), 2019);
+  public void getWithdrawnTransactionsByTeamNameAndQuarterAndYear() {
+    ReportData reportTransactions = adminService
+        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(null, Quarter.QUARTER_1.name(), 2019);
     Assert.assertNull(reportTransactions);
 
-    reportTransactions = adminService.getTransactionsByTeamNameAndQuarterAndYear("Best team", null,
-        2019);
+    reportTransactions = adminService
+        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear("Best team", null, 2019);
     Assert.assertNull(reportTransactions);
 
-    reportTransactions = adminService.getTransactionsByTeamNameAndQuarterAndYear("Best team",
-        "anyQuarter", 2019);
+    reportTransactions = adminService
+        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear("Best team", "anyQuarter", 2019);
     Assert.assertNull(reportTransactions);
-    
+
   }
 
   @Test
   public void getTransactionsLossesByQuarterAndYear() {
-    Float losses = adminService
-        .getTransactionLossesByQuarterAndYear("anyQuarter", 2019);
+    Float losses = adminService.getTransactionLossesByQuarterAndYear("anyQuarter", 2019);
 
     Assert.assertNull(losses);
   }

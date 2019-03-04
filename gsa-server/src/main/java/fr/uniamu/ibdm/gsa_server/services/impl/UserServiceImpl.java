@@ -42,17 +42,14 @@ public class UserServiceImpl implements UserService {
   /**
    * Constructor for UserService.
    *
-   * @param userRepository   Dao for user entities.
-   * @param teamRepository   Dao for team entities.
+   * @param userRepository Dao for user entities.
+   * @param teamRepository Dao for team entities.
    * @param memberRepository Dao for member entities.
    */
   @Autowired
-  public UserServiceImpl(UserRepository userRepository,
-                         TeamRepository teamRepository,
-                         MemberRepository memberRepository,
-                         ProductRepository productRepository,
-                         AliquotRepository aliquotRepository,
-                         TransactionRepository transactionRepository) {
+  public UserServiceImpl(UserRepository userRepository, TeamRepository teamRepository,
+      MemberRepository memberRepository, ProductRepository productRepository,
+      AliquotRepository aliquotRepository, TransactionRepository transactionRepository) {
     this.userRepository = userRepository;
     this.teamRepository = teamRepository;
     this.memberRepository = memberRepository;
@@ -62,17 +59,16 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User registerAccount(String name, String email, String password, String teamName, boolean isAdmin) {
+  public User registerAccount(String name, String email, String password, String teamName,
+      boolean isAdmin) {
 
     Team team = teamRepository.findByTeamName(teamName);
     User u = userRepository.findByUserEmail(email);
-
 
     if (team == null || u != null) {
       /* the team does not exists or the email is already used */
       return null;
     }
-
 
     byte[] seed = SecureRandom.getSeed(128);
     byte[] passwordHash = Crypto.hashPassword(seed, password.getBytes());
@@ -91,7 +87,6 @@ public class UserServiceImpl implements UserService {
     member.setTeam(team);
     member.setUser(user);
     memberRepository.save(member);
-
 
     return user;
   }
@@ -171,7 +166,8 @@ public class UserServiceImpl implements UserService {
         }
 
         if (member != null) {
-          transaction = new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.now(), withdrowQuantity, aliquot, member);
+          transaction = new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW,
+              LocalDate.now(), withdrowQuantity, aliquot, member);
           transactionRepository.save(transaction);
           aliquotRepository.save(aliquot);
         } else {
@@ -193,7 +189,6 @@ public class UserServiceImpl implements UserService {
     productRepository.findAll().forEach(element -> {
       productNames.add(element.getProductName());
     });
-
 
     return productNames;
   }

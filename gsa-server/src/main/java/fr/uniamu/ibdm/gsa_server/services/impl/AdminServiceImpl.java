@@ -35,7 +35,8 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData.ReportTransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
@@ -43,9 +44,13 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
+import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
 
 @Service
 public class AdminServiceImpl implements AdminService {
+
+  @Autowired
+  private TimeFactory clock;
 
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
@@ -296,19 +301,24 @@ public class AdminServiceImpl implements AdminService {
       return false;
     }
 
-    //Optional<Team> nullableTeam = teamRepository.findById(form.getTeamId());
-    Team team = teamRepository.findByTeamName(form.getTeamName());
+    // Checking that the quarter is over in order to save
+    LocalDate now = clock.now();
+    System.out.println("NOW " + now.toString());
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(form.getQuarter(), form.getYear());
+    System.out.println("lastDay : " + lastDay);
+    if (now.isBefore(lastDay)) {
+      return false;
+    }
 
     // Checking that the team is valid
+    Team team = teamRepository.findByTeamName(form.getTeamName());
     if (team == null) {
       return false;
     }
 
     TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
     Quarter quarter = Quarter.valueOf(form.getQuarter());
-    
-    
-    
+
     teamTrimestrialReportPk.setTeam(team.getTeamId());
     teamTrimestrialReportPk.setYear(form.getYear());
     teamTrimestrialReportPk.setQuarter(quarter);
@@ -337,35 +347,37 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public List<TransactionReportData> getTransactionsByTeamNameAndQuarterAndYear(String teamName,
+  public ReportData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName,
       String quarter, int year) {
     if (teamName == null || quarter == null) {
       return null;
     }
 
-    LocalDate firstDay;
-    LocalDate lastDay;
-
-    QuarterDateConverter dates = new QuarterDateConverter();
-    if (dates.setQuarterDates(quarter, year)) {
-      firstDay = dates.getFirstDay();
-      lastDay = dates.getLastDay();
-
-    } else {
+    LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
+    if (firstDay == null) {
+      return null;
+    }
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    if (lastDay == null) {
       return null;
     }
 
-    List<Object[]> resultQuery = transactionRepository.getReportTransactionsByTeamNameAndQuarter(
+    List<Object[]> resultQuery = transactionRepository.getWithdrawnTransactionsByTeamNameAndQuarter(
         teamName, firstDay.toString(), lastDay.toString());
 
-    List<TransactionReportData> reportTransactions = new ArrayList<>();
-    resultQuery.forEach(o -> {
+    ReportData data = new ReportData();
+    List<ReportTransactionData> transactions = new ArrayList<>();
+    float totalPrice = 0F;
+    
+    
+    for (Object[] o : resultQuery) {
 
-      TransactionReportData data = new TransactionReportData();
-      data.setAliquotPrice((Float) o[0]);
-      data.setTransactionDate((String) o[1].toString());
-      data.setTransactionQuantity((Integer) o[2]);
-      data.setUserName((String) o[3]);
+      ReportTransactionData transactionData = data.new ReportTransactionData();
+      
+      transactionData.setAliquotPrice((Float) o[0]);
+      transactionData.setTransactionDate((String) o[1].toString());
+      transactionData.setTransactionQuantity((Integer) o[2]);
+      transactionData.setUserName((String) o[3]);
       String source = (String) o[4];
       String target = (String) o[5];
       ProductPK productPk = new ProductPK();
@@ -374,27 +386,28 @@ public class AdminServiceImpl implements AdminService {
 
       // get() function won't return null as the source and the target are well-defined in the
       // aliquot table.
-      data.setProductName(productRepository.findById(productPk).get().getProductName());
+      transactionData.setProductName(productRepository.findById(productPk).get().getProductName());
+      totalPrice += transactionData.getAliquotPrice() * transactionData.getTransactionQuantity();
 
-      reportTransactions.add(data);
-    });
-
-    return reportTransactions;
-  }
-
-  //Only outdated aliquots for now 
-  @Override
-  public Float getTransactionLossesByQuarterAndYear(String quarter, int year) {
-    LocalDate firstDay;
-    LocalDate lastDay;
-
-    QuarterDateConverter dates = new QuarterDateConverter();
-    if(!dates.setQuarterDates(quarter, year)) {
-      return null;
+      transactions.add(transactionData);
     }
     
-    firstDay = dates.getFirstDay();
-    lastDay = dates.getLastDay();
+    data.setTotalPrice(totalPrice);
+    data.setTransactions(transactions);
+    
+    return data;
+  }
+
+  @Override
+  public Float getTransactionLossesByQuarterAndYear(String quarter, int year) {
+    LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
+    if (firstDay == null) {
+      return null;
+    }
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    if (lastDay == null) {
+      return null;
+    }
 
     return transactionRepository.getTransactionLossesByQuarterAndYear(firstDay.toString(),
         lastDay.toString());

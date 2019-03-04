@@ -1,15 +1,15 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
+import java.util.List;
+
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-
-import java.util.List;
 
 public interface AdminService {
 
@@ -81,10 +81,10 @@ public interface AdminService {
    * @param quarter value of Quarter enumeration
    * @param year int
    * 
-   * @return a list of transactions with only relevant data to billing or null if an error occurred.
+   * @return a list of transactions and the total price or null if an error occurred.
    */
-  List<TransactionReportData> getTransactionsByTeamNameAndQuarterAndYear(String teamName,
-      String quarter, int year);
+  ReportData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName, String quarter,
+      int year);
 
   /**
    * This method saves a team trimestrial report in the database if it is still editable. Used to
@@ -96,10 +96,10 @@ public interface AdminService {
    * @return true if the saving process is successful, false otherwise.
    */
   boolean saveTeamTrimestrialReport(AddTeamTrimestrialReportForm form);
-  
+
   /**
    * This method returns the sum of prices of outdated aliquots.
-   * 
+   *
    * @param quarter value of Quarter enumeration
    * @param year year value
    * 
