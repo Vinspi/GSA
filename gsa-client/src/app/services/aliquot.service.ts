@@ -14,8 +14,8 @@ export class AliquotService {
     return this.http.get<JsonResponse>(environment.API_URL+'/aliquot/get-aliquots',{withCredentials: true})
   }
 
-  // suppression
+  // save au lieu 
    removeAliquots(id: number): Observable<JsonResponse> {
-     return this.http.post<JsonResponse>(environment.API_URL+'/aliquot/delete-aliquot/',{id},{withCredentials: true})
+     return this.http.post<JsonResponse>(environment.API_URL+'/aliquot/delete-aliquot/'+id,{withCredentials: true})
    }
 }

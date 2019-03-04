@@ -10,31 +10,18 @@
 //	private LocalDate aliquotExpirationDate;
 //	private long aliquotQuantityVisibleStock;
 //	private long aliquotQuantityHiddenStock;
-//	
+//	private String productName;
+//	private Boolean expire;
 //
 //	private Aliquot aliquot;
 //
 //	public AliquotExpired(Aliquot aliquot) {
-//		this.nlot = aliquot.getAliquotNLot();
-//		this.date = date;
+//		this.aliquotNLot = aliquot.getAliquotNLot();
+//		this.aliquotExpirationDate = aliquot.aliquotExpirationDate;
+//		this.aliquotQuantityVisibleStock = aliquot.saliquotQuantityVisibleStock;
 //	}
-//
-//	public AliquotExpired() {
-//	}
-//
-//	public long getNlot() {
-//		return nlot;
-//	}
-//
-//	public void setNlot(long nlot) {
-//		this.nlot = nlot;
-//	}
-//
-//	public LocalDate getDate() {
-//		return date;
-//	}
-//
-//	public void setDate(LocalDate date) {
-//		this.date = date;
-//	}
+//	
+//	
 //}
+//
+//	

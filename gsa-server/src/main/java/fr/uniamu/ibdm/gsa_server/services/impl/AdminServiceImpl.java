@@ -28,7 +28,7 @@ public class AdminServiceImpl implements AdminService {
 	}
 
 	@Override
-	public void makeQuantityZero(long id) {
+	public void makeQuantityZero(long id) {//à modifier
 		this.aliquotRepository.makeQuantityZeroNative(id, (long) 0);
 	}
 	

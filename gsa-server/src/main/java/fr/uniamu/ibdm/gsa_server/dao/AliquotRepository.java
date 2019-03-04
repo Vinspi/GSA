@@ -38,8 +38,12 @@ public interface AliquotRepository extends JpaRepository<Aliquot, Long> {
 //    @Query("UPDATE fr.uniamu.ibdm.gsa_server.models.Aliquot a SET a.aliquotQuantityVisibleStock = :aliquotQuantityVisibleStock WHERE a.aliquotNLot = :aliquotNLot")
 //	void makeQuantityZeroNative(@Param("aliquotNLot") Long aliquotNLot, @Param("aliquotQuantityVisibleStock") Long aliquotQuantityVisibleStock);
 
-	@Modifying(clearAutomatically = true)
-    @Query("UPDATE fr.uniamu.ibdm.gsa_server.models.Aliquot a SET a.aliquotQuantityVisibleStock = :aliquotQuantityVisibleStock WHERE a.aliquotNLot = :aliquotNLot")
-	void makeQuantityZeroNative(@Param("aliquotNLot") Long aliquotNLot, @Param("aliquotQuantityVisibleStock") Long aliquotQuantityVisibleStock);
-
+//	@Modifying(clearAutomatically = true)// save au lieu d update ( mettre la val 0 )
+//    @Query("UPDATE fr.uniamu.ibdm.gsa_server.models.Aliquot a SET a.aliquotQuantityVisibleStock = :aliquotQuantityVisibleStock WHERE a.aliquotNLot = :aliquotNLot")
+//	void makeQuantityZeroNative(@Param("aliquotNLot") Long aliquotNLot, @Param("aliquotQuantityVisibleStock") Long aliquotQuantityVisibleStock);
+	// envoyer le nom du produit getProductName();
+	// rajouter le filrage sur la date dans la query
+	
+	//utiliser save de repo au lieu de query, findbyid( nlot) -> apres set qt visible et hidden apres save aliquots
+	//inserer des transactions pour la gestion des pertes ( ennum OUDATED pour les qts visibles et hidden )
 }
