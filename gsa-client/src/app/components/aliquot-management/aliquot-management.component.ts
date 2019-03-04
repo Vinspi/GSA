@@ -5,12 +5,14 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { User } from 'src/app/user';
 import { Aliquot } from './aliquot';
 import * as moment from 'moment';
+import {formatDate} from '@angular/common';
 
 @Component({
   selector: 'app-aliquot-management',
   templateUrl: './aliquot-management.component.html',
   styleUrls: ['./aliquot-management.component.css']
 })
+
 export class AliquotManagementComponent implements OnInit {
 
   cart: Array<any> = new Array();
@@ -20,11 +22,14 @@ export class AliquotManagementComponent implements OnInit {
   loaded: boolean = false;
   aliquoList = new Array<Aliquot>();
 
-  constructor(private userService: UserService, private localStorage: LocalStorage, private aliquotService: AliquotService) { }
+
+  constructor(private userService: UserService, private localStorage: LocalStorage, private aliquotService: AliquotService) {}
 
   ngOnInit() {
-    console.log('aliqot');
+    formatDate(new Date(), 'yyyy-MM-dd', 'en');
+    console.log(this.aliquoList);
     // this.aliquotService.getAliquots();
+    console.log(new Date());
     this.aliquotService.getAliquots().subscribe(res => {
       // this.aliquoList = res.data;
       res.data.forEach(el => {
@@ -34,15 +39,17 @@ export class AliquotManagementComponent implements OnInit {
         aliquot.quantityVisible = el.aliquotQuantityVisibleStock;
         aliquot.quatityHidden = el.aliquotQuantityHiddenStock;
         const expirationDate  = el.aliquotExpirationDate;
-       // console.log(expirationDate);
-        if(expirationDate > moment()){
-          aliquot.expire = false;
-        } else {
+       console.log(expirationDate);
+        if(expirationDate < moment.locale()){ 
+          //if(aliquot.date < moment()){ 
           aliquot.expire = true;
+        } else {
+          aliquot.expire = false;
         }
         this.aliquoList.push(aliquot)
        });
-     //  console.log(this.aliquoList);
+       //console.log(aliquot.expire);
+      console.log(this.aliquoList);
       });
   }
 
@@ -52,7 +59,6 @@ export class AliquotManagementComponent implements OnInit {
       alert("Aliquot deleted");
     });
 
-    
   }
 
   

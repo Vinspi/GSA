@@ -18,10 +18,12 @@
               <td>{{item.date}}</td>
               <td>{{item.quantityVisible}}</td>
               <td>{{item.quatityHidden}}</td>
-              <td ng-if="item.expire"> 
-                  <button title="delete aliquot" type="button" class="btn btn-xs btn-danger" (click)="deleteAliquot(item.id)">
-                      <i>Expire</i>
-                  </button>
+              <td> 
+                <div *ngIf="item.expire">
+                    <button title="delete aliquot" type="button" class="btn btn-xs btn-danger" (click)="deleteAliquot(item.id)">
+                        <i>Expire</i>
+                    </button>
+                </div>
               </td>
             </tr>
       </ng-container>

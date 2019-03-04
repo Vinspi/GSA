@@ -30,10 +30,16 @@ public interface AliquotRepository extends JpaRepository<Aliquot, Long> {
 //	@Query("update fr.uniamu.ibdm.gsa_server.models.Aliquot a set a.aliquotQuantityVisibleStock =:zero where a.aliquotNLot =:aliquotNLot")
 //	void makeQuantityZero(@Param("aliquotNLot") Long aliquotNLot, @Param("zero") Long zero);
 //	
-	@Modifying
-	@Query(value="update fr.uniamu.ibdm.gsa_server.models.Aliquot a set a.aliquotQuantityVisibleStock = ? where a.aliquotNLot = ?", nativeQuery = true)
-	void makeQuantityZeroNative(Long aliquotNLot, Long aliquotQuantityVisibleStock);
+//	@Modifying
+//	@Query(value="update fr.uniamu.ibdm.gsa_server.models.Aliquot a set a.aliquotQuantityVisibleStock = ? where a.aliquotNLot = ?", nativeQuery = true)
+//	void makeQuantityZeroNative(Long aliquotNLot, Long aliquotQuantityVisibleStock);
 	
-	
+//	@Modifying(clearAutomatically = true)
+//    @Query("UPDATE fr.uniamu.ibdm.gsa_server.models.Aliquot a SET a.aliquotQuantityVisibleStock = :aliquotQuantityVisibleStock WHERE a.aliquotNLot = :aliquotNLot")
+//	void makeQuantityZeroNative(@Param("aliquotNLot") Long aliquotNLot, @Param("aliquotQuantityVisibleStock") Long aliquotQuantityVisibleStock);
+
+	@Modifying(clearAutomatically = true)
+    @Query("UPDATE fr.uniamu.ibdm.gsa_server.models.Aliquot a SET a.aliquotQuantityVisibleStock = :aliquotQuantityVisibleStock WHERE a.aliquotNLot = :aliquotNLot")
+	void makeQuantityZeroNative(@Param("aliquotNLot") Long aliquotNLot, @Param("aliquotQuantityVisibleStock") Long aliquotQuantityVisibleStock);
 
 }
