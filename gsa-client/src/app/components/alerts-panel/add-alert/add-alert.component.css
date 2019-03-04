@@ -1,0 +1,49 @@
+
+:host {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+#edit-alerts {
+    width: 50%;
+    height: 100%;
+    background-color: white;
+    margin-right: 2px;
+    border-radius: 5px;
+}
+
+h4 {
+    text-align: center;
+  }
+
+#alerts-right-panel{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-left: 2px;
+
+}
+
+#triggered-alerts {
+    width: 100%;
+    height: 60%;
+    background-color: white;
+    margin-bottom: 2px;
+    border-radius: 5px;
+    max-height: 70%;
+    overflow-y: auto;
+
+}
+
+#add-alert {
+    width: 100%;
+    height: 40%;
+    background-color: white;
+    margin-top: 2px;
+    border-radius: 5px;
+
+
+}
+

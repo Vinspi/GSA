@@ -1,0 +1,29 @@
+<div id="add-alert">
+  <h4>Add a new alert</h4>
+  <form >
+    <div class="col-sm-10 form-group">
+    <div id="select-container" class="form-group">
+      <div id="alert-container" class="form-group">
+        <label for="source">Select alert type :</label>
+        <select id="source" class="form-control">
+          <option value="" selected disabled hidden>General</option>
+          <option value="" >Visible stock</option>
+          <option value="" >Hidden stock</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-10 form-group">
+      <div id="seuil-container" class="form-group">
+        <label for="target">Seuil : </label>
+        <input placeholder="Seuil">
+    </div>
+    </div>
+    </div>
+    <div class="col-sm-10 form-group">
+    <div id="button-container" class="form-group">
+      <button (click)="addAlert()" type="submit" class="btn btn-primary">Add alert</button>
+    </div>
+    </div>
+  </form>
+  <ngb-alert *ngIf="messageAlert" [(type)]="typeAlert" (close)="messageAlert = null">{{messageAlert}}</ngb-alert>
+</div>
