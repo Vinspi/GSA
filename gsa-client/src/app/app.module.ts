@@ -34,7 +34,7 @@ import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-al
     WithdrawComponent,
     StatsComponent,
     AddProductComponent,
-    HistoryComponent
+    HistoryComponent,
     StatsComponent,
     AddAliquoteComponent,
     AlertsPanelComponent,
