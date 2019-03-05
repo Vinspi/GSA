@@ -10,6 +10,13 @@ public class AddAlertForm implements Form {
   private String productName;
   private int quantity;
 
+  /**
+   * Constructor for AddAlertForm.
+   *
+   * @param storageType Storage type for the alert.
+   * @param productName Product name for the alert.
+   * @param quantity    Min quantity for triggering alert.
+   */
   public AddAlertForm(StorageType storageType, String productName, int quantity) {
     this.storageType = storageType;
     this.productName = productName;
@@ -23,7 +30,7 @@ public class AddAlertForm implements Form {
   public boolean validate() {
     Pattern patternProductName = Pattern.compile("^[A-Z]*_ANTI_[A-Z]*");
 
-    if(!patternProductName.matcher(productName).matches() || quantity <= 0){
+    if (!patternProductName.matcher(productName).matches() || quantity <= 0) {
       return false;
     }
 

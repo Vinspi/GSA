@@ -5,7 +5,13 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 
 public class EnumConvertor {
 
-  public static AlertType storageTypeToAlertType(StorageType storageType){
+  /**
+   * Utility function to convert StorageType to AlertType.
+   *
+   * @param storageType StorageType enum ton convert.
+   * @return AlertType corresponding to the StorageType provided.
+   */
+  public static AlertType storageTypeToAlertType(StorageType storageType) {
     switch (storageType) {
       case STOCK:
         return AlertType.VISIBLE_STOCK;

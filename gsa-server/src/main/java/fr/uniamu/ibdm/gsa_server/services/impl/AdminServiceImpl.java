@@ -301,11 +301,9 @@ public class AdminServiceImpl implements AdminService {
     Optional<Alert> alert;
 
     if (productOPt.isPresent()) {
-      System.out.println("product found");
       alert = alertRepository.findByAlertTypeAndProduct(EnumConvertor.storageTypeToAlertType(form.getStorageType()), productOPt.get());
 
       if (!alert.isPresent()) {
-        System.out.println("alert present");
         /* we can add the alert */
         Alert alert1 = new Alert();
         alert1.setSeuil(form.getQuantity());
@@ -313,13 +311,11 @@ public class AdminServiceImpl implements AdminService {
         alert1.setAlertType(EnumConvertor.storageTypeToAlertType(form.getStorageType()));
 
 
-
         alertRepository.save(alert1);
 
         return true;
       } else {
         /* the alert already exists */
-        System.out.println("alert non present");
         return false;
       }
     } else {

@@ -236,13 +236,13 @@ public class AdminController {
    * @return SUCCESS status if the operation can be done, FAIL status otherwise.
    */
   @PostMapping("/addAlert")
-  public JsonResponse<AddAlertForm> addAlert(@RequestBody AddAlertForm form){
+  public JsonResponse<AddAlertForm> addAlert(@RequestBody AddAlertForm form) {
 
     JsonResponse<AddAlertForm> failRequest = new JsonResponse<>(RequestStatus.FAIL);
     failRequest.setData(form);
     boolean success;
 
-    if (form.validate()){
+    if (form.validate()) {
       System.out.println("form is valid");
       success = adminService.addAlert(form);
       if (success) {
