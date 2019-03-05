@@ -1,0 +1,36 @@
+.close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.toast-custom {
+    color: white !important;
+    position: absolute;
+    right: 15px;
+    top: 13%;
+    z-index: 1;
+    border-radius: 5px;
+    padding: 15px;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .5s ease-in-out, visibility .5s ease-in-out 
+}
+
+.separator {
+    margin-top: 5px;
+    margin-bottom: 8px;
+}
+
+.toast-danger {
+    background-color: rgba(244, 67, 54, .8) !important;
+}
+
+.toast-success {
+    background-color: rgba(76, 175, 80, .8) !important;
+}
+
+.show {
+    visibility: visible !important;
+    opacity: 1;
+}
