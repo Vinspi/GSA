@@ -12,15 +12,18 @@ import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
@@ -45,7 +48,7 @@ public class AdminServiceImpl implements AdminService {
    * @param productRepository Autowired repository.
    * @param aliquotRepository Autowired repository.
    * @param speciesRepository Autowired repository.
-   * @param alertRepository Autowired repository.
+   * @param alertRepository   Autowired repository.
    */
   @Autowired
   public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository) {
@@ -257,6 +260,31 @@ public class AdminServiceImpl implements AdminService {
     if (nullableProduct.isPresent()) {
       newAliquot.setProduct(nullableProduct.get());
       aliquotRepository.save(newAliquot);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean transfertAliquot(TransfertAliquotForm form) {
+
+    Optional<Aliquot> aliquotOpt = aliquotRepository.findById(form.getNumLot());
+    Aliquot aliquot;
+    long transfertQuantity;
+
+    if (aliquotOpt.isPresent()) {
+      aliquot = aliquotOpt.get();
+      if (form.getFrom() == StorageType.RESERVE) {
+        transfertQuantity = form.getQuantity() >= aliquot.getAliquotQuantityHiddenStock() ? aliquot.getAliquotQuantityHiddenStock() : form.getQuantity();
+        aliquot.setAliquotQuantityHiddenStock(aliquot.getAliquotQuantityHiddenStock() - transfertQuantity);
+        aliquot.setAliquotQuantityVisibleStock(aliquot.getAliquotQuantityVisibleStock() + transfertQuantity);
+      } else {
+        transfertQuantity = form.getQuantity() >= aliquot.getAliquotQuantityVisibleStock() ? aliquot.getAliquotQuantityVisibleStock() : form.getQuantity();
+        aliquot.setAliquotQuantityHiddenStock(aliquot.getAliquotQuantityHiddenStock() + transfertQuantity);
+        aliquot.setAliquotQuantityVisibleStock(aliquot.getAliquotQuantityVisibleStock() - transfertQuantity);
+      }
+      aliquotRepository.save(aliquot);
       return true;
     } else {
       return false;

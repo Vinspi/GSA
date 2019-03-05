@@ -4,6 +4,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
@@ -64,6 +65,7 @@ public interface AdminService {
    * This method update the alert seuil of the given alert.
    *
    * @param form Wrapper containing new seuil and alert id.
+   * @return true if succeed, false otherwise.
    */
   boolean updateAlertSeuil(UpdateAlertForm form);
 
@@ -71,7 +73,16 @@ public interface AdminService {
    * This method remove the given alert from the database.
    *
    * @param id targeted alert id.
+   * @return true if succeed, false otherwise.
    */
   boolean removeAlert(long id);
+
+  /**
+   * This method transfers aliquots between storage type.
+   *
+   * @param form Wrapper containing NLot, quantity and storage type.
+   * @return true if succeed, false otherwise.
+   */
+  boolean transfertAliquot(TransfertAliquotForm form);
 
 }
