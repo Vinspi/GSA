@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
@@ -84,5 +85,13 @@ public interface AdminService {
    * @return true if succeed, false otherwise.
    */
   boolean transfertAliquot(TransfertAliquotForm form);
+
+  /**
+   * This method add a new alert in the database.
+   *
+   * @param form Wrapper containing product name, quantity and storage type.
+   * @return false if the alert alreadyExist, false otherwise.
+   */
+  boolean addAlert(AddAlertForm form);
 
 }

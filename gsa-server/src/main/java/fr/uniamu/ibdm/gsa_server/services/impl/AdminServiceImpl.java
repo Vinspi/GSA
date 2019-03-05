@@ -15,12 +15,14 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
+import fr.uniamu.ibdm.gsa_server.util.EnumConvertor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -286,6 +288,40 @@ public class AdminServiceImpl implements AdminService {
       }
       aliquotRepository.save(aliquot);
       return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean addAlert(AddAlertForm form) {
+
+    String[] shards = form.getProductName().split("_");
+    Optional<Product> productOPt = productRepository.findById(new ProductPK(shards[2], shards[0]));
+    Optional<Alert> alert;
+
+    if (productOPt.isPresent()) {
+      System.out.println("product found");
+      alert = alertRepository.findByAlertTypeAndProduct(EnumConvertor.storageTypeToAlertType(form.getStorageType()), productOPt.get());
+
+      if (!alert.isPresent()) {
+        System.out.println("alert present");
+        /* we can add the alert */
+        Alert alert1 = new Alert();
+        alert1.setSeuil(form.getQuantity());
+        alert1.setProduct(productOPt.get());
+        alert1.setAlertType(EnumConvertor.storageTypeToAlertType(form.getStorageType()));
+
+
+
+        alertRepository.save(alert1);
+
+        return true;
+      } else {
+        /* the alert already exists */
+        System.out.println("alert non present");
+        return false;
+      }
     } else {
       return false;
     }
