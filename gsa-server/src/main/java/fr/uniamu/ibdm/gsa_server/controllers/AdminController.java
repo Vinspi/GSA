@@ -8,6 +8,7 @@ import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
@@ -73,7 +74,7 @@ public class AdminController {
    *
    * @param form contains "targetName" and "sourceName" keys.
    * @return if successful, a JSON response with a success status, otherwise a
-   *      JSON response with a fail status and the sent form as data.
+   *     JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -103,7 +104,7 @@ public class AdminController {
    * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
    *             price & provider & product of aliquote.
    * @return if successful, a JSON response with a success status, otherwise a
-   *      JSON response with a fail status and the sent form as data.
+   *     JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
@@ -197,6 +198,34 @@ public class AdminController {
     } else {
       return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
     }
+  }
+
+  /**
+   * REST endpoint, transfer entity of an aliquot from a storage type to another one.
+   *
+   * @param form Wrapper containing nlot, quantity,
+   *             from and destination sent by the client.
+   * @return SUCCESS status if the operation can be done, FAIL status otherwise.
+   */
+  @PostMapping("/transfertAliquot")
+  public JsonResponse<TransfertAliquotForm> transfertAliquot(@RequestBody TransfertAliquotForm form) {
+
+    JsonResponse<TransfertAliquotForm> response;
+    boolean success;
+
+    if (form.validate()) {
+      success = adminService.transfertAliquot(form);
+      if (success) {
+        response = new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        response = new JsonResponse<>(RequestStatus.FAIL);
+        response.setData(form);
+      }
+    } else {
+      response = new JsonResponse<>(RequestStatus.FAIL);
+      response.setData(form);
+    }
+    return response;
   }
 
 }
