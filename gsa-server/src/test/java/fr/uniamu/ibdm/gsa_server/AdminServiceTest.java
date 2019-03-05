@@ -14,6 +14,7 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
@@ -25,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -364,6 +366,45 @@ public class AdminServiceTest {
 
     Assert.assertFalse(success);
     Mockito.verify(aliquotRepository, Mockito.never()).save(Mockito.any());
+
+
+  }
+
+  @Test
+  public void addAlert(){
+
+    AddAlertForm form = new AddAlertForm();
+    form.setProductName("MONKEY_ANTI_DONKEY");
+    form.setQuantity(20);
+    form.setStorageType(StorageType.RESERVE);
+
+    ArgumentCaptor<Alert> captor = ArgumentCaptor.forClass(Alert.class);
+
+    /* product exists */
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.of(new Product()));
+    /* alert doesn't exits */
+    Mockito.when(alertRepository.findByAlertTypeAndProduct(Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
+
+    boolean success = adminService.addAlert(form);
+
+    Mockito.verify(alertRepository, Mockito.times(1)).save(captor.capture());
+    Assert.assertTrue(success);
+    Assert.assertEquals(AlertType.HIDDEN_STOCK ,captor.getValue().getAlertType());
+
+    /* the product doesn't exist */
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.empty());
+
+    success = adminService.addAlert(form);
+
+    Assert.assertFalse(success);
+
+    /* the alert already exists */
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.of(new Product()));
+    Mockito.when(alertRepository.findByAlertTypeAndProduct(Mockito.any(), Mockito.any())).thenReturn(Optional.of(new Alert()));
+
+    success = adminService.addAlert(form);
+
+    Assert.assertFalse(success);
 
 
   }

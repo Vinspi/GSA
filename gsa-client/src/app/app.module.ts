@@ -20,6 +20,8 @@ import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.com
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
 import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
+import { AddAlertComponent } from './components/alerts-panel/add-alert/add-alert.component';
+import { ToastComponent } from './components/toast/toast.component';
 
 
 @NgModule({
@@ -37,7 +39,9 @@ import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-al
     AddAliquoteComponent,
     AlertsPanelComponent,
     EditAlertsComponent,
-    TriggeredAlertsComponent
+    TriggeredAlertsComponent,
+    AddAlertComponent,
+    ToastComponent
   ],
   imports: [
     BrowserModule,

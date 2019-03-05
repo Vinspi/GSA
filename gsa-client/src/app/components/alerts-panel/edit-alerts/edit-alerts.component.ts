@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { AdminService } from '../../../services/admin.service';
 
 @Component({
@@ -7,7 +7,7 @@ import { AdminService } from '../../../services/admin.service';
   styleUrls: ['./edit-alerts.component.css']
 })
 
-export class EditAlertsComponent implements OnInit {
+export class EditAlertsComponent implements OnInit, OnChanges {
 
   @Output() updateAlertList = new EventEmitter<any>();
 
@@ -19,6 +19,14 @@ export class EditAlertsComponent implements OnInit {
   constructor(private adminService : AdminService) { }
 
   ngOnInit() {
+    this.loadData();
+  }
+
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    this.loadData();
+  }
+
+  loadData() {
     this.adminService.getAllAlerts().subscribe(response => {
       this.data = response.data;
       this.elementChoosed = 0;

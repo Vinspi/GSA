@@ -8,22 +8,7 @@ h1 {
   text-align: center;
 }
 
-.button-countainer button {
-  background-color: #242939;
-}
-
 .btn:disabled:hover {
   background-color: white !important;
   color: #242939 !important;
-}
-
-.ng-valid[required], .ng-valid.required  {
-  border-left: 5px solid #42A948; /* green */
-}
-
-.ng-valid {
-  border-left: 5px solid #42A948; /* green */
-}
-.ng-invalid:not(form)  {
-  border-left: 5px solid #a94442; /* red */
 }

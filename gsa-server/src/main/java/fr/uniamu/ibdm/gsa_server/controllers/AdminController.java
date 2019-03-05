@@ -5,6 +5,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
@@ -226,6 +227,30 @@ public class AdminController {
       response.setData(form);
     }
     return response;
+  }
+
+  /**
+   * REST endpoint, add a new alert in the database.
+   *
+   * @param form Wrapper containing product name, quantity and storage type.
+   * @return SUCCESS status if the operation can be done, FAIL status otherwise.
+   */
+  @PostMapping("/addAlert")
+  public JsonResponse<AddAlertForm> addAlert(@RequestBody AddAlertForm form) {
+
+    JsonResponse<AddAlertForm> failRequest = new JsonResponse<>(RequestStatus.FAIL);
+    failRequest.setData(form);
+    boolean success;
+
+    if (form.validate()) {
+      System.out.println("form is valid");
+      success = adminService.addAlert(form);
+      if (success) {
+        return new JsonResponse<>(RequestStatus.SUCCESS);
+      }
+    }
+
+    return failRequest;
   }
 
 }

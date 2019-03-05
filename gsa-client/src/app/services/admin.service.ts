@@ -59,4 +59,8 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/transfertAliquot', data, {withCredentials: true});
   }
 
+  addAlert(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/addAlert', data, {withCredentials: true});
+  }
+
 }
