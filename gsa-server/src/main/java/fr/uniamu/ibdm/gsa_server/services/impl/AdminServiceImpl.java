@@ -322,4 +322,11 @@ public class AdminServiceImpl implements AdminService {
       return false;
     }
   }
+
+  @Override
+  public List<Product> getAllProductsWithAliquots() {
+
+    return (List) productRepository.findAll();
+
+  }
 }

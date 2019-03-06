@@ -22,6 +22,7 @@ import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
 import { AddAlertComponent } from './components/alerts-panel/add-alert/add-alert.component';
 import { ToastComponent } from './components/toast/toast.component';
+import { InventoryComponent } from './components/inventory/inventory.component';
 
 
 @NgModule({
@@ -41,7 +42,8 @@ import { ToastComponent } from './components/toast/toast.component';
     EditAlertsComponent,
     TriggeredAlertsComponent,
     AddAlertComponent,
-    ToastComponent
+    ToastComponent,
+    InventoryComponent
   ],
   imports: [
     BrowserModule,

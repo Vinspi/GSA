@@ -1,0 +1,33 @@
+<div class="d-flex w-100 flex-column" id="inventory">
+  <div *ngFor="let product of data" class="card w-100">
+    <div class="card-body">
+      <h5 class="card-title">{{product.productName}}</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">
+          <div class="row">
+            <div class="col-md-3 center">nLot</div>
+            <div class="col-md-3 center">date</div>
+            <div class="col-md-3 center">quantity</div>
+            <div class="col-md-3 center">inventory</div>
+          </div>
+        </li>
+        <li *ngFor="let aliquot of product.aliquots" class="list-group-item">
+          <div class="row">
+            <div class="col-md-3 center">
+              {{aliquot.aliquotNLot}}
+            </div>
+            <div class="col-md-3 center">
+              {{aliquot.aliquotExpirationDate}}
+            </div>
+            <div class="col-md-3 center">
+              {{aliquot.aliquotQuantityVisibleStock}}
+            </div>
+            <div class="col-md-3 center">
+              <input type="text" class="form-control">
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

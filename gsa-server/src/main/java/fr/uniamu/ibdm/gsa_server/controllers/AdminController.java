@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.controllers;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
@@ -251,6 +252,18 @@ public class AdminController {
     }
 
     return failRequest;
+  }
+
+  /**
+   * REST endpoint, retrieve all products and their aliquots.
+   *
+   * @return a JsonResponse containing a list of Products.
+   */
+  @GetMapping("/getAllProductsWithAliquots")
+  public JsonResponse<List<Product>> getAllProductsWithAliquots(){
+
+    return new JsonResponse<>(RequestStatus.SUCCESS,adminService.getAllProductsWithAliquots());
+
   }
 
 }

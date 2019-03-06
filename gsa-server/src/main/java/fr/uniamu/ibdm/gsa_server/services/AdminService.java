@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -93,5 +94,13 @@ public interface AdminService {
    * @return false if the alert alreadyExist, false otherwise.
    */
   boolean addAlert(AddAlertForm form);
+
+  /**
+   * This method retrieve all products and their aliquots
+   *     from the database.
+   *
+   * @return a list of products.
+   */
+  List<Product> getAllProductsWithAliquots();
 
 }

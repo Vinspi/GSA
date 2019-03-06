@@ -1,0 +1,12 @@
+:host {
+    width: 100%;
+}
+
+.card {
+    margin-bottom: 10px;
+}
+
+#inventory {
+    overflow-y: auto;
+    max-height: 60vh;
+}

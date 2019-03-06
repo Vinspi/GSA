@@ -29,6 +29,7 @@ export class AdminService {
 
     return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true})
   }
+
   getTriggeredAlerts(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL+"/triggeredAlerts")
   }
@@ -61,6 +62,10 @@ export class AdminService {
 
   addAlert(data: any): Observable<JsonResponse> {
     return this.http.post<JsonResponse>(this.BASE_URL+'/addAlert', data, {withCredentials: true});
+  }
+
+  getAllProductsWithAliquots(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getAllProductsWithAliquots', {withCredentials: true});
   }
 
 }
