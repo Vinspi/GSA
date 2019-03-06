@@ -1,14 +1,36 @@
 package fr.uniamu.ibdm.gsa_server;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
@@ -23,6 +45,7 @@ import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
@@ -32,34 +55,12 @@ import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AdminServiceTest {
   @MockBean
   TimeFactory clock;
-  
+
   @MockBean
   ProductRepository productRepository;
 
@@ -472,29 +473,28 @@ public class AdminServiceTest {
 
     Assert.assertNull(losses);
 
-    // Only outdated and lost aliquots should be returned.
     int year = 2019;
     String quarter = "QUARTER_1";
 
-    List<Object[]> obj = new ArrayList<>();
-    obj.add(new Object[] { BigDecimal.valueOf(0), "dog", "cat" });
-    obj.add(new Object[] { BigDecimal.valueOf(0), "donkey", "kong" });
-    obj.add(new Object[] { BigDecimal.valueOf(100), "horse", "cat" });
+    List<Object[]> cost = new ArrayList<>();
+    cost.add(new Object[] { BigDecimal.valueOf(46.51), "dog", "cat" });
+    cost.add(new Object[] { BigDecimal.valueOf(51.49), "donkey", "kong" });
+    cost.add(new Object[] { BigDecimal.valueOf(100.90), "horse", "cat" });
 
     LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
     LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
     Mockito.when(transactionRepository.getTransactionLossesByQuarterAndYearGroupedByProducts(
-        firstDay.toString(), lastDay.toString())).thenReturn(obj);
+        firstDay.toString(), lastDay.toString())).thenReturn(cost);
 
     TransactionLossesData data = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
-    Assert.assertEquals(1, data.getProductLosses().size());
+    Assert.assertEquals(3, data.getProductLosses().size());
 
-    Product p = new Product();
-    p.setSource(new Species("cat"));
-    p.setTarget(new Species("horse"));
+    float sum = 0F;
+    for (ProductLossData loss : data.getProductLosses()) {
+      sum += loss.getProductLoss();
+    }
+    Assert.assertEquals(198.90F, sum, 2);
 
-    Assert.assertEquals(p.getProductName(), data.getProductLosses().get(0).getProductName());
-    Assert.assertEquals(100, data.getProductLosses().get(0).getProductLoss(), 0);
   }
 
 }

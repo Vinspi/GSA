@@ -435,7 +435,7 @@ public class AdminServiceImpl implements AdminService {
 
     ReportData data = new ReportData();
     List<ReportTransactionData> transactions = new ArrayList<>();
-    Float totalPrice = 0F;
+    BigDecimal totalPrice = BigDecimal.ZERO;
 
     for (Object[] o : resultQuery) {
 
@@ -454,12 +454,13 @@ public class AdminServiceImpl implements AdminService {
       // get() function won't return null as the source and the target are well-defined in the
       // aliquot table.
       transactionData.setProductName(productRepository.findById(productPk).get().getProductName());
-      totalPrice += transactionData.getAliquotPrice() * transactionData.getTransactionQuantity();
+      BigDecimal withdrawnAliquotsCost = ((BigDecimal) o[0]).multiply(BigDecimal.valueOf(transactionData.getTransactionQuantity()));
+      totalPrice = totalPrice.add(withdrawnAliquotsCost);
 
       transactions.add(transactionData);
     }
 
-    data.setTotalPrice(totalPrice);
+    data.setTotalPrice(totalPrice.floatValue());
     data.setTransactions(transactions);
 
     return data;
@@ -482,14 +483,11 @@ public class AdminServiceImpl implements AdminService {
         .getTransactionLossesByQuarterAndYearGroupedByProducts(firstDay.toString(),
             lastDay.toString());
 
-    Float totalLosses = 0F;
+    BigDecimal totalLosses = BigDecimal.ZERO;
     List<ProductLossData> productLosses = new ArrayList<>();
 
     for (Object[] row : queryResult) {
       Float loss = ((BigDecimal) row[0]).floatValue();
-      if (loss <= 0) {
-        continue;
-      }
 
       ProductLossData productLoss = data.new ProductLossData();
       productLoss.setProductLoss(loss);
@@ -499,11 +497,11 @@ public class AdminServiceImpl implements AdminService {
       productLoss.setProductName(p.getProductName());
 
       productLosses.add(productLoss);
-      totalLosses += productLoss.getProductLoss();
+      totalLosses = totalLosses.add((BigDecimal) row[0]);
     }
 
     data.setProductLosses(productLosses);
-    data.setTotalLosses(totalLosses);
+    data.setTotalLosses(totalLosses.floatValue());
 
     return data;
   }

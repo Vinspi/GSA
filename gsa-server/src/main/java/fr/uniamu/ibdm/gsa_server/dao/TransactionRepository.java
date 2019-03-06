@@ -23,12 +23,13 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
 
-  @Query(value = "SELECT SUM(aliquot_price * transaction_quantity), source, target\n"
+  @Query(value = "SELECT SUM(aliquot_price * transaction_quantity) as sum, source, target\n"
       + "FROM transaction\n" + "JOIN aliquot ON (aliquot_id = aliquot.aliquotNLot)\n"
       + "WHERE (transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
       + "AND transaction.member_id IS NULL\n"
       + "AND (transaction.transaction_motif LIKE 'OUTDATED' OR transaction.transaction_motif LIKE 'LOST'))"
-      + "GROUP BY source, target", nativeQuery = true)
+      + "GROUP BY source, target\n"
+      + "HAVING sum > 0", nativeQuery = true)
   List<Object[]> getTransactionLossesByQuarterAndYearGroupedByProducts(
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
