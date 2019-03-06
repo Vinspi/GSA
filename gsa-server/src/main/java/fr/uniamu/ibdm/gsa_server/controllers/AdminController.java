@@ -266,4 +266,10 @@ public class AdminController {
 
   }
 
+  @PostMapping("/handleInventory")
+  public JsonResponse<Boolean> handleInventory(){
+
+    return new JsonResponse<Boolean>(RequestStatus.SUCCESS);
+  }
+
 }

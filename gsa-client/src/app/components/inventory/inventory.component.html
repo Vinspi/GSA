@@ -1,33 +1,38 @@
 <div class="d-flex w-100 flex-column" id="inventory">
-  <div *ngFor="let product of data" class="card w-100">
-    <div class="card-body">
-      <h5 class="card-title">{{product.productName}}</h5>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-          <div class="row">
-            <div class="col-md-3 center">nLot</div>
-            <div class="col-md-3 center">date</div>
-            <div class="col-md-3 center">quantity</div>
-            <div class="col-md-3 center">inventory</div>
-          </div>
-        </li>
-        <li *ngFor="let aliquot of product.aliquots" class="list-group-item">
-          <div class="row">
-            <div class="col-md-3 center">
-              {{aliquot.aliquotNLot}}
+  <div *ngFor="let product of data, let i = index">
+    <div *ngIf="product.aliquots.length > 0" class="card w-100">
+      <div class="card-body">
+        <h5 class="card-title center">{{product.productName}}</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-md-3 center">nLot</div>
+              <div class="col-md-3 center">date</div>
+              <div class="col-md-3 center">quantity</div>
+              <div class="col-md-3 center">inventory</div>
             </div>
-            <div class="col-md-3 center">
-              {{aliquot.aliquotExpirationDate}}
+          </li>
+          <li *ngFor="let aliquot of product.aliquots, let k = index" class="list-group-item">
+            <div class="row">
+              <div class="col-md-3 center">
+                {{aliquot.aliquotNLot}}
+              </div>
+              <div class="col-md-3 center">
+                {{aliquot.aliquotExpirationDate}}
+              </div>
+              <div class="col-md-3 center">
+                {{aliquot.aliquotQuantityVisibleStock}}
+              </div>
+              <div class="col-md-3 center">
+                <input (change)="setMapValue(aliquot.aliquotNLot, $event)" type="text" digitsOnly [ngModel]="map.get(aliquot.aliquotNLot)" class="form-control">
+              </div>
             </div>
-            <div class="col-md-3 center">
-              {{aliquot.aliquotQuantityVisibleStock}}
-            </div>
-            <div class="col-md-3 center">
-              <input type="text" class="form-control">
-            </div>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
+</div>
+<div class="button-container">
+  <button (click)="sendForm()" type="button" class="btn btn-outlined-custom">Terminate</button>
 </div>

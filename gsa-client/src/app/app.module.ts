@@ -23,6 +23,7 @@ import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-al
 import { AddAlertComponent } from './components/alerts-panel/add-alert/add-alert.component';
 import { ToastComponent } from './components/toast/toast.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
+import { DigitsOnlyDirective } from './directives/digits-only.directive';
 
 
 @NgModule({
@@ -43,7 +44,8 @@ import { InventoryComponent } from './components/inventory/inventory.component';
     TriggeredAlertsComponent,
     AddAlertComponent,
     ToastComponent,
-    InventoryComponent
+    InventoryComponent,
+    DigitsOnlyDirective
   ],
   imports: [
     BrowserModule,

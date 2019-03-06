@@ -68,4 +68,8 @@ export class AdminService {
     return this.http.get<JsonResponse>(this.BASE_URL+'/getAllProductsWithAliquots', {withCredentials: true});
   }
 
+  postInventoryForm(form: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/handleInventory',form, {withCredentials: true});
+  }
+
 }
