@@ -35,6 +35,8 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData.ReportTransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -42,6 +44,7 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
+import fr.uniamu.ibdm.gsa_server.util.BigDecimalAttributeConverter;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
@@ -367,14 +370,13 @@ public class AdminServiceImpl implements AdminService {
 
     ReportData data = new ReportData();
     List<ReportTransactionData> transactions = new ArrayList<>();
-    float totalPrice = 0F;
-    
-    
+    Float totalPrice = 0F;
+
     for (Object[] o : resultQuery) {
 
       ReportTransactionData transactionData = data.new ReportTransactionData();
-      
-      transactionData.setAliquotPrice((Float) o[0]);
+
+      transactionData.setAliquotPrice(((BigDecimal) o[0]).floatValue());
       transactionData.setTransactionDate((String) o[1].toString());
       transactionData.setTransactionQuantity((Integer) o[2]);
       transactionData.setUserName((String) o[3]);
@@ -391,15 +393,15 @@ public class AdminServiceImpl implements AdminService {
 
       transactions.add(transactionData);
     }
-    
+
     data.setTotalPrice(totalPrice);
     data.setTransactions(transactions);
-    
+
     return data;
   }
 
   @Override
-  public Float getTransactionLossesByQuarterAndYear(String quarter, int year) {
+  public TransactionLossesData getTransactionLossesByQuarterAndYear(String quarter, int year) {
     LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
     if (firstDay == null) {
       return null;
@@ -409,8 +411,36 @@ public class AdminServiceImpl implements AdminService {
       return null;
     }
 
-    return transactionRepository.getTransactionLossesByQuarterAndYear(firstDay.toString(),
-        lastDay.toString());
+    TransactionLossesData data = new TransactionLossesData();
+
+    List<Object[]> queryResult = transactionRepository
+        .getTransactionLossesByQuarterAndYearGroupedByProducts(firstDay.toString(),
+            lastDay.toString());
+
+    Float totalLosses = 0F;
+    List<ProductLossData> productLosses = new ArrayList<>();
+
+    for (Object[] row : queryResult) {
+      Float loss = ((BigDecimal) row[0]).floatValue();
+      if (loss <= 0) {
+        continue;
+      }
+
+      ProductLossData productLoss = data.new ProductLossData();
+      productLoss.setProductLoss(loss);
+      Product p = new Product();
+      p.setTarget(new Species((String) row[1]));
+      p.setSource(new Species((String) row[2]));
+      productLoss.setProductName(p.getProductName());
+
+      productLosses.add(productLoss);
+      totalLosses += productLoss.getProductLoss();
+    }
+
+    data.setProductLosses(productLosses);
+    data.setTotalLosses(totalLosses);
+
+    return data;
   }
 
 }

@@ -19,6 +19,7 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
@@ -252,19 +253,20 @@ public class AdminController {
   }
 
   /**
-   * REST endpoint returning the total price of outdated transactions in a specific year's quarter.
+   * REST endpoint returning the total price of outdated and lost aliquot transactions in a specific
+   * year's quarter.
    *
    * @return JSON response containing a value.
    */
   @GetMapping("/transactionLosses")
-  public JsonResponse<Float> getTransactionLossesByQuarterAndYear(@RequestParam String quarter,
-      @RequestParam Integer year) {
-    Float losses = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
+  public JsonResponse<TransactionLossesData> getTransactionLossesByQuarterAndYear(
+      @RequestParam String quarter, @RequestParam Integer year) {
+    TransactionLossesData data = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
 
-    if (losses == null) {
+    if (data == null) {
       return new JsonResponse<>("Could not retrieve any transaction losses", RequestStatus.FAIL);
     }
-    return new JsonResponse<>(RequestStatus.SUCCESS, losses);
+    return new JsonResponse<>(RequestStatus.SUCCESS, data);
   }
 
 }

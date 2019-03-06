@@ -3,22 +3,22 @@ package fr.uniamu.ibdm.gsa_server.requests.JsonData;
 import java.util.List;
 
 public class ReportData {
-  private float totalPrice;
+  private Float totalPrice;
   private List<ReportTransactionData> transactions;
   
   public ReportData() {
   }
 
-  public ReportData(float totalPrice, List<ReportTransactionData> transactions) {
+  public ReportData(Float totalPrice, List<ReportTransactionData> transactions) {
     this.totalPrice = totalPrice;
     this.transactions = transactions;
   }
 
-  public float getTotalPrice() {
+  public Float getTotalPrice() {
     return totalPrice;
   }
 
-  public void setTotalPrice(float totalPrice) {
+  public void setTotalPrice(Float totalPrice) {
     this.totalPrice = totalPrice;
   }
 

@@ -42,12 +42,14 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
 
 @RunWith(SpringRunner.class)
@@ -306,7 +308,7 @@ public class AdminServiceTest {
   public void addAliquote() {
 
     long id = 33;
-    float priceValue1 = 4.56F;
+    BigDecimal priceValue1 = BigDecimal.valueOf(4.5);
     int qtyHiddenValue1 = 6;
     int qtyVisibleValue1 = 2;
     String providerValue1 = "Provider x";
@@ -421,8 +423,33 @@ public class AdminServiceTest {
 
   @Test
   public void getTransactionsLossesByQuarterAndYear() {
-    Float losses = adminService.getTransactionLossesByQuarterAndYear("anyQuarter", 2019);
+    TransactionLossesData losses = adminService.getTransactionLossesByQuarterAndYear("anyQuarter",
+        2019);
 
     Assert.assertNull(losses);
+
+    // Only outdated and lost aliquots should be returned.
+    int year = 2019;
+    String quarter = "QUARTER_1";
+
+    List<Object[]> obj = new ArrayList<>();
+    obj.add(new Object[] { BigDecimal.valueOf(0), "dog", "cat" });
+    obj.add(new Object[] { BigDecimal.valueOf(0), "donkey", "kong" });
+    obj.add(new Object[] { BigDecimal.valueOf(100), "horse", "cat" });
+
+    LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    Mockito.when(transactionRepository.getTransactionLossesByQuarterAndYearGroupedByProducts(
+        firstDay.toString(), lastDay.toString())).thenReturn(obj);
+
+    TransactionLossesData data = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
+    Assert.assertEquals(1, data.getProductLosses().size());
+
+    Product p = new Product();
+    p.setSource(new Species("cat"));
+    p.setTarget(new Species("horse"));
+
+    Assert.assertEquals(p.getProductName(), data.getProductLosses().get(0).getProductName());
+    Assert.assertEquals(100, data.getProductLosses().get(0).getProductLoss(), 0);
   }
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
@@ -98,12 +99,12 @@ public interface AdminService {
   boolean saveTeamTrimestrialReport(AddTeamTrimestrialReportForm form);
 
   /**
-   * This method returns the sum of prices of outdated aliquots.
+   * This method returns the sum of prices of outdated and lost aliquots and details of each loss.
    *
    * @param quarter value of Quarter enumeration
    * @param year year value
    * 
-   * @return total price losses.
+   * @return total price losses and its details (product's name and its associated loss).
    */
-  Float getTransactionLossesByQuarterAndYear(String quarter, int year);
+  TransactionLossesData getTransactionLossesByQuarterAndYear(String quarter, int year);
 }
