@@ -15,6 +15,7 @@ export class AddAliquoteComponent implements OnInit {
   messageAlert: string;
   typeAlert: string;
   model: any = {};
+  modelTransfert: any = {};
 
   constructor(private adminService: AdminService) {
     this.isViewable = false; 
@@ -22,6 +23,8 @@ export class AddAliquoteComponent implements OnInit {
    
   ngOnInit() {
     this.data = [];
+    this.modelTransfert.from = 'RESERVE';
+    this.modelTransfert.to = 'STOCK';
 
     this.adminService.getAllProductsName().subscribe(response => {
       this.data = <String[]> response.data;
@@ -34,12 +37,29 @@ export class AddAliquoteComponent implements OnInit {
     this.isViewable = !this.isViewable;
   }
 
+  transfertAliquot() {
+    this.adminService.transfertAliquot(this.modelTransfert).subscribe(res => {
+
+      if(res.status == 'SUCCESS') {
+        this.typeAlert = 'success';
+        this.messageAlert = this.modelTransfert.qte+' entity of aliquot n°'+this.modelTransfert.Nlot+
+        ' have been transferred from '+this.modelTransfert.from+' to '+this.modelTransfert.to
+      } else {
+        this.typeAlert = 'danger';
+        this.messageAlert = 'An error occured, this aliquot can\'t be transferred' 
+      }
+      setTimeout(() => {        
+        this.messageAlert = null;
+      }, 4000);
+    });
+  }
+
   addAliquote(){
   
     this.adminService.addAliquote({
       aliquotNLot : this.model.Nlot,
       aliquotQuantityVisibleStock : this.model.visibleQty,
-      aliquotQuantityHiddenStock : this.isViewable?this.model.reserveQty:0,
+      aliquotQuantityHiddenStock : this.model.reserveQty,
       aliquotPrice  : this.model.price,
       aliquotProvider : this.model.provider,
       aliquotProduct : this.model.product,
@@ -48,7 +68,7 @@ export class AddAliquoteComponent implements OnInit {
         this.typeAlert = "success";
         this.messageAlert = "The aliquot was successfully added.";
 
-      } else if (res.status === 'FAIL') {
+      } else {
         this.typeAlert = "danger";
         this.messageAlert = "An error occurred, this aliquot could not be added.";
       }

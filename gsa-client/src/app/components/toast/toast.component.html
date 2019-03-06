@@ -1,0 +1,20 @@
+<!-- <div *ngIf="isVisible && toastType == 'danger'" class="toast-custom toast-danger">
+  <i class="fas fa-times close"></i>
+  <div class="toast-custom-header">
+    {{toastHeader}}
+  </div>
+  <div class="separator"></div>
+  <div class="toast-custom-body">
+    {{toastBody}}
+  </div>
+</div> -->
+<div [ngClass]="{'show': isVisible, 'toast-success': (toastType == 'success'), 'toast-danger': (toastType == 'danger')}" class="toast-custom">
+  <i (click)="closeToast()" class="fas fa-times close"></i>
+  <div class="toast-custom-header">
+    {{toastHeader}}
+  </div>
+  <div class="separator"></div>
+  <div class="toast-custom-body">
+    {{toastBody}}
+  </div>
+</div>

@@ -1,16 +1,18 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
-import java.util.List;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+
+import java.util.List;
 
 public interface AdminService {
 
@@ -41,16 +43,17 @@ public interface AdminService {
   /**
    * This method adds a new aliquote.
    *
-   * @param form Wrapper containing informations about the aliquot.
+   * @param  form Wrapper containing informations about the aliquot.
    * @return true if adding the aliquote is successful, false otherwise.
    */
   boolean addAliquot(AddAliquoteForm form);
 
   /**
-   * This method retrieve all products on which an alert has been triggered.
+   * This method retrieve all products on which an
+   * alert has been triggered.
    *
-   * @return A list of wrapper containing product names, the quantity left and the threshold of the
-   *         alert.
+   * @return A list of wrapper containing product names, the quantity left
+   *     and the threshold of the alert.
    */
   List<TriggeredAlertsQuery> getTriggeredAlerts();
 
@@ -65,6 +68,7 @@ public interface AdminService {
    * This method update the alert seuil of the given alert.
    *
    * @param form Wrapper containing new seuil and alert id.
+   * @return true if succeed, false otherwise.
    */
   boolean updateAlertSeuil(UpdateAlertForm form);
 
@@ -72,8 +76,25 @@ public interface AdminService {
    * This method remove the given alert from the database.
    *
    * @param id targeted alert id.
+   * @return true if succeed, false otherwise.
    */
   boolean removeAlert(long id);
+
+  /**
+   * This method transfers aliquots between storage type.
+   *
+   * @param form Wrapper containing NLot, quantity and storage type.
+   * @return true if succeed, false otherwise.
+   */
+  boolean transfertAliquot(TransfertAliquotForm form);
+
+  /**
+   * This method add a new alert in the database.
+   *
+   * @param form Wrapper containing product name, quantity and storage type.
+   * @return false if the alert alreadyExist, false otherwise.
+   */
+  boolean addAlert(AddAlertForm form);
 
   /**
    * This method retrieves all transactions made by a team in a quarter of a given year.
@@ -107,4 +128,5 @@ public interface AdminService {
    * @return total price losses and its details (product's name and its associated loss).
    */
   TransactionLossesData getTransactionLossesByQuarterAndYear(String quarter, int year);
+
 }

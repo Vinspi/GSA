@@ -1,20 +1,8 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
-import java.util.List;
-
-import javax.servlet.http.HttpSession;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
@@ -24,10 +12,21 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin")
@@ -59,6 +58,7 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
   }
 
+
   /**
    * /Endpoint returning all of species names.
    *
@@ -78,8 +78,8 @@ public class AdminController {
    * Endpoint enabling well-formatted POST requests to add a product.
    *
    * @param form contains "targetName" and "sourceName" keys.
-   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
-   *         fail status and the sent form as data.
+   * @return if successful, a JSON response with a success status, otherwise a
+   *     JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
@@ -106,10 +106,10 @@ public class AdminController {
   /**
    * Endpoint enabling well-formatted POST requests to add an aliquot.
    *
-   * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock price &
-   *          provider & product of aliquote.
-   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
-   *         fail status and the sent form as data.
+   * @param form contains n°aliquote & quantity in visible stock & quantity in hidden stock
+   *             price & provider & product of aliquote.
+   * @return if successful, a JSON response with a success status, otherwise a
+   *     JSON response with a fail status and the sent form as data.
    */
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
@@ -203,6 +203,58 @@ public class AdminController {
     } else {
       return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
     }
+  }
+
+  /**
+   * REST endpoint, transfer entity of an aliquot from a storage type to another one.
+   *
+   * @param form Wrapper containing nlot, quantity,
+   *             from and destination sent by the client.
+   * @return SUCCESS status if the operation can be done, FAIL status otherwise.
+   */
+  @PostMapping("/transfertAliquot")
+  public JsonResponse<TransfertAliquotForm> transfertAliquot(@RequestBody TransfertAliquotForm form) {
+
+    JsonResponse<TransfertAliquotForm> response;
+    boolean success;
+
+    if (form.validate()) {
+      success = adminService.transfertAliquot(form);
+      if (success) {
+        response = new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        response = new JsonResponse<>(RequestStatus.FAIL);
+        response.setData(form);
+      }
+    } else {
+      response = new JsonResponse<>(RequestStatus.FAIL);
+      response.setData(form);
+    }
+    return response;
+  }
+
+  /**
+   * REST endpoint, add a new alert in the database.
+   *
+   * @param form Wrapper containing product name, quantity and storage type.
+   * @return SUCCESS status if the operation can be done, FAIL status otherwise.
+   */
+  @PostMapping("/addAlert")
+  public JsonResponse<AddAlertForm> addAlert(@RequestBody AddAlertForm form) {
+
+    JsonResponse<AddAlertForm> failRequest = new JsonResponse<>(RequestStatus.FAIL);
+    failRequest.setData(form);
+    boolean success;
+
+    if (form.validate()) {
+      System.out.println("form is valid");
+      success = adminService.addAlert(form);
+      if (success) {
+        return new JsonResponse<>(RequestStatus.SUCCESS);
+      }
+    }
+
+    return failRequest;
   }
 
   /**

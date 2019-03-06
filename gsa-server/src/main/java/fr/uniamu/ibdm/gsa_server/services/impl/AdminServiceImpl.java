@@ -1,29 +1,12 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
@@ -31,10 +14,12 @@ import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
@@ -48,6 +33,16 @@ import fr.uniamu.ibdm.gsa_server.util.BigDecimalAttributeConverter;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -58,6 +53,7 @@ public class AdminServiceImpl implements AdminService {
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
   private AlertRepository alertRepository;
+
   private SpeciesRepository speciesRepository;
   private TeamRepository teamRepository;
   private TeamTrimestrialReportRepository teamTrimestrialReportRepository;
@@ -79,8 +75,7 @@ public class AdminServiceImpl implements AdminService {
       SpeciesRepository speciesRepository, AlertRepository alertRepository,
       TeamRepository teamRepository,
       TeamTrimestrialReportRepository teamTrimestrialReportRepository,
-      TransactionRepository transactionRepository) {
-    this.productRepository = productRepository;
+      TransactionRepository transactionRepository) {    this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
     this.alertRepository = alertRepository;
@@ -210,9 +205,13 @@ public class AdminServiceImpl implements AdminService {
             ((Timestamp) a[1]).toLocalDateTime().toLocalDate(), qte));
       }
 
-      returnValue.add(
-          new TriggeredAlertsQuery((String) o[0], (String) o[1], ((BigDecimal) o[2]).intValue(),
-              (int) o[3], type, alertAliquots, ((BigInteger) o[5]).longValue()));
+      returnValue.add(new TriggeredAlertsQuery(
+          (String) o[0],
+          (String) o[1],
+          ((BigDecimal) o[2]).intValue(),
+          (int) o[3], type,
+          alertAliquots,
+          ((BigInteger) o[5]).longValue()));
 
     }
     return returnValue;
@@ -296,6 +295,61 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  public boolean transfertAliquot(TransfertAliquotForm form) {
+
+    Optional<Aliquot> aliquotOpt = aliquotRepository.findById(form.getNumLot());
+    Aliquot aliquot;
+    long transfertQuantity;
+
+    if (aliquotOpt.isPresent()) {
+      aliquot = aliquotOpt.get();
+      if (form.getFrom() == StorageType.RESERVE) {
+        transfertQuantity = form.getQuantity() >= aliquot.getAliquotQuantityHiddenStock() ? aliquot.getAliquotQuantityHiddenStock() : form.getQuantity();
+        aliquot.setAliquotQuantityHiddenStock(aliquot.getAliquotQuantityHiddenStock() - transfertQuantity);
+        aliquot.setAliquotQuantityVisibleStock(aliquot.getAliquotQuantityVisibleStock() + transfertQuantity);
+      } else {
+        transfertQuantity = form.getQuantity() >= aliquot.getAliquotQuantityVisibleStock() ? aliquot.getAliquotQuantityVisibleStock() : form.getQuantity();
+        aliquot.setAliquotQuantityHiddenStock(aliquot.getAliquotQuantityHiddenStock() + transfertQuantity);
+        aliquot.setAliquotQuantityVisibleStock(aliquot.getAliquotQuantityVisibleStock() - transfertQuantity);
+      }
+      aliquotRepository.save(aliquot);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  @Override
+  public boolean addAlert(AddAlertForm form) {
+
+    String[] shards = form.getProductName().split("_");
+    Optional<Product> productOPt = productRepository.findById(new ProductPK(shards[2], shards[0]));
+    Optional<Alert> alert;
+
+    if (productOPt.isPresent()) {
+      alert = alertRepository.findByAlertTypeAndProduct(EnumConvertor.storageTypeToAlertType(form.getStorageType()), productOPt.get());
+
+      if (!alert.isPresent()) {
+        /* we can add the alert */
+        Alert alert1 = new Alert();
+        alert1.setSeuil(form.getQuantity());
+        alert1.setProduct(productOPt.get());
+        alert1.setAlertType(EnumConvertor.storageTypeToAlertType(form.getStorageType()));
+
+
+        alertRepository.save(alert1);
+
+        return true;
+      } else {
+        /* the alert already exists */
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+ @Override
   public boolean saveTeamTrimestrialReport(AddTeamTrimestrialReportForm form) {
 
     // Checking that the stringified quarter is a valid value of Quarter Enum.
