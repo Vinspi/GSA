@@ -7,16 +7,21 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
@@ -41,7 +46,7 @@ public class AdminServiceImpl implements AdminService {
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
   private AlertRepository alertRepository;
-
+  private TransactionRepository transactionRepository;
   private SpeciesRepository speciesRepository;
 
   /**
@@ -53,11 +58,12 @@ public class AdminServiceImpl implements AdminService {
    * @param alertRepository   Autowired repository.
    */
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository) {
+  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository, TransactionRepository transactionRepository) {
     this.productRepository = productRepository;
     this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
     this.alertRepository = alertRepository;
+    this.transactionRepository = transactionRepository;
   }
 
   @Override
@@ -321,5 +327,30 @@ public class AdminServiceImpl implements AdminService {
     } else {
       return false;
     }
+  }
+
+  @Override
+  public List<Product> getAllProductsWithAliquots() {
+
+    return (List) productRepository.findAll();
+
+  }
+
+  @Override
+  public void makeInventory(List<InventoryForm> forms) {
+
+    forms.forEach(form -> {
+      Optional<Aliquot> actualOne = aliquotRepository.findById(form.getAliquotNLot());
+      if (actualOne.isPresent()) {
+        /* if we got losses */
+        long losses = form.getQuantity() - actualOne.get().getAliquotQuantityVisibleStock();
+        if (losses < 0) {
+          Transaction lossesTransaction = new Transaction(TransactionMotif.INVENTORY, TransactionType.WITHDRAW, LocalDate.now(),(int) -losses, actualOne.get(), null);
+          transactionRepository.save(lossesTransaction);
+        }
+        actualOne.get().setAliquotQuantityVisibleStock(form.getQuantity());
+        aliquotRepository.save(actualOne.get());
+      }
+    });
   }
 }

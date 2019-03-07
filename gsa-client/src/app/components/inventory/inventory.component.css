@@ -1,0 +1,21 @@
+:host {
+    width: 100%;
+}
+
+.card {
+    margin-bottom: 5px;
+    display: block;
+}
+
+#inventory {
+    overflow-y: auto;
+    max-height: 60vh;
+}
+
+.button-container {
+    margin-top: 15px;
+}
+
+h3 {
+    margin-top: 20%;
+}

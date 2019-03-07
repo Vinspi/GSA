@@ -38,6 +38,7 @@
     "@angular/cli": "~7.1.2",
     "@angular/compiler-cli": "~7.1.0",
     "@angular/language-service": "~7.1.0",
+    "@types/bootstrap": "^4.3.0",
     "@types/datatables.net": "^1.10.15",
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",

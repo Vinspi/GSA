@@ -29,7 +29,7 @@
     </div>
   </div>
 </div>
-<div *ngIf="data.length > 0" id="modalEdit" class="modal" tabindex="-1" role="dialog">
+<div *ngIf="data.length > 0" id="modalEdit" class="modal fade" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -61,22 +61,22 @@
     </div>
   </div>
 </div>
-<div *ngIf="data.length > 0" id="modalSuppress" class="modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Suppress : {{data[elementChoosed].productName}}</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>You're about to suppress alert type {{data[elementChoosed].alertType}}<br/> on product {{data[elementChoosed].productName}}</p>
-        </div>
-        <div class="modal-footer">
-          <button (click)="removeAlert()" type="button" class="btn btn-danger" data-dismiss="modal">Yes, suppress it</button>
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-        </div>
+<div *ngIf="data.length > 0" id="modalSuppress" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Suppress : {{data[elementChoosed].productName}}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>You're about to suppress alert type {{data[elementChoosed].alertType}}<br/> on product {{data[elementChoosed].productName}}</p>
+      </div>
+      <div class="modal-footer">
+        <button (click)="removeAlert()" type="button" class="btn btn-danger" data-dismiss="modal">Yes, suppress it</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>
+</div>

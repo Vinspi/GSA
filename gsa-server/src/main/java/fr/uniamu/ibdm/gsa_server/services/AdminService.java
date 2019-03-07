@@ -2,9 +2,11 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
@@ -93,5 +95,21 @@ public interface AdminService {
    * @return false if the alert alreadyExist, false otherwise.
    */
   boolean addAlert(AddAlertForm form);
+
+  /**
+   * This method retrieve all products and their aliquots
+   *     from the database.
+   *
+   * @return a list of products.
+   */
+  List<Product> getAllProductsWithAliquots();
+
+  /**
+   * This method perform the inventory. It add losses transactions
+   *     for every aliquot lost and restore the database to the user inputs.
+   *
+   * @param forms a list of form containing aliquotNLot and quantity.
+   */
+  void makeInventory(List<InventoryForm> forms);
 
 }
