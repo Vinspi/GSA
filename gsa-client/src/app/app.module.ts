@@ -15,8 +15,8 @@ import { ConnectionFormComponent } from './components/connection-form/connection
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
-import { AddProductComponent } from './components/add-product/add-product.component';
-import { AddAliquoteComponent } from './components/add-aliquote/add-aliquote.component';
+import { AddProductComponent } from './components/product-manager/add-product/add-product.component';
+import { AddAliquoteComponent } from './components/product-manager/add-aliquote/add-aliquote.component';
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
 import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
@@ -24,6 +24,7 @@ import { AddAlertComponent } from './components/alerts-panel/add-alert/add-alert
 import { ToastComponent } from './components/toast/toast.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { DigitsOnlyDirective } from './directives/digits-only.directive';
+import { ProductManagerComponent } from './components/product-manager/product-manager.component';
 
 
 @NgModule({
@@ -45,7 +46,8 @@ import { DigitsOnlyDirective } from './directives/digits-only.directive';
     AddAlertComponent,
     ToastComponent,
     InventoryComponent,
-    DigitsOnlyDirective
+    DigitsOnlyDirective,
+    ProductManagerComponent
   ],
   imports: [
     BrowserModule,

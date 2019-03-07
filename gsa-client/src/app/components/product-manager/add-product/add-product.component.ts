@@ -39,8 +39,6 @@ export class AddProductComponent implements OnInit {
   }
 
   addProduct() {
-    // this.selectedSource = $('#source option:selected').text();
-    // this.selectedTarget = $('#target option:selected').text();
 
     console.log(this.selectedSource);
     

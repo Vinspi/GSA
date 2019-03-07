@@ -1,22 +1,22 @@
 <div id="add-product">
-  <h1>Add a new product</h1>
+  <h1 class="center">Add a new product</h1>
   <form>
-    <div id="select-container" class="form-group">
-      <div id="source-container" class="form-group">
+    <div id="select-container" class="row">
+      <div id="source-container" class="form-group col-md-6">
         <label for="source">Select the source :</label>
         <select [(ngModel)]="selectedSource" id="source" class="form-control" name="source">
           <option *ngFor="let name of speciesNames">{{name}}</option>
         </select>
       </div>
-      <div id="target-container" class="form-group">
+      <div id="target-container" class="form-group col-md-6">
         <label for="target">Select the target :</label>
         <select [(ngModel)]="selectedTarget" id="target" class="form-control" name="target">
           <option *ngFor="let name of speciesNames">{{name}}</option>
         </select>
       </div>
     </div>
-    <div id="button-container" class="form-group">
-      <button (click)="addProduct()" type="submit" class="btn btn-primary">Add product</button>
+    <div class="button-container">
+      <button (click)="addProduct()" type="button" class="btn btn-outlined-custom">Add product</button>
     </div>
   </form>
   <ngb-alert *ngIf="messageAlert" [(type)]="typeAlert" (close)="messageAlert = null">{{messageAlert}}</ngb-alert>
