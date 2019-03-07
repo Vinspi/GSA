@@ -20,15 +20,11 @@ export class InventoryComponent implements OnInit {
         this.data = res.data;
         
         /* we fill the map with actual values */
-        for(var i=0;i<this.data.length;i++){
-          for(var k=0;k<this.data[i].aliquots.length;k++){
-            
-            this.map.set(this.data[i].aliquots[k].aliquotNLot, this.data[i].aliquots[k].aliquotQuantityVisibleStock);
-    
-          }
-        }
-        
-        
+        this.data.forEach(product => {
+          product.aliquots.forEach(aliquot => {
+            this.map.set(aliquot.aliquotNLot, aliquot.aliquotQuantityVisibleStock);
+          });
+        });
       }
     });
   }
