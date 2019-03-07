@@ -31,7 +31,6 @@ export class WithdrawComponent implements OnInit {
   }
 
   onMinusClicked(nlot: number) {
-    console.log("minus"+nlot);
     
     this.cart.forEach((element, index, o) => {
       if(element.nlot == nlot){
@@ -44,7 +43,6 @@ export class WithdrawComponent implements OnInit {
   }
 
   onKeyEnter() {
-    console.log("keyup ! ");
 
     var call_api = true;
 
