@@ -6,6 +6,7 @@ import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
@@ -16,6 +17,7 @@ import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
@@ -26,7 +28,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,6 +59,9 @@ public class AdminServiceTest {
 
   @MockBean
   AliquotRepository aliquotRepository;
+
+  @MockBean
+  TransactionRepository transactionRepository;
 
   @InjectMocks
   AdminServiceImpl adminService;
@@ -405,6 +409,35 @@ public class AdminServiceTest {
     success = adminService.addAlert(form);
 
     Assert.assertFalse(success);
+
+
+  }
+
+  @Test
+  public void makeInventory() {
+
+    Aliquot mockAliquot = new Aliquot();
+    mockAliquot.setAliquotQuantityVisibleStock(5);
+
+    /* all those aliquots exist */
+    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(mockAliquot));
+    Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(mockAliquot));
+    Mockito.when(aliquotRepository.findById(3L)).thenReturn(Optional.of(mockAliquot));
+
+
+    List<InventoryForm> forms = new ArrayList<>();
+
+    forms.add(new InventoryForm(1, 5));
+    forms.add(new InventoryForm(2, 2));
+    forms.add(new InventoryForm(3, 6));
+    forms.add(new InventoryForm(4, 10));
+
+    adminService.makeInventory(forms);
+
+    /* only 6 < 5 so transactionRepository.save() should be called once */
+    Mockito.verify(transactionRepository, Mockito.times(1)).save(Mockito.any());
+    /* aliquot n°4 doesn't exist so it won't be saved */
+    Mockito.verify(aliquotRepository, Mockito.times(3)).save(Mockito.any());
 
 
   }

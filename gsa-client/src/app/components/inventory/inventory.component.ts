@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AdminService } from '../../services/admin.service';
 import { keyframes } from '@angular/animations';
+import { Subject } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inventory',
@@ -11,8 +13,9 @@ export class InventoryComponent implements OnInit {
 
   data: any[] = [];
   map: Map<number, number> = new Map();
+  toastTrigger: Subject<void> = new Subject();
 
-  constructor(private adminService: AdminService) { }
+  constructor(private adminService: AdminService, private router: Router) { }
 
   ngOnInit() {
     this.adminService.getAllProductsWithAliquots().subscribe(res => {
@@ -36,15 +39,24 @@ export class InventoryComponent implements OnInit {
   sendForm(){
     var form = [];
 
-    this.map.forEach((nlot, value) => {
+    this.map.forEach((value, key) => {
       form.push({
-        aliquotNLot: nlot,
+        aliquotNLot: key,
         quantity: value
       });    
     });
     
-    this.adminService.postInventoryForm(form).subscribe(res => {
+    console.log(form);
+    
 
+    this.adminService.postInventoryForm(form).subscribe(res => {
+      if(res.status == 'FAIL'){
+        this.toastTrigger.next();
+      }
+      else {
+        /* i know this is ugly but stackOverflow's users said it was ok so */
+        (<any>$('#modalInventory')).modal('toggle');
+      }
     });
   }
 

@@ -9,6 +9,7 @@ import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
@@ -260,16 +261,30 @@ public class AdminController {
    * @return a JsonResponse containing a list of Products.
    */
   @GetMapping("/getAllProductsWithAliquots")
-  public JsonResponse<List<Product>> getAllProductsWithAliquots(){
+  public JsonResponse<List<Product>> getAllProductsWithAliquots() {
 
-    return new JsonResponse<>(RequestStatus.SUCCESS,adminService.getAllProductsWithAliquots());
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllProductsWithAliquots());
 
   }
 
+  /**
+   * REST endpoint, perform the inventory.
+   *
+   * @param forms list of form that contains nlot and quantity.
+   * @return a JsonResponse SUCCESS if the form is valid, a JsonResponse FAIl otherwise
+   */
   @PostMapping("/handleInventory")
-  public JsonResponse<Boolean> handleInventory(){
+  public JsonResponse<List<InventoryForm>> handleInventory(@RequestBody List<InventoryForm> forms) {
 
-    return new JsonResponse<Boolean>(RequestStatus.SUCCESS);
+    for (InventoryForm form : forms) {
+      if (!form.validate()) {
+        return new JsonResponse<>(RequestStatus.FAIL, forms);
+      }
+    }
+
+    adminService.makeInventory(forms);
+
+    return new JsonResponse<>(RequestStatus.SUCCESS);
   }
 
 }
