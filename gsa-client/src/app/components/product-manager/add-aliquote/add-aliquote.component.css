@@ -4,8 +4,8 @@
   justify-content: center;
 }
 
-h1 {
-  text-align: center;
+h4 {
+  font-size: 1.6rem;
 }
 
 .btn:disabled:hover {

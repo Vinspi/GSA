@@ -1,6 +1,6 @@
 <div class="container">
-	<h1 *ngIf="!isViewable" class="well">Add a new aliquot</h1>
-	<h1 *ngIf="isViewable">Transfert aliquot</h1>
+	<h4 *ngIf="!isViewable" class="center">Add a new aliquot</h4>
+	<h4 *ngIf="isViewable" class="center">Transfert aliquot</h4>
 	<div class="col-sm-12 form-group">
 		<div class="custom-control custom-switch">
 			<input type="checkbox" id="reserveInput" class="custom-control-input" (click)="toggle()"
@@ -116,5 +116,5 @@
 			</div>
 		</div>
 	</form>
-	<ngb-alert *ngIf="messageAlert" [(type)]="typeAlert" (close)="messageAlert = null">{{messageAlert}}</ngb-alert>
 </div>
+

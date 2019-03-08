@@ -1,10 +1,14 @@
 <div id="product-manager" class="w-100">
-  <div class="row">
-    <div class="col-md-7">
-      <app-add-aliquote></app-add-aliquote>
-    </div>
-    <div class="col-md-5">
-      <app-add-product></app-add-product>
+  <h1 class="center"><i class="fa fa-flask" aria-hidden="true"></i>Product manager</h1>
+  <div class="card">
+    <div class="row">
+      <div class="col-md-7">
+        <app-add-aliquote (toast)="toaster($event)"></app-add-aliquote>
+      </div>
+      <div class="col-md-5">
+        <app-add-product (toast)="toaster($event)" (reload)="reloadForm()"></app-add-product>
+      </div>
     </div>
   </div>
 </div>
+<app-toast [toastHeader]="toastHeader" [toastBody]="toastBody" [event]="toastTrigger" timeout="2000" [toastType]="toastType"></app-toast>

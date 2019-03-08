@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { AdminService } from 'src/app/services/admin.service';
+import { Subject } from 'rxjs';
 
 
 @Component({
@@ -7,18 +8,26 @@ import { AdminService } from 'src/app/services/admin.service';
   templateUrl: './add-aliquote.component.html',
   styleUrls: ['./add-aliquote.component.css']
 })
-export class AddAliquoteComponent implements OnInit {
+export class AddAliquoteComponent implements OnInit, OnChanges {
+
+  @Output() toast: EventEmitter<any> = new EventEmitter();
 
   public isViewable: boolean;
  
   data: String[];
-  messageAlert: string;
-  typeAlert: string;
   model: any = {};
   modelTransfert: any = {};
 
   constructor(private adminService: AdminService) {
     this.isViewable = false; 
+  }
+
+  loadData() {
+    this.adminService.getAllProductsName().subscribe(response => {
+      this.data = <String[]> response.data;
+      /* set default value */
+      this.model.product = this.data[0];
+    });
   }
    
   ngOnInit() {
@@ -26,11 +35,11 @@ export class AddAliquoteComponent implements OnInit {
     this.modelTransfert.from = 'RESERVE';
     this.modelTransfert.to = 'STOCK';
 
-    this.adminService.getAllProductsName().subscribe(response => {
-      this.data = <String[]> response.data;
-      /* set default value */
-      this.model.product = this.data[0];
-    });
+    this.loadData();
+  }
+
+  ngOnChanges(simpleChanges: SimpleChanges) {
+    this.loadData();
   }
 
   public toggle(): void { 
@@ -41,16 +50,22 @@ export class AddAliquoteComponent implements OnInit {
     this.adminService.transfertAliquot(this.modelTransfert).subscribe(res => {
 
       if(res.status == 'SUCCESS') {
-        this.typeAlert = 'success';
-        this.messageAlert = this.modelTransfert.qte+' entity of aliquot n°'+this.modelTransfert.Nlot+
-        ' have been transferred from '+this.modelTransfert.from+' to '+this.modelTransfert.to
+
+        this.toast.emit({
+          toastHeader: "Success",
+          toastBody: "The aliquot was successfully transferred.",
+          toastType: 'success'
+        });
+
+    
       } else {
-        this.typeAlert = 'danger';
-        this.messageAlert = 'An error occured, this aliquot can\'t be transferred' 
+
+        this.toast.emit({
+          toastHeader: "Error",
+          toastBody: "this aliquot could not be added.",
+          toastType: 'danger'
+        });
       }
-      setTimeout(() => {        
-        this.messageAlert = null;
-      }, 4000);
     });
   }
 
@@ -65,16 +80,21 @@ export class AddAliquoteComponent implements OnInit {
       aliquotProduct : this.model.product,
     }).subscribe(res => {
       if (res.status === 'SUCCESS') {
-        this.typeAlert = "success";
-        this.messageAlert = "The aliquot was successfully added.";
+
+        this.toast.emit({
+          toastHeader: "Success",
+          toastBody: "The aliquot was successfully added.",
+          toastType: 'success'
+        });
 
       } else {
-        this.typeAlert = "danger";
-        this.messageAlert = "An error occurred, this aliquot could not be added.";
+
+        this.toast.emit({
+          toastHeader: "Error",
+          toastBody: "this aliquot could not be added.",
+          toastType: 'danger'
+        });   
       }
-      setTimeout(() => {        
-        this.messageAlert = null;
-      }, 4000);
     });
   }
 }
