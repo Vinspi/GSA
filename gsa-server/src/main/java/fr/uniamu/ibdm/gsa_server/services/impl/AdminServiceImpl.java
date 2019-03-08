@@ -19,6 +19,7 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -352,5 +353,10 @@ public class AdminServiceImpl implements AdminService {
         aliquotRepository.save(actualOne.get());
       }
     });
+  }
+
+  @Override
+  public List<ProvidersStats> generateProvidersStats() {
+    return aliquotRepository.generateProviderStats();
   }
 }

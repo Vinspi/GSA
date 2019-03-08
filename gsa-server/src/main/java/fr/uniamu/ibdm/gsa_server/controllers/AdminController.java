@@ -4,6 +4,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
@@ -285,6 +286,16 @@ public class AdminController {
     adminService.makeInventory(forms);
 
     return new JsonResponse<>(RequestStatus.SUCCESS);
+  }
+
+  /**
+   * REST endpoint, retrieve stats on provider for the admin homepage.
+   *
+   * @return a JsonResponse SUCCESS with a list of provider stat.
+   */
+  @GetMapping("/getProvidersStats")
+  public JsonResponse<List<ProvidersStats>> getProvidersStats(){
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProvidersStats());
   }
 
 }

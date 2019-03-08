@@ -4,6 +4,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -111,5 +112,12 @@ public interface AdminService {
    * @param forms a list of form containing aliquotNLot and quantity.
    */
   void makeInventory(List<InventoryForm> forms);
+
+  /**
+   * This method generate a list of providers stats.
+   *
+   * @return a list of providers stats.
+   */
+  List<ProvidersStats> generateProvidersStats();
 
 }

@@ -1,7 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.dao;
 
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -15,5 +15,7 @@ public interface AliquotRepository extends CrudRepository<Aliquot, Long> {
   @Query(value = "SELECT aliquotnlot, aliquot_expiration_date, aliquot_quantity_visible_stock, aliquot_quantity_hidden_stock FROM aliquot WHERE (source LIKE :source AND target LIKE :target)", nativeQuery = true)
   List<Object[]> findAllBySourceAndTargetQuery(@Param("source") String source, @Param("target") String target);
 
+  @Query("SELECT new fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats(a.provider, count(a.aliquotNLot)) FROM Aliquot a GROUP BY a.provider")
+  List<ProvidersStats> generateProviderStats();
 
 }

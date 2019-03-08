@@ -72,4 +72,8 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/handleInventory',form, {withCredentials: true});
   }
 
+  getProvidersStats(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getProvidersStats', {withCredentials: true});
+  }
+
 }
