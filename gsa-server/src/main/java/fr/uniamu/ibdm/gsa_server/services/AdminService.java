@@ -4,6 +4,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -126,5 +127,12 @@ public interface AdminService {
    * @return the number of triggered alerts.
    */
   int getAlertsNotification();
+
+  /**
+   * This method retrieve the number of days until the next report available.
+   *
+   * @return wrapper containing the number of days until the next report.
+   */
+  NextReportData getNextReportData();
 
 }

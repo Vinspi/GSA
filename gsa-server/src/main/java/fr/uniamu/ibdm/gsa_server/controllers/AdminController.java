@@ -4,6 +4,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
@@ -306,5 +307,10 @@ public class AdminController {
   @GetMapping("/getAlertsNotification")
   public JsonResponse<Integer> getAlertsNotification() {
     return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+  }
+
+  @GetMapping("/getNextReport")
+  public JsonResponse<NextReportData> getNextReport() {
+    return new JsonResponse<>(RequestStatus.SUCCESS,adminService.getNextReportData());
   }
 }

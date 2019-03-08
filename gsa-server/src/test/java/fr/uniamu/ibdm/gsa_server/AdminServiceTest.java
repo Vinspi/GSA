@@ -6,15 +6,19 @@ import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -62,6 +66,9 @@ public class AdminServiceTest {
 
   @MockBean
   TransactionRepository transactionRepository;
+
+  @MockBean
+  TeamTrimestrialReportRepository teamTrimestrialReportRepository;
 
   @InjectMocks
   AdminServiceImpl adminService;
