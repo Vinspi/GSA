@@ -120,4 +120,11 @@ public interface AdminService {
    */
   List<ProvidersStats> generateProvidersStats();
 
+  /**
+   * This methods return the number of triggered alerts.
+   *
+   * @return the number of triggered alerts.
+   */
+  int getAlertsNotification();
+
 }

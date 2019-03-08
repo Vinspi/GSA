@@ -298,4 +298,13 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProvidersStats());
   }
 
+  /**
+   * REST endpoint, retrieve the number of triggered alerts.
+   *
+   * @return a JsonResponse SUCCESS containing the number of triggered alerts.
+   */
+  @GetMapping("/getAlertsNotification")
+  public JsonResponse<Integer> getAlertsNotification() {
+    return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+  }
 }

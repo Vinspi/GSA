@@ -6,7 +6,7 @@
       <div class="col-md-10">
         <i *ngIf="notificationType == 'warning'" class="fas fa-exclamation-circle notif-warning-color"></i>
         <i *ngIf="notificationType == 'success'" class="fas fa-check notif-success-color"></i>
-        <span *ngIf="notificationType == 'warning'">Warning, you have X triggered alerts.</span>
+        <span *ngIf="notificationType == 'warning'">Warning, you have {{alerts}} triggered alerts.</span>
         <span *ngIf="notificationType == 'success'">No alert has been triggered.</span>
       </div>
       <!-- <div class="col-md-2">

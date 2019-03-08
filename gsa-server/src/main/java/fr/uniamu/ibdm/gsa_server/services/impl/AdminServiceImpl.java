@@ -359,4 +359,15 @@ public class AdminServiceImpl implements AdminService {
   public List<ProvidersStats> generateProvidersStats() {
     return aliquotRepository.generateProviderStats();
   }
+
+  @Override
+  public int getAlertsNotification() {
+
+    List<Object[]> queryResult = productRepository.getTriggeredAlertsVisible();
+    queryResult.addAll(productRepository.getTriggeredAlertsHidden());
+    queryResult.addAll(productRepository.getTriggeredAlertsGeneral());
+
+
+    return queryResult.size();
+  }
 }
