@@ -17,7 +17,7 @@ public class InventoryForm implements Form {
   @Override
   public boolean validate() {
 
-    if (aliquotNLot < 0 || quantity < 0) {
+    if (aliquotNLot < 0 || quantity < 0) {  
       return false;
     }
 

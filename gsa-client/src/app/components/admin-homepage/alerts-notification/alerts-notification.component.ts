@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AlertsNotificationComponent implements OnInit {
 
+  notificationType: String = 'warning';
+
   constructor() { }
 
   ngOnInit() {

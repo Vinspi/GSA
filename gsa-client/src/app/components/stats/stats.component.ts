@@ -3,7 +3,6 @@ import { UserService } from '../../services/user.service';
 import { AdminService } from '../../services/admin.service';
 import { BaseChartDirective } from 'ng2-charts/ng2-charts';
 import { EventEmitter } from 'events';
-import { load } from '@angular/core/src/render3';
 
 @Component({
   selector: 'app-stats',
@@ -33,7 +32,7 @@ export class StatsComponent implements OnInit {
   public chartData:number[] = [];
 
   public chartType:string = 'line';
-  public chartOptions:any = {responsive: true, maintainAspectRatio: false, legend: {display: false}}
+  public chartOptions:any = {responsive: true, maintainAspectRatio: true, legend: {display: false}}
   public chartColors: Array<any> = [
     { 
       backgroundColor: 'rgba(77,92,138,0.8)',
@@ -111,7 +110,9 @@ export class StatsComponent implements OnInit {
         this.chartData.push(element.withdraw);
       });
 
-      this.chart.ngOnChanges({});
+      if(this.chartData.length > 0){
+        this.chart.ngOnChanges({});
+      }
 
     });
   }

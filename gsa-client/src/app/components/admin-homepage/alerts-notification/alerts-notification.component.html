@@ -1,3 +1,20 @@
-<p>
-  alerts-notification works!
-</p>
+<div class="card">
+  <div [ngClass]="{'card-header': true, 'notif-warning': notificationType == 'warning', 'notif-success': notificationType == 'success'}">
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-10">
+        <i *ngIf="notificationType == 'warning'" class="fas fa-exclamation-circle notif-warning-color"></i>
+        <i *ngIf="notificationType == 'success'" class="fas fa-check notif-success-color"></i>
+        <span *ngIf="notificationType == 'warning'">Warning, you have X triggered alerts.</span>
+        <span *ngIf="notificationType == 'success'">No alert has been triggered.</span>
+      </div>
+      <!-- <div class="col-md-2">
+        <div class="icon-container notif-warning">
+          <i class="fas fa-eye"></i>
+        </div>
+      </div> -->
+    </div>
+      
+  </div>
+</div>

@@ -1,3 +1,16 @@
-<p>
-  stats-providers works!
-</p>
+<div class="card h-100">
+  <div class="card-header">
+    <h5>Distribution of providers by aliquot</h5>
+  </div>
+  <div class="card-body">
+      <canvas baseChart
+      [data]="chartData"
+      [labels]="chartLabels"
+      [chartType]="chartType"
+      [colors]="chartColors"
+      [options]="chartOptions">
+
+      </canvas>
+  </div>
+</div>
+

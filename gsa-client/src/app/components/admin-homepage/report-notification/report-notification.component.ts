@@ -7,9 +7,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ReportNotificationComponent implements OnInit {
 
+  notificationType: String = 'warning';
+
   constructor() { }
 
   ngOnInit() {
+    // this.notificationType = 'success';
   }
 
 }

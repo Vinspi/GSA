@@ -7,6 +7,8 @@ import { Component, OnInit } from '@angular/core';
 })
 export class OutdateNotificationComponent implements OnInit {
 
+  notificationType: String = 'success';
+
   constructor() { }
 
   ngOnInit() {
