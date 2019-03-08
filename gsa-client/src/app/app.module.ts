@@ -25,6 +25,12 @@ import { ToastComponent } from './components/toast/toast.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { DigitsOnlyDirective } from './directives/digits-only.directive';
 import { ProductManagerComponent } from './components/product-manager/product-manager.component';
+import { AdminHomepageComponent } from './components/admin-homepage/admin-homepage.component';
+import { AlertsNotificationComponent } from './components/admin-homepage/alerts-notification/alerts-notification.component';
+import { OutdateNotificationComponent } from './components/admin-homepage/outdate-notification/outdate-notification.component';
+import { ReportNotificationComponent } from './components/admin-homepage/report-notification/report-notification.component';
+import { StatsProvidersComponent } from './components/admin-homepage/stats-providers/stats-providers.component';
+import { StatsProductsComponent } from './components/admin-homepage/stats-products/stats-products.component';
 
 
 @NgModule({
@@ -47,7 +53,13 @@ import { ProductManagerComponent } from './components/product-manager/product-ma
     ToastComponent,
     InventoryComponent,
     DigitsOnlyDirective,
-    ProductManagerComponent
+    ProductManagerComponent,
+    AdminHomepageComponent,
+    AlertsNotificationComponent,
+    OutdateNotificationComponent,
+    ReportNotificationComponent,
+    StatsProvidersComponent,
+    StatsProductsComponent
   ],
   imports: [
     BrowserModule,
