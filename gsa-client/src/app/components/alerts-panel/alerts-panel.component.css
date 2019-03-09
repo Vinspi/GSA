@@ -24,7 +24,7 @@
 
 #triggered-alerts {
     width: 100%;
-    height: 70%;
+    height: 60%;
     background-color: white;
     margin-bottom: 2px;
     border-radius: 5px;
@@ -35,7 +35,7 @@
 
 #add-alert {
     width: 100%;
-    height: 30%;
+    height: 40%;
     background-color: white;
     margin-top: 2px;
     border-radius: 5px;

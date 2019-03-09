@@ -1,5 +1,9 @@
 export class Aliquot {
     id: number;
-    date: string;
+    name: string;
+    //date: string;
+    date: Date;
+    quantityVisible: number;
+    quatityHidden: number;
     expire: boolean;
 }

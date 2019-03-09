@@ -31,6 +31,7 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
                                             @Param("target") String target);
   
   
+<<<<<<< HEAD
 
 
   @Query(value = "SELECT source_pk, target_pk, SUM(aliquot.aliquot_quantity_visible_stock) as qte, seuil, alert_type, alert_id\n"
@@ -56,5 +57,7 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
       + "GROUP BY source_pk, target_pk, alert_type, seuil, alert_id\n"
       + "HAVING (qte < seuil AND alert_type LIKE 'GENERAL')", nativeQuery = true)
   List<Object[]> getTriggeredAlertsGeneral();
+=======
+>>>>>>> 4b2ff0596f3c6433f62ba13fa5b221df440340c3
 
 }

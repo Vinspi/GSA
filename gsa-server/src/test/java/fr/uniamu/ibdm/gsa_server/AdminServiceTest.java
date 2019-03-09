@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -50,43 +48,33 @@ public class AdminServiceTest {
   @MockBean
   ProductRepository productRepository;
 
-  @MockBean
-  SpeciesRepository speciesRepository;
-
-  @MockBean
-  AlertRepository alertRepository;
-
-  @MockBean
-  AliquotRepository aliquotRepository;
-
   @InjectMocks
   AdminServiceImpl adminService;
 
   @Before
-  public void initMocks() {
+  public void initMocks(){
     MockitoAnnotations.initMocks(this);
   }
 
   @Test
-  public void getWithdrawsStats() {
+  public void getWithdrawsStats(){
 
     List<Object[]> returnQuery = new ArrayList<>();
     Object[] o;
 
-    for (int i = 0; i < 10; i++) {
+
+    for (int i=0;i<10;i++) {
       o = new Object[3];
-      o[0] = i + 1;
+      o[0] = i+1;
       o[1] = 2019;
       o[2] = new BigDecimal(12);
-      if ((i + 1) % 2 == 0) {
+      if((i+1)%2 == 0)
         returnQuery.add(o);
-      }
     }
 
-    Mockito.when(
-        productRepository.getWithdrawStats(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
-        .thenReturn(returnQuery);
-    WithdrawStatsForm form = new WithdrawStatsForm("fake team", "chicken_anti_donkey", "april", "may", 2019, 2019);
+
+    Mockito.when(productRepository.getWithdrawStats(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any())).thenReturn(returnQuery);
+    WithdrawStatsForm form = new WithdrawStatsForm("fake team", "chicken_anti_donkey","april","may",2019,2019);
 
     List<StatsWithdrawQuery> list = adminService.getWithdrawStats(form);
 
@@ -279,6 +267,13 @@ public class AdminServiceTest {
       Assert.assertEquals("SOURCE", tr.getSource());
       Assert.assertEquals("TARGET", tr.getTarget());
 
+    for (int i=0;i<list.size();i++){
+      System.out.println(list.get(i).getMonth()+" - "+list.get(i).getWithdraw());
+      Assert.assertEquals(list.get(i).getMonth(),i+2);
+      if ((i+1)%2 == 0)
+        Assert.assertEquals(list.get(i).getWithdraw(),0);
+      else
+        Assert.assertEquals(list.get(i).getWithdraw(), 12);
     }
 
   }
