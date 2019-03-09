@@ -1,16 +1,16 @@
 package fr.uniamu.ibdm.gsa_server.requests.JsonData;
 
-public class ProvidersStats {
+public class ProvidersStatsData {
 
   private String providerName;
   private long providerStat;
 
-  public ProvidersStats(String providerName, long providerStat) {
+  public ProvidersStatsData(String providerName, long providerStat) {
     this.providerName = providerName;
     this.providerStat = providerStat;
   }
 
-  public ProvidersStats() {
+  public ProvidersStatsData() {
   }
 
   public String getProviderName() {

@@ -83,4 +83,8 @@ export class AdminService {
   getReportNotification(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL+'/getNextReport', {withCredentials: true});
   }
+
+  getProductsStats(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getProductsStats', {withCredentials: true});
+  }
 }

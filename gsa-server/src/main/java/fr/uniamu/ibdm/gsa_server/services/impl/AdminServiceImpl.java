@@ -23,7 +23,8 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -364,7 +365,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public List<ProvidersStats> generateProvidersStats() {
+  public List<ProvidersStatsData> generateProvidersStats() {
     return aliquotRepository.generateProviderStats();
   }
 
@@ -443,5 +444,10 @@ public class AdminServiceImpl implements AdminService {
       return new NextReportData(false, daysUntilNextOne);
     }
 
+  }
+
+  @Override
+  public List<ProductsStatsData> generateProductsStats() {
+    return aliquotRepository.generateProductsStats();
   }
 }

@@ -10,7 +10,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { MenuComponent } from './components/menu/menu.component';
-import { LoremComponent } from './components/lorem/lorem.component';
 import { ConnectionFormComponent } from './components/connection-form/connection-form.component';
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
@@ -38,7 +37,6 @@ import { StatsProductsComponent } from './components/admin-homepage/stats-produc
     AppComponent,
     NavbarComponent,
     MenuComponent,
-    LoremComponent,
     ConnectionFormComponent,
     StockOverviewComponent,
     WithdrawComponent,

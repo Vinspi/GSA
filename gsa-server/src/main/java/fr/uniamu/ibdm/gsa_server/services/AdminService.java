@@ -5,7 +5,8 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStats;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -119,7 +120,7 @@ public interface AdminService {
    *
    * @return a list of providers stats.
    */
-  List<ProvidersStats> generateProvidersStats();
+  List<ProvidersStatsData> generateProvidersStats();
 
   /**
    * This methods return the number of triggered alerts.
@@ -134,5 +135,12 @@ public interface AdminService {
    * @return wrapper containing the number of days until the next report.
    */
   NextReportData getNextReportData();
+
+  /**
+   * This method generate a list of products stats.
+   *
+   * @return a list of products stats.
+   */
+  List<ProductsStatsData> generateProductsStats();
 
 }

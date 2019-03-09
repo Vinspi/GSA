@@ -20,10 +20,20 @@ insert into species (species_name) values ('SHARK');
 insert into product (target_pk, source_pk) values ('SHARK', 'WOLF');
 insert into product (target_pk, source_pk) values ('WOLF', 'GOAT');
 insert into product (target_pk, source_pk) values ('SPIDER', 'WOLF');
+insert into product (target_pk, source_pk) values ('MONKEY', 'DONKEY');
+insert into product (target_pk, source_pk) values ('MONKEY', 'WOLF');
+insert into product (target_pk, source_pk) values ('MONKEY', 'SPIDER');
+insert into product (target_pk, source_pk) values ('MONKEY', 'GOAT');
+insert into product (target_pk, source_pk) values ('MONKEY', 'SHARK');
 -- aliquots --
 insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (1, '2019-02-11 00:00:00', 0.167879443, 2,2, 'Dynabox', 'SHARK', 'WOLF');
 insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (2, '2019-02-11 00:00:00', 0.4369044297, 2,6, 'Linktype', 'SHARK', 'WOLF');
 insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (3, '2019-02-11 00:00:00', 2.0824829339, 13,14, 'Flipbug', 'SPIDER', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (4, '2019-02-11 00:00:00', 0.167879443, 2,2, 'Dynabox', 'MONKEY', 'DONKEY');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (5, '2019-02-11 00:00:00', 0.4369044297, 2,6, 'Linktype', 'MONKEY', 'WOLF');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (6, '2019-02-11 00:00:00', 2.0824829339, 13,14, 'Flipbug', 'MONKEY', 'SPIDER');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (7, '2019-02-11 00:00:00', 0.167879443, 2,2, 'Dynabox', 'MONKEY', 'GOAT');
+insert into aliquot (aliquotnlot, aliquot_expiration_date, aliquot_price, aliquot_quantity_hidden_stock, aliquot_quantity_visible_stock, provider, target, source) values (8, '2019-02-11 00:00:00', 0.4369044297, 2,6, 'Linktype', 'MONKEY', 'SHARK');
 -- transaction --
 SET FOREIGN_KEY_CHECKS = 0;
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (1, '2019-04-10 08:00:01', 'TEAM_WITHDRAW', 1, 'WITHDRAW', 1, 1);

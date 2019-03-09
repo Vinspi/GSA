@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AdminService } from '../../../services/admin.service';
+import { BaseChartDirective } from 'ng2-charts';
 
 @Component({
   selector: 'app-stats-products',
@@ -6,6 +8,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./stats-products.component.css']
 })
 export class StatsProductsComponent implements OnInit {
+
+  @ViewChild(BaseChartDirective)
+  chart: BaseChartDirective;
 
   public chartLabels:String[] = [];
   public chartData:number[] = [];
@@ -32,13 +37,24 @@ export class StatsProductsComponent implements OnInit {
     }
   }
 
-  constructor() { }
+  constructor(private adminService: AdminService) { }
 
   ngOnInit() {
-    for(var i=0;i<75;i++){
-      this.chartData.push(Math.random()*5);
-      this.chartLabels.push('SOURCE_ANTI_TARGET');
-    }
+    // for(var i=0;i<75;i++){
+    //   this.chartData.push(Math.random()*5);
+    //   this.chartLabels.push('SOURCE_ANTI_TARGET');
+    // }
+    this.loadData();
+  }
+
+  loadData() {
+    this.adminService.getProductsStats().subscribe(res => {
+      res.data.forEach(elt => {
+        this.chartData.push(elt.productPrice);
+        this.chartLabels.push(elt.productName);
+      });
+      this.chart.ngOnChanges({});
+    });
   }
 
 }
