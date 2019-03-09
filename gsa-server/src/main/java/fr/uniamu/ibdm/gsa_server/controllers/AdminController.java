@@ -4,6 +4,9 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
@@ -287,4 +290,39 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS);
   }
 
+  /**
+   * REST endpoint, retrieve stats on provider for the admin homepage.
+   *
+   * @return a JsonResponse SUCCESS with a list of provider stat.
+   */
+  @GetMapping("/getProvidersStats")
+  public JsonResponse<List<ProvidersStatsData>> getProvidersStats(){
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProvidersStats());
+  }
+
+  /**
+   * REST endpoint, retrieve the number of triggered alerts.
+   *
+   * @return a JsonResponse SUCCESS containing the number of triggered alerts.
+   */
+  @GetMapping("/getAlertsNotification")
+  public JsonResponse<Integer> getAlertsNotification() {
+    return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+  }
+
+
+  /**
+   * REST endpoint, retrieve the number of days until the next report.
+   *
+   * @return a JsonResponse SUCCESS containing the number of days until the next report.
+   */
+  @GetMapping("/getNextReport")
+  public JsonResponse<NextReportData> getNextReport() {
+    return new JsonResponse<>(RequestStatus.SUCCESS,adminService.getNextReportData());
+  }
+
+  @GetMapping("/getProductsStats")
+  public JsonResponse<List<ProductsStatsData>> getProductsStats() {
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProductsStats());
+  }
 }

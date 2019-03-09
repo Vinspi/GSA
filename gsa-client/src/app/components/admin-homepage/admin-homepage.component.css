@@ -1,0 +1,38 @@
+:host {
+    width: 100%;
+}
+
+#admin-homepage {
+    overflow-y: auto;
+}
+
+.notif {
+    margin-bottom: 15px;
+}
+
+.row {
+    margin-left: 0px;
+}
+
+.col-md-7 {
+    padding-right: 7.5px !important;
+    padding-left: 2.5px !important;
+}
+
+.col-md-5 {
+    padding-right: 2.5px !important;
+    padding-left: 7.5px !important;
+}
+
+.col-md-12 {
+    padding-right: 2.5px !important;
+    padding-left: 2.5px !important;
+}
+
+.row-margin {
+    margin-bottom: 15px;
+}
+
+/* .first-row {
+    height: 35vh;
+} */

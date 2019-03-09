@@ -1,0 +1,12 @@
+:host {
+    width: 100%;
+}
+
+.card {
+    -webkit-box-shadow: 0 0 5px 0 rgba(43,43,43,.1), 0 11px 6px -7px rgba(43,43,43,.1);
+    box-shadow: 0 0 5px 0 rgba(43,43,43,.1), 0 11px 6px -7px rgba(43,43,43,.1);
+}
+
+.card-body i {
+    margin-right: 15px;
+}

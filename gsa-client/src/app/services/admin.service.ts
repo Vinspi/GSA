@@ -72,4 +72,19 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/handleInventory',form, {withCredentials: true});
   }
 
+  getProvidersStats(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getProvidersStats', {withCredentials: true});
+  }
+
+  getAlertNotification(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getAlertsNotification', {withCredentials: true});
+  }
+
+  getReportNotification(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getNextReport', {withCredentials: true});
+  }
+
+  getProductsStats(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getProductsStats', {withCredentials: true});
+  }
 }

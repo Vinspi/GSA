@@ -4,6 +4,7 @@
 
 .card {
     padding: 2%;
+    transition: all .5s ease-in-out;
 }
 
 h1 {

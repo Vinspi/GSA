@@ -4,7 +4,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     overflow: hidden;
-    background-color: #eff5ff;
+    background-color: #f2f7fb;
     height: 100vh;
 }
 
@@ -28,12 +28,29 @@ body {
     height: 100%;
 }
 
+.notif-warning {
+    background-color: #ffb64d;
+}
+
+.notif-warning-color {
+    color: #ffb64d;
+}
+
+.notif-success {
+    background-color: #76bb79;
+}
+
+.notif-success-color {
+    color: #76bb79;
+}
 
 .content {
     /* position: relative; */
-    width: 90%;
+    width: 100%;
     display: flex;
     padding: 3%;
+    max-height: 87vh;
+    overflow-y: auto;
 }
 
 .button-container {

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoremComponent } from './lorem.component';
+import { AlertsNotificationComponent } from './alerts-notification.component';
 
-describe('LoremComponent', () => {
-  let component: LoremComponent;
-  let fixture: ComponentFixture<LoremComponent>;
+describe('AlertsNotificationComponent', () => {
+  let component: AlertsNotificationComponent;
+  let fixture: ComponentFixture<AlertsNotificationComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LoremComponent ]
+      declarations: [ AlertsNotificationComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LoremComponent);
+    fixture = TestBed.createComponent(AlertsNotificationComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

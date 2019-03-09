@@ -10,7 +10,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { MenuComponent } from './components/menu/menu.component';
-import { LoremComponent } from './components/lorem/lorem.component';
 import { ConnectionFormComponent } from './components/connection-form/connection-form.component';
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component';
 import { WithdrawComponent } from './components/withdraw/withdraw.component';
@@ -25,6 +24,12 @@ import { ToastComponent } from './components/toast/toast.component';
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { DigitsOnlyDirective } from './directives/digits-only.directive';
 import { ProductManagerComponent } from './components/product-manager/product-manager.component';
+import { AdminHomepageComponent } from './components/admin-homepage/admin-homepage.component';
+import { AlertsNotificationComponent } from './components/admin-homepage/alerts-notification/alerts-notification.component';
+import { OutdateNotificationComponent } from './components/admin-homepage/outdate-notification/outdate-notification.component';
+import { ReportNotificationComponent } from './components/admin-homepage/report-notification/report-notification.component';
+import { StatsProvidersComponent } from './components/admin-homepage/stats-providers/stats-providers.component';
+import { StatsProductsComponent } from './components/admin-homepage/stats-products/stats-products.component';
 
 
 @NgModule({
@@ -32,7 +37,6 @@ import { ProductManagerComponent } from './components/product-manager/product-ma
     AppComponent,
     NavbarComponent,
     MenuComponent,
-    LoremComponent,
     ConnectionFormComponent,
     StockOverviewComponent,
     WithdrawComponent,
@@ -47,7 +51,13 @@ import { ProductManagerComponent } from './components/product-manager/product-ma
     ToastComponent,
     InventoryComponent,
     DigitsOnlyDirective,
-    ProductManagerComponent
+    ProductManagerComponent,
+    AdminHomepageComponent,
+    AlertsNotificationComponent,
+    OutdateNotificationComponent,
+    ReportNotificationComponent,
+    StatsProvidersComponent,
+    StatsProductsComponent
   ],
   imports: [
     BrowserModule,
