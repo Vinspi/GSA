@@ -22,6 +22,10 @@ export class ConnectionFormComponent implements OnInit {
     }
 
   ngOnInit() {
+    this.localStorage.getItem("user").subscribe(user => {
+      if (user != null)
+        this.router.navigate(["/"]);
+    });
     this.error = false;
   }
 
@@ -30,14 +34,9 @@ export class ConnectionFormComponent implements OnInit {
       if (response.status == 'SUCCESS') {
         this.error = false;
         this.localStorage.setItem("user", response.data).subscribe(() => {});
-        console.log("navigate to index page ...");
-        
-        this.localStorage.getItem("user").subscribe(user => {
-          console.log(user);
-          
-        })
+
         window.location.reload();
-        this.router.navigate(["/"]);
+        
       }
       else {
         this.error = true;

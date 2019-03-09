@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import * as $ from 'jquery';
 import { User } from 'src/app/user';
@@ -8,13 +8,19 @@ import { User } from 'src/app/user';
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css']
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnChanges {
 
   user: User;
 
   constructor(private localStorage: LocalStorage) { }
 
   ngOnInit() {
+    this.localStorage.getItem("user").subscribe(user => {
+      this.user = <User> user;
+    });
+  }
+
+  ngOnChanges(simpleChanges: SimpleChanges) {
     this.localStorage.getItem("user").subscribe(user => {
       this.user = <User> user;
     });
