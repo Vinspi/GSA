@@ -4,33 +4,34 @@
   <form class="form-inline">
     <div class="form-group">
       <div class="input-group">
-        <input class="form-control" placeholder="Begin date (yyyy-mm-dd)"
-               name="begin" [(ngModel)]="beginDate" ngbDatepicker #d="ngbDatepicker"
-               (onchange)="sendData()" (onclick)="print(beginDate)">
+        <input class="form-control" placeholder="Begin date (yyyy-mm-dd)" type="text"
+               name="begin" [(ngModel)]="begin" ngbDatepicker #d="ngbDatepicker"
+               title="begin date of the period">
         <div class="input-group-append">
           <button (click)="d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
         </div>
       </div>
       <div class="input-group">
-        <input class="form-control" placeholder="End date (yyyy-mm-dd)"
-               name="end" [(ngModel)]="endDate" ngbDatepicker #d2="ngbDatepicker"
-               (onchange)="sendData()">
+        <input class="form-control" placeholder="End date (yyyy-mm-dd)" type="text"
+               name="end" [(ngModel)]="end" ngbDatepicker #d2="ngbDatepicker"
+               title="end date of the period">
         <div class="input-group-append">
           <button (click)="d2.toggle()" type="button"><i class="fa fa-calendar"></i></button>
         </div>
       </div>
+      <div class="btn-submit">
+        <button class="btn btn-dark" type="button" (click)="sendData()">Send</button>
+      </div>
     </div>
   </form>
 
-  <div *ngFor="let item of beginDate">{{ item }}</div>
-  <div *ngFor="let item of endDate">{{ item }}</div>
-
-  <pre>From: {{ beginDate | json }} </pre>
-  <pre>To: {{ endDate | json }} </pre>
+  <pre *ngIf="begin !== null">{{ begin | json }}</pre>
+  <pre *ngIf="end !== null">{{ end | json }} </pre>
+  <!--*<button class="html5">CSV</button>-->
 
   <div>
-    <table datatable data-paging="true" data-info="false" class="custom-table row-border hover" style="width: 100%;">
-      <thead>
+    <table id="datatable" datatable data-paging="false" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" data-info="false" class="custom-table row-border hover" style="width: 100%;">
+      <!----><thead>
         <tr>
           <th>Date</th>
           <th>User</th>
@@ -49,7 +50,9 @@
           <td>{{item.quantity}}</td>
           <td>{{item.price}}</td>
         </tr>
-      </tbody>
+      </tbody><!---->
     </table>
   </div>
+
+  <button class="csv btn btn-outline-dark">Export to CSV</button>
 </div>
