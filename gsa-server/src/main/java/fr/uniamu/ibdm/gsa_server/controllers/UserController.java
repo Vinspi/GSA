@@ -47,7 +47,7 @@ public class UserController {
    */
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
-    if (isLoggedIn()) {
+    if (isLoggedIn() && ((boolean) session.getAttribute("techArea"))) {
       boolean data = userService.withdrawCart(form, (User) session.getAttribute("user"));
       JsonResponse<Boolean> response;
 
