@@ -2837,7 +2837,8 @@ __webpack_require__.r(__webpack_exports__);
 // The list of file replacements can be found in `angular.json`.
 var environment = {
     production: false,
-    API_URL: 'http://localhost:8080',
+    // API_URL: 'http://localhost:8080',
+    API_URL: 'http://51.77.147.140:8080',
     API_ADMIN: '/admin'
 };
 /*
