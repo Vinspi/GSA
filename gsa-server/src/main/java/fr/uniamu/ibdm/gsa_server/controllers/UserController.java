@@ -47,17 +47,19 @@ public class UserController {
    */
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
+    if (isLoggedIn()) {
+      boolean data = userService.withdrawCart(form, (User) session.getAttribute("user"));
+      JsonResponse<Boolean> response;
 
-    boolean data = userService.withdrawCart(form,(User) session.getAttribute("user"));
-    JsonResponse<Boolean> response;
+      if (data) {
+        response = new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        response = new JsonResponse<>("bad aliquot nlot", RequestStatus.FAIL);
+      }
 
-    if (data) {
-      response = new JsonResponse<>(RequestStatus.SUCCESS);
-    } else {
-      response = new JsonResponse<>("bad aliquot nlot", RequestStatus.FAIL);
+      return response;
     }
-
-    return response;
+    return new JsonResponse<>("Please log in", RequestStatus.FAIL);
   }
 
   /**
@@ -102,4 +104,12 @@ public class UserController {
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllProductName());
   }
 
+
+  private boolean isLoggedIn() {
+    if (session.getAttribute("user") == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }
