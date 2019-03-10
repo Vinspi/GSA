@@ -3,8 +3,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { JsonResponse } from './request-interfaces/json-response';
 import { environment } from '../../environments/environment';
-import { Subject } from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
 
 
 @Injectable({
