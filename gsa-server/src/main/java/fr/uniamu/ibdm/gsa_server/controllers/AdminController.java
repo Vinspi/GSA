@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
@@ -62,8 +63,11 @@ public class AdminController {
   public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(
       @RequestBody WithdrawStatsForm form) {
 
-    System.out.println(form.getProductName());
-    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
+    if (this.isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
   }
 
   /**
@@ -73,12 +77,17 @@ public class AdminController {
    */
   @GetMapping("/allspeciesnames")
   public JsonResponse<List<String>> getAllSpeciesNames() {
-    List<String> names = adminService.getAllSpeciesNames();
-    if (names != null) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, names);
+    if (this.isAdmin()) {
+      List<String> names = adminService.getAllSpeciesNames();
+      if (names != null) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, names);
+      } else {
+        return new JsonResponse<>("Could not retrieve all of species names", RequestStatus.FAIL);
+      }
     } else {
-      return new JsonResponse<>("Could not retrieve all of species names", RequestStatus.FAIL);
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
+
   }
 
   /**
@@ -90,23 +99,27 @@ public class AdminController {
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
-    JsonResponse<AddProductForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
-    failedRequestResponse.setData(form);
+    if (this.isAdmin()) {
+      JsonResponse<AddProductForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+      failedRequestResponse.setData(form);
 
-    String sourceName = form.getSourceName();
-    String targetName = form.getTargetName();
+      String sourceName = form.getSourceName();
+      String targetName = form.getTargetName();
 
-    if (sourceName == null || targetName == null) {
-      failedRequestResponse.setError("Missing attributes within request body");
-      return failedRequestResponse;
-    }
+      if (sourceName == null || targetName == null) {
+        failedRequestResponse.setError("Missing attributes within request body");
+        return failedRequestResponse;
+      }
 
-    boolean success = adminService.addProduct(sourceName, targetName);
-    if (success) {
-      return new JsonResponse<>(RequestStatus.SUCCESS);
+      boolean success = adminService.addProduct(sourceName, targetName);
+      if (success) {
+        return new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        failedRequestResponse.setError("Could not add the product");
+        return failedRequestResponse;
+      }
     } else {
-      failedRequestResponse.setError("Could not add the product");
-      return failedRequestResponse;
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
   }
 
@@ -121,22 +134,26 @@ public class AdminController {
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
 
-    JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
-    failedRequestResponse.setData(form);
+    if (isAdmin()) {
+      JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
+      failedRequestResponse.setData(form);
 
-    /* form validation */
+      /* form validation */
 
-    if (form.validate()) {
-      boolean success = adminService.addAliquot(form);
-      if (success) {
-        return new JsonResponse<>(RequestStatus.SUCCESS);
+      if (form.validate()) {
+        boolean success = adminService.addAliquot(form);
+        if (success) {
+          return new JsonResponse<>(RequestStatus.SUCCESS);
+        } else {
+          failedRequestResponse.setError("Could not add the aliquote");
+          return failedRequestResponse;
+        }
       } else {
         failedRequestResponse.setError("Could not add the aliquote");
         return failedRequestResponse;
       }
     } else {
-      failedRequestResponse.setError("Could not add the aliquote");
-      return failedRequestResponse;
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
 
   }
@@ -148,12 +165,17 @@ public class AdminController {
    */
   @GetMapping("/allProducts")
   public JsonResponse<List<String>> getAllProductsName() {
-    List<String> productsName = userService.getAllProductName();
-    if (productsName != null) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, productsName);
+    if (isAdmin()) {
+      List<String> productsName = userService.getAllProductName();
+      if (productsName != null) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, productsName);
+      } else {
+        return new JsonResponse<>("Could not retrieve all of products names", RequestStatus.FAIL);
+      }
     } else {
-      return new JsonResponse<>("Could not retrieve all of products names", RequestStatus.FAIL);
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
+
   }
 
   /**
@@ -163,7 +185,12 @@ public class AdminController {
    */
   @GetMapping("/triggeredAlerts")
   public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts() {
-    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
   }
 
   /**
@@ -173,7 +200,12 @@ public class AdminController {
    */
   @GetMapping("/getAllAlerts")
   public JsonResponse<List<AlertsData>> getAllAlerts() {
-    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAlerts());
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAlerts());
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
   }
 
   /**
@@ -184,12 +216,16 @@ public class AdminController {
    */
   @PostMapping("/removeAlert")
   public JsonResponse<Boolean> removeAlert(@RequestBody RemoveAlertForm form) {
-    if (adminService.removeAlert(form.getAlertId())) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, true);
+    if (isAdmin()) {
+      if (adminService.removeAlert(form.getAlertId())) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, true);
+      } else {
+        return new JsonResponse<>("This alert doesn't exists or has already been removed", RequestStatus.FAIL);
+      }
     } else {
-      return new JsonResponse<>("This alert doesn't exists or has already been removed",
-          RequestStatus.FAIL);
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
+
   }
 
   /**
@@ -201,15 +237,20 @@ public class AdminController {
   @PostMapping("/updateAlert")
   public JsonResponse<Boolean> updateAlert(@RequestBody UpdateAlertForm form) {
 
-    if (form.getSeuil() < 1) {
-      return new JsonResponse<>("Seuil must be > 0", RequestStatus.FAIL);
+    if (isAdmin()) {
+      if (form.getSeuil() < 1) {
+        return new JsonResponse<>("Seuil must be > 0", RequestStatus.FAIL);
+      }
+
+      if (adminService.updateAlertSeuil(form)) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, true);
+      } else {
+        return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
+      }
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
 
-    if (adminService.updateAlertSeuil(form)) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, true);
-    } else {
-      return new JsonResponse<>("The specified alert doesn't exists", RequestStatus.FAIL);
-    }
   }
 
   /**
@@ -219,25 +260,28 @@ public class AdminController {
    * @return SUCCESS status if the operation can be done, FAIL status otherwise.
    */
   @PostMapping("/transfertAliquot")
-  public JsonResponse<TransfertAliquotForm> transfertAliquot(
-      @RequestBody TransfertAliquotForm form) {
+  public JsonResponse<TransfertAliquotForm> transfertAliquot(@RequestBody TransfertAliquotForm form) {
+    if (isAdmin()) {
+      JsonResponse<TransfertAliquotForm> response;
+      boolean success;
 
-    JsonResponse<TransfertAliquotForm> response;
-    boolean success;
-
-    if (form.validate()) {
-      success = adminService.transfertAliquot(form);
-      if (success) {
-        response = new JsonResponse<>(RequestStatus.SUCCESS);
+      if (form.validate()) {
+        success = adminService.transfertAliquot(form);
+        if (success) {
+          response = new JsonResponse<>(RequestStatus.SUCCESS);
+        } else {
+          response = new JsonResponse<>(RequestStatus.FAIL);
+          response.setData(form);
+        }
       } else {
         response = new JsonResponse<>(RequestStatus.FAIL);
         response.setData(form);
       }
+      return response;
     } else {
-      response = new JsonResponse<>(RequestStatus.FAIL);
-      response.setData(form);
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
-    return response;
+
   }
 
   /**
@@ -249,19 +293,24 @@ public class AdminController {
   @PostMapping("/addAlert")
   public JsonResponse<AddAlertForm> addAlert(@RequestBody AddAlertForm form) {
 
-    JsonResponse<AddAlertForm> failRequest = new JsonResponse<>(RequestStatus.FAIL);
-    failRequest.setData(form);
-    boolean success;
+    if (isAdmin()) {
+      JsonResponse<AddAlertForm> failRequest = new JsonResponse<>(RequestStatus.FAIL);
+      failRequest.setData(form);
+      boolean success;
 
-    if (form.validate()) {
-      System.out.println("form is valid");
-      success = adminService.addAlert(form);
-      if (success) {
-        return new JsonResponse<>(RequestStatus.SUCCESS);
+      if (form.validate()) {
+        System.out.println("form is valid");
+        success = adminService.addAlert(form);
+        if (success) {
+          return new JsonResponse<>(RequestStatus.SUCCESS);
+        }
       }
+
+      return failRequest;
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
 
-    return failRequest;
   }
 
   /**
@@ -335,8 +384,11 @@ public class AdminController {
    */
   @GetMapping("/getAllProductsWithAliquots")
   public JsonResponse<List<Product>> getAllProductsWithAliquots() {
-
-    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllProductsWithAliquots());
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllProductsWithAliquots());
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
 
   }
 
@@ -348,16 +400,20 @@ public class AdminController {
    */
   @PostMapping("/handleInventory")
   public JsonResponse<List<InventoryForm>> handleInventory(@RequestBody List<InventoryForm> forms) {
-
-    for (InventoryForm form : forms) {
-      if (!form.validate()) {
-        return new JsonResponse<>(RequestStatus.FAIL, forms);
+    if (isAdmin()) {
+      for (InventoryForm form : forms) {
+        if (!form.validate()) {
+          return new JsonResponse<>(RequestStatus.FAIL, forms);
+        }
       }
+
+      adminService.makeInventory(forms);
+
+      return new JsonResponse<>(RequestStatus.SUCCESS);
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
 
-    adminService.makeInventory(forms);
-
-    return new JsonResponse<>(RequestStatus.SUCCESS);
   }
 
   /**
@@ -366,8 +422,13 @@ public class AdminController {
    * @return a JsonResponse SUCCESS with a list of provider stat.
    */
   @GetMapping("/getProvidersStats")
-  public JsonResponse<List<ProvidersStatsData>> getProvidersStats(){
-    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProvidersStats());
+  public JsonResponse<List<ProvidersStatsData>> getProvidersStats() {
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProvidersStats());
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
   }
 
   /**
@@ -377,7 +438,12 @@ public class AdminController {
    */
   @GetMapping("/getAlertsNotification")
   public JsonResponse<Integer> getAlertsNotification() {
-    return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+    if (isAdmin()) {
+      return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
   }
 
 
@@ -388,11 +454,40 @@ public class AdminController {
    */
   @GetMapping("/getNextReport")
   public JsonResponse<NextReportData> getNextReport() {
-    return new JsonResponse<>(RequestStatus.SUCCESS,adminService.getNextReportData());
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getNextReportData());
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
   }
 
+  /**
+   * REST endpoint, retrieve the average price for all product.
+   *
+   * @return a JsonResponse containing a list of stats.
+   */
   @GetMapping("/getProductsStats")
   public JsonResponse<List<ProductsStatsData>> getProductsStats() {
-    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProductsStats());
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProductsStats());
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
   }
+
+
+  /**
+   * Utility function to tell us if the user logged in is admin or not.
+   *
+   * @return true if the user is admin, false otherwise.
+   */
+  private boolean isAdmin() {
+    if (session.getAttribute("user") == null) {
+      return false;
+    }
+    return ((User) session.getAttribute("user")).isAdmin();
+  }
+
 }

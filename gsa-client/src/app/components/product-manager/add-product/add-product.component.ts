@@ -14,9 +14,9 @@ export class AddProductComponent implements OnInit {
   @Output() toast: EventEmitter<any> = new EventEmitter();
   @Output() reload: EventEmitter<void> = new EventEmitter();
 
-  private speciesNames: string[] = [];
-  private selectedTarget: string;
-  private selectedSource: string;
+  speciesNames: string[] = [];
+  selectedTarget: string;
+  selectedSource: string;
 
   /* toast (cuz i like toast) */
   toastBody: String;

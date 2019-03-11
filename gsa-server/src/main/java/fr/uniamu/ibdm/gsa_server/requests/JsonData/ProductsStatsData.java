@@ -11,6 +11,13 @@ public class ProductsStatsData {
   private Species target;
   private double productPrice;
 
+  /**
+   * Constructor for ProductsStatsData.
+   *
+   * @param source       source of the product.
+   * @param target       target of the product.
+   * @param productPrice average price for this product.
+   */
   public ProductsStatsData(Species source, Species target, double productPrice) {
     this.source = source;
     this.target = target;
@@ -45,6 +52,6 @@ public class ProductsStatsData {
   }
 
   public String getProductName() {
-    return this.source.getSpeciesName().toUpperCase()+"_ANTI_"+this.target.getSpeciesName().toUpperCase();
+    return this.source.getSpeciesName().toUpperCase() + "_ANTI_" + this.target.getSpeciesName().toUpperCase();
   }
 }

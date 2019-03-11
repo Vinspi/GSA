@@ -529,7 +529,7 @@ public class AdminServiceImpl implements AdminService {
         /* if we got losses */
         long losses = form.getQuantity() - actualOne.get().getAliquotQuantityVisibleStock();
         if (losses < 0) {
-          Transaction lossesTransaction = new Transaction(TransactionMotif.INVENTORY, TransactionType.WITHDRAW, LocalDate.now(),(int) -losses, actualOne.get(), null);
+          Transaction lossesTransaction = new Transaction(TransactionMotif.INVENTORY, TransactionType.WITHDRAW, LocalDate.now(), (int) -losses, actualOne.get(), null);
           transactionRepository.save(lossesTransaction);
         }
         actualOne.get().setAliquotQuantityVisibleStock(form.getQuantity());
@@ -565,25 +565,22 @@ public class AdminServiceImpl implements AdminService {
 
     /* step 2 : determine the quarter */
     Quarter quarter;
-    if (LocalDate.of(year, Month.MARCH, 31).isAfter(LocalDate.now())){
+    if (LocalDate.of(year, Month.MARCH, 31).isAfter(LocalDate.now())) {
       quarter = Quarter.QUARTER_1;
-    }
-    else if (LocalDate.of(year, Month.JUNE, 30).isAfter(LocalDate.now())){
+    } else if (LocalDate.of(year, Month.JUNE, 30).isAfter(LocalDate.now())) {
       quarter = Quarter.QUARTER_2;
-    }
-    else if (LocalDate.of(year, Month.SEPTEMBER, 31).isAfter(LocalDate.now())) {
+    } else if (LocalDate.of(year, Month.SEPTEMBER, 31).isAfter(LocalDate.now())) {
       quarter = Quarter.QUARTER_3;
-    }
-    else {
+    } else {
       quarter = Quarter.QUARTER_4;
     }
 
     /* step 3 : search for a report */
     List<TeamTrimestrialReport> listReports = new ArrayList<>();
-    switch (quarter){
+    switch (quarter) {
       case QUARTER_1:
         daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.MARCH, 31));
-        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year-1, Quarter.QUARTER_4);
+        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year - 1, Quarter.QUARTER_4);
         break;
       case QUARTER_2:
         daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.JUNE, 30));
@@ -597,6 +594,8 @@ public class AdminServiceImpl implements AdminService {
         daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.DECEMBER, 31));
         listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_3);
         break;
+      default:
+        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_3);
     }
 
     boolean todo = false;
@@ -612,9 +611,8 @@ public class AdminServiceImpl implements AdminService {
     /* if we got one or more report to do */
     if (todo) {
       return new NextReportData(true, 0);
-    }
-    /* else, we count the number of days until the next one */
-    else {
+    } else {
+      /* else, we count the number of days until the next one */
       return new NextReportData(false, daysUntilNextOne);
     }
 
