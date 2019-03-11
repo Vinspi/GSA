@@ -2,11 +2,16 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
@@ -128,5 +133,49 @@ public interface AdminService {
    * @return total price losses and its details (product's name and its associated loss).
    */
   TransactionLossesData getTransactionLossesByQuarterAndYear(String quarter, int year);
+  
+  /**
+   * This method retrieve all products and their aliquots
+   *     from the database.
+   *
+   * @return a list of products.
+   */
+  List<Product> getAllProductsWithAliquots();
+
+  /**
+   * This method perform the inventory. It add losses transactions
+   *     for every aliquot lost and restore the database to the user inputs.
+   *
+   * @param forms a list of form containing aliquotNLot and quantity.
+   */
+  void makeInventory(List<InventoryForm> forms);
+
+  /**
+   * This method generate a list of providers stats.
+   *
+   * @return a list of providers stats.
+   */
+  List<ProvidersStatsData> generateProvidersStats();
+
+  /**
+   * This methods return the number of triggered alerts.
+   *
+   * @return the number of triggered alerts.
+   */
+  int getAlertsNotification();
+
+  /**
+   * This method retrieve the number of days until the next report available.
+   *
+   * @return wrapper containing the number of days until the next report.
+   */
+  NextReportData getNextReportData();
+
+  /**
+   * This method generate a list of products stats.
+   *
+   * @return a list of products stats.
+   */
+  List<ProductsStatsData> generateProductsStats();
 
 }

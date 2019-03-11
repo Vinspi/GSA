@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.dao;
 
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -54,5 +55,6 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
       + "GROUP BY source_pk, target_pk, alert_type, seuil, alert_id\n"
       + "HAVING (qte < seuil AND alert_type LIKE 'GENERAL')", nativeQuery = true)
   List<Object[]> getTriggeredAlertsGeneral();
+
 
 }

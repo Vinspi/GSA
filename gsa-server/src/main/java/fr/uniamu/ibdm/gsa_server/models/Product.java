@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 
 import javax.persistence.Entity;
@@ -27,6 +28,7 @@ public class Product implements Serializable {
   private Species source;
 
   @OneToMany(mappedBy = "product")
+  @JsonManagedReference
   private Collection<Aliquot> aliquots;
 
   public Product() {

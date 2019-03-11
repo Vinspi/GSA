@@ -16,14 +16,21 @@ import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
@@ -43,6 +50,8 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -59,11 +68,10 @@ public class AdminServiceImpl implements AdminService {
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
   private AlertRepository alertRepository;
-
+  private TransactionRepository transactionRepository;
   private SpeciesRepository speciesRepository;
   private TeamRepository teamRepository;
   private TeamTrimestrialReportRepository teamTrimestrialReportRepository;
-  private TransactionRepository transactionRepository;
 
   /**
    * Constructor for the AdminService.
@@ -506,4 +514,114 @@ public class AdminServiceImpl implements AdminService {
     return data;
   }
 
+  public List<Product> getAllProductsWithAliquots() {
+
+    return (List) productRepository.findAll();
+
+  }
+
+  @Override
+  public void makeInventory(List<InventoryForm> forms) {
+
+    forms.forEach(form -> {
+      Optional<Aliquot> actualOne = aliquotRepository.findById(form.getAliquotNLot());
+      if (actualOne.isPresent()) {
+        /* if we got losses */
+        long losses = form.getQuantity() - actualOne.get().getAliquotQuantityVisibleStock();
+        if (losses < 0) {
+          Transaction lossesTransaction = new Transaction(TransactionMotif.INVENTORY, TransactionType.WITHDRAW, LocalDate.now(),(int) -losses, actualOne.get(), null);
+          transactionRepository.save(lossesTransaction);
+        }
+        actualOne.get().setAliquotQuantityVisibleStock(form.getQuantity());
+        aliquotRepository.save(actualOne.get());
+      }
+    });
+  }
+
+  @Override
+  public List<ProvidersStatsData> generateProvidersStats() {
+    return aliquotRepository.generateProviderStats();
+  }
+
+  @Override
+  public int getAlertsNotification() {
+
+    List<Object[]> queryResult = productRepository.getTriggeredAlertsVisible();
+    queryResult.addAll(productRepository.getTriggeredAlertsHidden());
+    queryResult.addAll(productRepository.getTriggeredAlertsGeneral());
+
+
+    return queryResult.size();
+  }
+
+  @Override
+  public NextReportData getNextReportData() {
+
+    /* see if we already have a report for this quarter */
+
+    /* step 1 : determine the year */
+    int year = LocalDate.now().getYear();
+    long daysUntilNextOne = 0;
+
+    /* step 2 : determine the quarter */
+    Quarter quarter;
+    if (LocalDate.of(year, Month.MARCH, 31).isAfter(LocalDate.now())){
+      quarter = Quarter.QUARTER_1;
+    }
+    else if (LocalDate.of(year, Month.JUNE, 30).isAfter(LocalDate.now())){
+      quarter = Quarter.QUARTER_2;
+    }
+    else if (LocalDate.of(year, Month.SEPTEMBER, 31).isAfter(LocalDate.now())) {
+      quarter = Quarter.QUARTER_3;
+    }
+    else {
+      quarter = Quarter.QUARTER_4;
+    }
+
+    /* step 3 : search for a report */
+    List<TeamTrimestrialReport> listReports = new ArrayList<>();
+    switch (quarter){
+      case QUARTER_1:
+        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.MARCH, 31));
+        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year-1, Quarter.QUARTER_4);
+        break;
+      case QUARTER_2:
+        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.JUNE, 30));
+        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_1);
+        break;
+      case QUARTER_3:
+        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.SEPTEMBER, 31));
+        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_2);
+        break;
+      case QUARTER_4:
+        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.DECEMBER, 31));
+        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_3);
+        break;
+    }
+
+    boolean todo = false;
+    if (listReports.isEmpty()) {
+      todo = true;
+    }
+    for (TeamTrimestrialReport report : listReports) {
+      if (!report.isFinalFlag()) {
+        todo = true;
+      }
+    }
+
+    /* if we got one or more report to do */
+    if (todo) {
+      return new NextReportData(true, 0);
+    }
+    /* else, we count the number of days until the next one */
+    else {
+      return new NextReportData(false, daysUntilNextOne);
+    }
+
+  }
+
+  @Override
+  public List<ProductsStatsData> generateProductsStats() {
+    return aliquotRepository.generateProductsStats();
+  }
 }

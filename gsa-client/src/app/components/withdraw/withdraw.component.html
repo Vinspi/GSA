@@ -1,12 +1,12 @@
 <div *ngIf="loaded">
-  <h1>Withdraw</h1>
+  <h1><i class="fas fa-cart-arrow-down"></i>Withdraw</h1>
   <p *ngIf="user.userTeams.length > 1" style="color: red;text-align: center;">You are linked with multiple teams, please choose a team to withdraw products</p>
   <div *ngIf="user.userTeams.length > 1" class="form-row">
     <div class="input-group mb-3 col-md-10">
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-barcode"></i></span>
       </div>
-      <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode">
+      <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode" >
     </div>
     <div class="input-group mb-3 col-md-2">
         <!-- <label for="inputState">State</label> -->
@@ -21,7 +21,7 @@
     </div>
     <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode">
   </div>
-  <div class="cart">
+  <div *ngIf="cart.length > 0" class="cart">
     <div class="cart-header">
       <div class="cart-header-element">NLot</div><div class="cart-header-element">Nom</div><div class="cart-header-element">Quantite</div>
     </div>

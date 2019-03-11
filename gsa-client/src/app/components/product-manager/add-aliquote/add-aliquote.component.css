@@ -1,0 +1,14 @@
+:host {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+h4 {
+  font-size: 1.6rem;
+}
+
+.btn:disabled:hover {
+  background-color: white !important;
+  color: #242939 !important;
+}

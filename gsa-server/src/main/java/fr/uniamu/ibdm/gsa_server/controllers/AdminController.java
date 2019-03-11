@@ -15,15 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
@@ -33,7 +38,7 @@ import fr.uniamu.ibdm.gsa_server.services.UserService;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200" })
+@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
 public class AdminController {
 
   @Autowired
@@ -323,4 +328,71 @@ public class AdminController {
     return new JsonResponse<>(RequestStatus.SUCCESS, data);
   }
 
+  /**
+   * REST endpoint, retrieve all products and their aliquots.
+   *
+   * @return a JsonResponse containing a list of Products.
+   */
+  @GetMapping("/getAllProductsWithAliquots")
+  public JsonResponse<List<Product>> getAllProductsWithAliquots() {
+
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllProductsWithAliquots());
+
+  }
+
+  /**
+   * REST endpoint, perform the inventory.
+   *
+   * @param forms list of form that contains nlot and quantity.
+   * @return a JsonResponse SUCCESS if the form is valid, a JsonResponse FAIl otherwise
+   */
+  @PostMapping("/handleInventory")
+  public JsonResponse<List<InventoryForm>> handleInventory(@RequestBody List<InventoryForm> forms) {
+
+    for (InventoryForm form : forms) {
+      if (!form.validate()) {
+        return new JsonResponse<>(RequestStatus.FAIL, forms);
+      }
+    }
+
+    adminService.makeInventory(forms);
+
+    return new JsonResponse<>(RequestStatus.SUCCESS);
+  }
+
+  /**
+   * REST endpoint, retrieve stats on provider for the admin homepage.
+   *
+   * @return a JsonResponse SUCCESS with a list of provider stat.
+   */
+  @GetMapping("/getProvidersStats")
+  public JsonResponse<List<ProvidersStatsData>> getProvidersStats(){
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProvidersStats());
+  }
+
+  /**
+   * REST endpoint, retrieve the number of triggered alerts.
+   *
+   * @return a JsonResponse SUCCESS containing the number of triggered alerts.
+   */
+  @GetMapping("/getAlertsNotification")
+  public JsonResponse<Integer> getAlertsNotification() {
+    return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+  }
+
+
+  /**
+   * REST endpoint, retrieve the number of days until the next report.
+   *
+   * @return a JsonResponse SUCCESS containing the number of days until the next report.
+   */
+  @GetMapping("/getNextReport")
+  public JsonResponse<NextReportData> getNextReport() {
+    return new JsonResponse<>(RequestStatus.SUCCESS,adminService.getNextReportData());
+  }
+
+  @GetMapping("/getProductsStats")
+  public JsonResponse<List<ProductsStatsData>> getProductsStats() {
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProductsStats());
+  }
 }

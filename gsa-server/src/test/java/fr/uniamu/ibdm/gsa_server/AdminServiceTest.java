@@ -31,6 +31,9 @@ import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
@@ -54,6 +57,15 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -494,6 +506,33 @@ public class AdminServiceTest {
       sum += loss.getProductLoss();
     }
     Assert.assertEquals(198.90F, sum, 2);
+
+  }
+
+  public void makeInventory() {
+
+    Aliquot mockAliquot = new Aliquot();
+    mockAliquot.setAliquotQuantityVisibleStock(5);
+
+    /* all those aliquots exist */
+    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(mockAliquot));
+    Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(mockAliquot));
+    Mockito.when(aliquotRepository.findById(3L)).thenReturn(Optional.of(mockAliquot));
+
+
+    List<InventoryForm> forms = new ArrayList<>();
+
+    forms.add(new InventoryForm(1, 5));
+    forms.add(new InventoryForm(2, 2));
+    forms.add(new InventoryForm(3, 6));
+    forms.add(new InventoryForm(4, 10));
+
+    adminService.makeInventory(forms);
+
+    /* only 6 < 5 so transactionRepository.save() should be called once */
+    Mockito.verify(transactionRepository, Mockito.times(1)).save(Mockito.any());
+    /* aliquot n°4 doesn't exist so it won't be saved */
+    Mockito.verify(aliquotRepository, Mockito.times(3)).save(Mockito.any());
 
   }
 

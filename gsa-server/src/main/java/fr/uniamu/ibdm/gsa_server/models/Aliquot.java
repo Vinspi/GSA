@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -27,8 +29,11 @@ public class Aliquot implements Serializable {
   private String provider;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumns({ @JoinColumn(name = "source", nullable = false),
-      @JoinColumn(name = "target", nullable = false) })
+  @JoinColumns({
+          @JoinColumn(name = "source", nullable = false),
+          @JoinColumn(name = "target", nullable = false)
+  })
+  @JsonBackReference
   private Product product;
 
   public Aliquot() {
