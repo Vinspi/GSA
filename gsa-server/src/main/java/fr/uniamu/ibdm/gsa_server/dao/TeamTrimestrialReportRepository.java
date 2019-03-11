@@ -2,12 +2,12 @@ package fr.uniamu.ibdm.gsa_server.dao;
 
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPK;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 
-public interface TeamTrimestrialReportRepository extends CrudRepository<TeamTrimestrialReport, TeamTrimestrialReportPK> {
+public interface TeamTrimestrialReportRepository extends CrudRepository<TeamTrimestrialReport, TeamTrimestrialReportPk> {
 
   List<TeamTrimestrialReport> findAllByYearAndQuarter(int year, Quarter quarter);
 
