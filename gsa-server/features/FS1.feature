@@ -1,5 +1,6 @@
 Feature: add a new aliquote
 
+  @smoke
   Scenario: Add a new aliquote to database
-    When I open browser and tap "http://localhost:4200/"
-    Then i should see login page and login with "rosa@univ-amu.fr" and "pantoufle"
+    When I open browser and enter valid "rosa@univ-amu.fr" and valid "pantoufle"
+    Then user should be able to connect successfully
