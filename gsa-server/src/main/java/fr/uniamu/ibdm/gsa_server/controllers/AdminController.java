@@ -275,7 +275,6 @@ public class AdminController {
 	 */
 	@PostMapping("/update-aliquot/{id}")
 	public JsonResponse<Boolean> updateAliquotExpire(@PathVariable long id) {
-		//adminService.updateAliquotExpire(id);
 		if (adminService.updateAliquotExpire(id)) {
 			return new JsonResponse<>(RequestStatus.SUCCESS, true);
 		} else {

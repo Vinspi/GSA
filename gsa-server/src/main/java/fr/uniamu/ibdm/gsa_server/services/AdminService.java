@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -10,6 +11,8 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 public interface AdminService {
@@ -99,5 +102,8 @@ public interface AdminService {
 	//void deleteAliquot(long id);
 	
 	boolean updateAliquotExpire(long id);
+	
+	/*List<Transaction> getTransactionsByAliquots(Collection<Aliquot> aliquots);
+	Iterator<Transaction> transformAliquotsToTransactions(Collection<Aliquot>aliquots);*/
 
 }

@@ -23,7 +23,7 @@ export class AliquotManagementComponent implements OnInit {
   constructor(private userService: UserService, private localStorage: LocalStorage, private adminService: AdminService) { }
 
   ngOnInit() {
-    this.adminService.getAliquots();
+    console.log(this.adminService.getAliquots());
     this.adminService.getAliquots().subscribe(res => {
       this.aliquoList = res.data;
       res.data.forEach(el => {
@@ -32,11 +32,13 @@ export class AliquotManagementComponent implements OnInit {
         aliquot.date = el.aliquotExpirationDate;
         aliquot.quantityVisible = el.aliquotQuantityVisibleStock;
         aliquot.quatityHidden = el.aliquotQuantityHiddenStock;
-        const expirationDate  = moment (el.date);
-        if(expirationDate > moment()){
-          aliquot.expire = false;
-        } else {
+        //const expirationDate  = moment (el.date);
+        if(this.adminService.updateAliquot(aliquot.id)){
           aliquot.expire = true;
+          console.log('haaaaaaaaaaahowaaaaaaaaaaaaaaaaaaaaaaaaaa \n'+aliquot.expire );
+          console.log(aliquot);
+        } else {
+          aliquot.expire = false;
         }
         this.aliquoList.push(aliquot)
        });
@@ -45,7 +47,6 @@ export class AliquotManagementComponent implements OnInit {
 
   /*ngOnInit() {
     console.log('aliqot');
-    
     //this.adminService.getAliquots();
     this.adminService.getAliquots().subscribe(res => {
       this.aliquoList = <Array<Aliquot>>res.data;
@@ -64,11 +65,11 @@ export class AliquotManagementComponent implements OnInit {
 
 
   updateAliquot(id: number){
-    // appel au service suppression
+    // test pour afficher msg ( aliquot expire ou not expire) , sinn test pour afficher le bouton ou pas 
     this.adminService.updateAliquot(id).subscribe(res => {
-      alert("Aliquot updated");
+      alert("Aliquot not expire !!!");
     });
-
+    this.ngOnInit();
     
   }
 

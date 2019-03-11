@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -331,32 +332,57 @@ public class AdminServiceImpl implements AdminService {
 		return (List<Aliquot>) aliquotRepository.getAliquots();
 	}
 
-	/*@Override // à modifier
-	public void deleteAliquot(long id) {
-		this.aliquotRepository.deleteById(id);
-	}*/
-	
 	@Override
 	public boolean updateAliquotExpire(long id) {
 
-		//long aliquotQuantityVisibleStock = 0;
-		//long aliquotQuantityHiddenStock = 0;
 		Optional<Aliquot> aliquotExpire = aliquotRepository.findById(id);
-		
+
 		if (aliquotExpire.isPresent()) {
-			//tester la date à faire
 			Aliquot newAliquot = aliquotExpire.get();
-			newAliquot.setAliquotQuantityVisibleStock(0);
-			newAliquot.setAliquotQuantityHiddenStock(0);
-			aliquotRepository.save(newAliquot);
-			//Optional<Transaction> transactionAliquotExpire = transactionRepository.findByAliquot(newAliquot);
-			//transactionAliquotExpire.get().setTransactionMotif(TransactionMotif.OUTDATED);
-			System.out.println("updaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
-			return true;
+			LocalDate dateExpire = newAliquot.getAliquotExpirationDate();
+			LocalDate currentDate = LocalDate.now();
+			if (dateExpire.isBefore(currentDate)) {
+				newAliquot.setAliquotQuantityVisibleStock(0);
+				newAliquot.setAliquotQuantityHiddenStock(0);
+				aliquotRepository.save(newAliquot);
+				Optional<Transaction> transactionAliquotExpire = transactionRepository.findByAliquot(newAliquot);
+				if (transactionAliquotExpire.isPresent()) {
+					Transaction transaction = transactionAliquotExpire.get();// null ????
+					transaction.setTransactionMotif(TransactionMotif.OUTDATED);
+					transactionRepository.save(transaction);
+					System.out.println(transactionAliquotExpire.get().getTransactionMotif());
+				} else {
+					System.out.println("transaction not exist");
+				}
+				System.out.println("updaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
+				return true;
+			} else {
+				System.out.println("Aliquot not expire!!!");
+				return false;
+			}
 		} else {
 			System.out.println("walooooooooooooooooooooooooo");
 			return false;
 		}
 	}
+
+	/*@Override
+	public Transaction getTransactionByAliquot(Aliquot aliquot) {
+
+		return transactionRepository.findByAliquot(aliquot);
+	}
+
+	public Iterator<Transaction> transformAliquotsToTransactions(Collection<Aliquot> aliquots) {
+		return getTransactionStreamFromBdd(aliquots).iterator();
+	}
+
+	private Stream<Transaction> getTransactionStreamFromBdd(Collection<Aliquot> aliquots) {
+		return aliquots.stream().map(this::getTransactionByAliquot);
+	}
+
+	@Override
+	public List<Transaction> getTransactionsByAliquots(Collection<Aliquot> aliquots) {
+		return getTransactionStreamFromBdd(aliquots).collect(Collectors.toList());
+	}*/
 
 }

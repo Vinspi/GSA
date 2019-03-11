@@ -67,7 +67,6 @@ export class AdminService {
     return this.http.get<JsonResponse>(this.BASE_URL+'/get-aliquots', {withCredentials: true})
   }
 
-  // update VisibleQuantity and HiddenQuantity -> 0
   updateAliquot(id: number): Observable<JsonResponse> {
      return this.http.post<JsonResponse>(this.BASE_URL+'/update-aliquot/'+id, {id : id},{withCredentials: true})
    }
