@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.util;
 
+import fr.uniamu.ibdm.gsa_server.services.impl.EmailServiceImpl;
 import fr.uniamu.ibdm.gsa_server.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -12,11 +13,16 @@ public class StartupApplicationBean implements ApplicationListener<ContextRefres
   @Autowired
   private UserServiceImpl userService;
 
+  @Autowired
+  private EmailServiceImpl emailService;
+
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
     userService.registerAccount("Michel", "michel@univ-amu.fr", "pantoufle", "Walgreen Company", false);
     userService.registerAccount("Rosa", "rosa@univ-amu.fr", "pantoufle", "Walgreen Company", true);
     userService.registerAccount("test", "test@univ-amu.fr", "test", "Walgreen Company", true);
+
+    emailService.sendAlertMessage();
 
     System.out.println("application started");
   }
