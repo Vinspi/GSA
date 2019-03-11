@@ -7,12 +7,15 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
@@ -41,6 +44,7 @@ public class AdminServiceImpl implements AdminService {
 	private ProductRepository productRepository;
 	private AliquotRepository aliquotRepository;
 	private AlertRepository alertRepository;
+	private TransactionRepository transactionRepository;
 
 	private SpeciesRepository speciesRepository;
 
@@ -327,9 +331,32 @@ public class AdminServiceImpl implements AdminService {
 		return (List<Aliquot>) aliquotRepository.getAliquots();
 	}
 
-	@Override // à modifier
+	/*@Override // à modifier
 	public void deleteAliquot(long id) {
 		this.aliquotRepository.deleteById(id);
+	}*/
+	
+	@Override
+	public boolean updateAliquotExpire(long id) {
+
+		//long aliquotQuantityVisibleStock = 0;
+		//long aliquotQuantityHiddenStock = 0;
+		Optional<Aliquot> aliquotExpire = aliquotRepository.findById(id);
+		
+		if (aliquotExpire.isPresent()) {
+			//tester la date à faire
+			Aliquot newAliquot = aliquotExpire.get();
+			newAliquot.setAliquotQuantityVisibleStock(0);
+			newAliquot.setAliquotQuantityHiddenStock(0);
+			aliquotRepository.save(newAliquot);
+			//Optional<Transaction> transactionAliquotExpire = transactionRepository.findByAliquot(newAliquot);
+			//transactionAliquotExpire.get().setTransactionMotif(TransactionMotif.OUTDATED);
+			System.out.println("updaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
+			return true;
+		} else {
+			System.out.println("walooooooooooooooooooooooooo");
+			return false;
+		}
 	}
 
 }

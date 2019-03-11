@@ -18,9 +18,9 @@ public class EnumConvertor {
       case RESERVE:
         return AlertType.HIDDEN_STOCK;
       case GENERAL:
-        return AlertType.GENERAL;
+        return AlertType.GENRAL;
       default:
-        return AlertType.GENERAL;
+        return AlertType.GENRAL;
     }
   }
 }

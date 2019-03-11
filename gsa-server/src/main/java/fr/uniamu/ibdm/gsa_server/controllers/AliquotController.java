@@ -39,14 +39,14 @@ public class AliquotController {
    * @param form The information needed to compute data.
    * @return a JSON formatted response.
    */
-    @GetMapping("/get-aliquots")
+  /*  @GetMapping("/get-aliquots")
   public JsonResponse<List<Aliquot>> getAliquots() {
     return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAliquots());
   }
   
   @DeleteMapping("/delete-aliquot/{id}")
   public void deleteAliquot(@PathVariable long id) {
-	  adminService.makeQuantityZero(id);
+	  adminService.deleteAliquot(id);
   }
-
+*/
 }

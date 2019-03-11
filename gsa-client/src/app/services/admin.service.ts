@@ -64,12 +64,12 @@ export class AdminService {
   }
 
   getAliquots(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(this.BASE_URL+'/get-aliquots',{withCredentials: true})
+    return this.http.get<JsonResponse>(this.BASE_URL+'/get-aliquots', {withCredentials: true})
   }
 
   // update VisibleQuantity and HiddenQuantity -> 0
-   removeAliquots(id: number): Observable<JsonResponse> {
-     return this.http.post<JsonResponse>(this.BASE_URL+'/delete-aliquot/'+id, {id : id},{withCredentials: true})
+  updateAliquot(id: number): Observable<JsonResponse> {
+     return this.http.post<JsonResponse>(this.BASE_URL+'/update-aliquot/'+id, {id : id},{withCredentials: true})
    }
 
 }

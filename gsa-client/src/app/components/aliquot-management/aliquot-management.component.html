@@ -20,7 +20,7 @@
               <td>{{item.quatityHidden}}</td>
               <td> 
                 <div *ngIf="item.expire">
-                    <button title="delete aliquot" type="button" class="btn btn-xs btn-danger" (click)="deleteAliquot(item.id)">
+                    <button title="delete aliquot" type="button" class="btn btn-xs btn-danger" (click)="updateAliquot(item.id)">
                         <i>Expire</i>
                     </button>
                 </div>

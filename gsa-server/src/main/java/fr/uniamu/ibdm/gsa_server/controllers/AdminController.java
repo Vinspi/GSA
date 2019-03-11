@@ -268,44 +268,22 @@ public class AdminController {
 	}
 
 	/**
-	 * REST endpoint for /delete-aliquot/{id} call, update visibleQuantity and
+	 * REST endpoint for /update-aliquot/{id} call, update visibleQuantity and
 	 * HiddenQuantity.
 	 *
 	 * @return a JSON formatted response.
 	 */
-	@PostMapping("/delete-aliquot/{id}")
-	public void deleteAliquot(@PathVariable long id) {
-		adminService.deleteAliquot(id);
+	@PostMapping("/update-aliquot/{id}")
+	public JsonResponse<Boolean> updateAliquotExpire(@PathVariable long id) {
+		//adminService.updateAliquotExpire(id);
+		if (adminService.updateAliquotExpire(id)) {
+			return new JsonResponse<>(RequestStatus.SUCCESS, true);
+		} else {
+			return new JsonResponse<>("Nooooo updaaaaaaaaaaaaaaaaaaate", RequestStatus.FAIL);
+		}
 	}
+	
 
-	/*
-	 * 
-	 * 
-	 * @RestController
-	 * 
-	 * @RequestMapping("/aliquot")
-	 * 
-	 * @CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
-	 * public class AliquotController {
-	 * 
-	 * @Autowired HttpSession session;
-	 * 
-	 * @Autowired AdminService adminService;
-	 * 
-	 * /** REST endpoint for /stats call, return stats needed for building admin
-	 * chart.
-	 *
-	 * @param form The information needed to compute data.
-	 * 
-	 * @return a JSON formatted response.
-	 */
-	/*
-	 * @GetMapping("/get-aliquots") public JsonResponse<List<Aliquot>> getAliquots()
-	 * { return new JsonResponse<>(RequestStatus.SUCCESS,
-	 * adminService.getAllAliquots()); }
-	 * 
-	 * @DeleteMapping("/delete-aliquot/{id}") public void
-	 * deleteAliquot(@PathVariable long id) { adminService.deleteAliquot(id); }
-	 */
+	
 
 }

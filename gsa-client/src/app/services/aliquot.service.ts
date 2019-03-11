@@ -9,7 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class AliquotService {
 
-  constructor(private http: HttpClient) { }
+  /*constructor(private http: HttpClient) { }
   getAliquots(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(environment.API_URL+'/admin/get-aliquots',{withCredentials: true})
   }
@@ -17,5 +17,5 @@ export class AliquotService {
   // update VisibleQuantity and HiddenQuantity -> 0
    removeAliquots(id: number): Observable<JsonResponse> {
      return this.http.post<JsonResponse>(environment.API_URL+'/admin/delete-aliquot/'+id,{withCredentials: true})
-   }
+   }*/
 }

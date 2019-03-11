@@ -14,25 +14,25 @@ import * as moment from 'moment';
 export class AliquotManagementComponent implements OnInit {
 
   cart: Array<any> = new Array();
-  barcodeNlot: number
   user: User;
   teamChoosed: String;
   loaded: boolean = false;
   aliquoList = new Array<Aliquot>();
 
+
   constructor(private userService: UserService, private localStorage: LocalStorage, private adminService: AdminService) { }
 
   ngOnInit() {
-    console.log('aliqot');
-    
     this.adminService.getAliquots();
     this.adminService.getAliquots().subscribe(res => {
       this.aliquoList = res.data;
       res.data.forEach(el => {
         const aliquot = new Aliquot();
-        aliquot.id = el[0];
-        aliquot.date = el[1];
-        const expirationDate  = moment (el[1]);
+        aliquot.id = el.aliquotNLot;
+        aliquot.date = el.aliquotExpirationDate;
+        aliquot.quantityVisible = el.aliquotQuantityVisibleStock;
+        aliquot.quatityHidden = el.aliquotQuantityHiddenStock;
+        const expirationDate  = moment (el.date);
         if(expirationDate > moment()){
           aliquot.expire = false;
         } else {
@@ -43,10 +43,30 @@ export class AliquotManagementComponent implements OnInit {
       });
   }
 
-  deleteAliquot(id: number){
+  /*ngOnInit() {
+    console.log('aliqot');
+    
+    //this.adminService.getAliquots();
+    this.adminService.getAliquots().subscribe(res => {
+      this.aliquoList = <Array<Aliquot>>res.data;
+      console.log("aliquoList : "+JSON.stringify(this.aliquoList));
+      res.data.forEach(el => {
+        const aliquot = new Aliquot();
+        aliquot.id = el.aliquotNLot;
+        aliquot.date = el.aliquotExpirationDate;
+        aliquot.quantityVisible = el.aliquotQuantityVisibleStock;
+        aliquot.quatityHidden = el.aliquotQuantityHiddenStock;
+        aliquot.expire=true;
+        console.log(aliquot);
+       });
+      });
+  }*/
+
+
+  updateAliquot(id: number){
     // appel au service suppression
-    this.adminService.removeAliquots(id).subscribe(res => {
-      alert("Aliquot deleted");
+    this.adminService.updateAliquot(id).subscribe(res => {
+      alert("Aliquot updated");
     });
 
     
