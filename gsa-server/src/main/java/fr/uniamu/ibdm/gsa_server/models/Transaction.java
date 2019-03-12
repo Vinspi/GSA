@@ -68,6 +68,11 @@ public class Transaction implements Serializable {
     this.aliquot = aliquot;
     this.member = member;
   }
+  
+  public Transaction(TransactionMotif transactionMotif, Aliquot aliquot) {
+	    this.transactionMotif = transactionMotif;
+	    this.aliquot = aliquot;
+	  }
 
   public long getTransactionId() {
     return transactionId;

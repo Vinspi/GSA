@@ -36,7 +36,7 @@ export class AliquotManagementComponent implements OnInit {
         if(this.adminService.updateAliquot(aliquot.id)){
           aliquot.expire = true;
           console.log('haaaaaaaaaaahowaaaaaaaaaaaaaaaaaaaaaaaaaa \n'+aliquot.expire );
-          console.log(aliquot);
+          console.log('aaaaaaaa'+aliquot);
         } else {
           aliquot.expire = false;
         }
@@ -44,24 +44,6 @@ export class AliquotManagementComponent implements OnInit {
        });
       });
   }
-
-  /*ngOnInit() {
-    console.log('aliqot');
-    //this.adminService.getAliquots();
-    this.adminService.getAliquots().subscribe(res => {
-      this.aliquoList = <Array<Aliquot>>res.data;
-      console.log("aliquoList : "+JSON.stringify(this.aliquoList));
-      res.data.forEach(el => {
-        const aliquot = new Aliquot();
-        aliquot.id = el.aliquotNLot;
-        aliquot.date = el.aliquotExpirationDate;
-        aliquot.quantityVisible = el.aliquotQuantityVisibleStock;
-        aliquot.quatityHidden = el.aliquotQuantityHiddenStock;
-        aliquot.expire=true;
-        console.log(aliquot);
-       });
-      });
-  }*/
 
 
   updateAliquot(id: number){

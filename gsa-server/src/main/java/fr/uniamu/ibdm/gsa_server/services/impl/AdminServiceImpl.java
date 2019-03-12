@@ -345,16 +345,17 @@ public class AdminServiceImpl implements AdminService {
 				newAliquot.setAliquotQuantityVisibleStock(0);
 				newAliquot.setAliquotQuantityHiddenStock(0);
 				aliquotRepository.save(newAliquot);
-				Optional<Transaction> transactionAliquotExpire = transactionRepository.findByAliquot(newAliquot);
-				if (transactionAliquotExpire.isPresent()) {
-					Transaction transaction = transactionAliquotExpire.get();// null ????
-					transaction.setTransactionMotif(TransactionMotif.OUTDATED);
-					transactionRepository.save(transaction);
-					System.out.println(transactionAliquotExpire.get().getTransactionMotif());
+				Transaction transactionAliquotExpire = transactionRepository.findByAliquot(id);
+				System.out.println("haaahyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa avant"+transactionAliquotExpire);
+				if (transactionAliquotExpire!= null) {
+					//Transaction transaction = transactionAliquotExpire;// null ????
+					transactionAliquotExpire.setTransactionMotif(TransactionMotif.OUTDATED);
+					transactionRepository.save(transactionAliquotExpire);
+					System.out.println("haaahyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa apres"+transactionAliquotExpire.getTransactionMotif());
 				} else {
 					System.out.println("transaction not exist");
 				}
-				System.out.println("updaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
+				System.out.println("haaahoowaaaaaaaaaaaaa updaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
 				return true;
 			} else {
 				System.out.println("Aliquot not expire!!!");
@@ -366,9 +367,8 @@ public class AdminServiceImpl implements AdminService {
 		}
 	}
 
-	/*@Override
-	public Transaction getTransactionByAliquot(Aliquot aliquot) {
-
+	
+/*	public Transaction getTransactionByAliquot(Aliquot aliquot) {
 		return transactionRepository.findByAliquot(aliquot);
 	}
 
