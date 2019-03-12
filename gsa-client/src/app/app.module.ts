@@ -30,6 +30,9 @@ import { OutdateNotificationComponent } from './components/admin-homepage/outdat
 import { ReportNotificationComponent } from './components/admin-homepage/report-notification/report-notification.component';
 import { StatsProvidersComponent } from './components/admin-homepage/stats-providers/stats-providers.component';
 import { StatsProductsComponent } from './components/admin-homepage/stats-products/stats-products.component';
+import { MaintenanceComponent } from './components/maintenance/maintenance.component';
+import { NotFoundComponent } from './components/not-found/not-found.component';
+import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
 
 
 @NgModule({
@@ -57,7 +60,10 @@ import { StatsProductsComponent } from './components/admin-homepage/stats-produc
     OutdateNotificationComponent,
     ReportNotificationComponent,
     StatsProvidersComponent,
-    StatsProductsComponent
+    StatsProductsComponent,
+    MaintenanceComponent,
+    NotFoundComponent,
+    AdminMaintenanceComponent
   ],
   imports: [
     BrowserModule,

@@ -15,21 +15,21 @@ export class AdminService {
   private BASE_URL: String = environment.API_URL+environment.API_ADMIN;
 
   getWithdrawStats(data: any): Observable<JsonResponse> {
-    return this.http.post<JsonResponse>(this.BASE_URL+'/stats', data, {withCredentials: true})
+    return this.http.post<JsonResponse>(this.BASE_URL+'/stats', data, {withCredentials: true});
   }
 
   getAllSpeciesName(): Observable<JsonResponse> {
 
-    return this.http.get<JsonResponse>(this.BASE_URL+'/allspeciesnames', {withCredentials: true})
+    return this.http.get<JsonResponse>(this.BASE_URL+'/allspeciesnames', {withCredentials: true});
   }
 
   addProduct(data: any): Observable<JsonResponse> {
 
-    return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true})
+    return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true});
   }
 
   getTriggeredAlerts(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(this.BASE_URL+"/triggeredAlerts")
+    return this.http.get<JsonResponse>(this.BASE_URL+"/triggeredAlerts", {withCredentials: true});
   }
 
   getAllAlerts(): Observable<JsonResponse> {
@@ -84,5 +84,9 @@ export class AdminService {
 
   getProductsStats(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL+'/getProductsStats', {withCredentials: true});
+  }
+
+  setMaintenanceMode(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/setupMaintenanceMode', data, {withCredentials: true});
   }
 }
