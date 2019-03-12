@@ -94,8 +94,6 @@ public class AdminServiceImpl implements AdminService {
     upperBound = form.getYearUpperBound() + "-" + DateConverter.monthToNumberConvertor(form.getMonthUpperBound())
         + "-31 00:00:00";
 
-    System.out.println("lower bound : " + lowerBound);
-
     List<Object[]> result = productRepository.getWithdrawStats(form.getTeamName(), lowerBound, upperBound, shards[0],
         shards[2]);
     List<StatsWithdrawQuery> returnValue = new ArrayList<>();
@@ -431,6 +429,7 @@ public class AdminServiceImpl implements AdminService {
     for (TeamTrimestrialReport report : listReports) {
       if (!report.isFinalFlag()) {
         todo = true;
+        break;
       }
     }
 

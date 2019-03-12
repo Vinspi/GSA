@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthentificationService } from '../../services/authentification.service';
 import { LocalStorage } from '@ngx-pwa/local-storage';
-import { Router } from "@angular/router"
+import { Router } from '@angular/router';
+import { User } from '../../user';
 
 @Component({
   selector: 'app-connection-form',
@@ -23,8 +24,11 @@ export class ConnectionFormComponent implements OnInit {
 
   ngOnInit() {
     this.localStorage.getItem("user").subscribe(user => {
-      if (user != null)
+      if (user != null && (<User> user).admin)
         this.router.navigate(["/"]);
+
+      if (user != null && !(<User> user).admin)
+        this.router.navigate(["/withdraw"]);
     });
     this.error = false;
   }

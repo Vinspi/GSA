@@ -6,26 +6,26 @@
     <form>
       <div class="row">
         <div class="col">
-          <label for="from">from</label>
-          <select (change)="onValueChange()" [(ngModel)]="beginMonth" id="from" class="form-control" [ngModelOptions]="{standalone: true}">
+          <label for="from-month">from</label>
+          <select (change)="onValueChange()" [(ngModel)]="beginMonth" id="from-month" class="form-control" [ngModelOptions]="{standalone: true}">
             <option *ngFor="let item of months">{{item}}</option>
           </select>
         </div>
         <div class="col">
-          <label for="team">year</label>
-          <select (change)="onValueChange()" [(ngModel)]="beginYear" id="from" class="form-control" [ngModelOptions]="{standalone: true}">
+          <label for="from-year">year</label>
+          <select (change)="onValueChange()" [(ngModel)]="beginYear" id="from-year" class="form-control" [ngModelOptions]="{standalone: true}">
             <option *ngFor="let item of years">{{item}}</option>
           </select>
         </div>
         <div class="col">
-          <label for="to">to</label>
-          <select (change)="onValueChange()" [(ngModel)]="endMonth" id="to" class="form-control" [ngModelOptions]="{standalone: true}">
+          <label for="to-month">to</label>
+          <select (change)="onValueChange()" [(ngModel)]="endMonth" id="to-month" class="form-control" [ngModelOptions]="{standalone: true}">
             <option *ngFor="let item of months">{{item}}</option>
           </select>
         </div>
         <div class="col">
-            <label for="team">year</label>
-          <select (change)="onValueChange()" [(ngModel)]="endYear" id="from" class="form-control" [ngModelOptions]="{standalone: true}">
+            <label for="to-year">year</label>
+          <select (change)="onValueChange()" [(ngModel)]="endYear" id="to-year" class="form-control" [ngModelOptions]="{standalone: true}">
             <option *ngFor="let item of years">{{item}}</option>
           </select>
         </div>

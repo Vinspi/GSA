@@ -85,4 +85,8 @@ export class AdminService {
   getProductsStats(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL+'/getProductsStats', {withCredentials: true});
   }
+
+  setMaintenanceMode(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/setupMaintenanceMode', data, {withCredentials: true});
+  }
 }

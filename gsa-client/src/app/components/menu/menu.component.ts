@@ -44,7 +44,6 @@ export class MenuComponent implements OnInit, OnChanges {
     $('.panel-icon-container i').css('font-size', '20pt');
   }
 
-
   
 
 }
