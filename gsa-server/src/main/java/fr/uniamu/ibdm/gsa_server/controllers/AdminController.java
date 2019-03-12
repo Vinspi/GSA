@@ -23,6 +23,7 @@ import fr.uniamu.ibdm.gsa_server.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -409,6 +410,24 @@ public class AdminController {
 
   }
 
+  /**
+   * REST endpoint for /update-aliquot/{id} call, update visibleQuantity and
+   * HiddenQuantity.
+   *
+   * @return a JSON formatted response.
+   */
+  @PostMapping("/update-aliquot/{id}")
+  public JsonResponse<Boolean> updateAliquotExpire(@PathVariable long id) {
+    //if (isAdmin()) {
+      if (adminService.updateAliquotExpire(id)) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, true);
+      } else {
+        return new JsonResponse<>("The aliquot could not be updated", RequestStatus.FAIL);
+      }
+    /*} else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }*/
+  }
 
   /**
    * Utility function to tell us if the user logged in is admin or not.
@@ -421,5 +440,5 @@ public class AdminController {
     }
     return ((User) session.getAttribute("user")).isAdmin();
   }
-
+  
 }

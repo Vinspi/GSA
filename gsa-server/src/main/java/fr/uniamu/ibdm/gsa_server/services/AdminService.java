@@ -142,5 +142,7 @@ public interface AdminService {
    * @return a list of products stats.
    */
   List<ProductsStatsData> generateProductsStats();
+  
+  boolean updateAliquotExpire(long id);
 
 }

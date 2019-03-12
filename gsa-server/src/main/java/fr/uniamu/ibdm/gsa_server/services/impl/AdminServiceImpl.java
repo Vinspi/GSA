@@ -34,8 +34,12 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import fr.uniamu.ibdm.gsa_server.util.EnumConvertor;
+import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static java.lang.Math.toIntExact;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -50,7 +54,9 @@ import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
-
+  @Autowired
+  private TimeFactory clock;
+  
   private ProductRepository productRepository;
   private AliquotRepository aliquotRepository;
   private AlertRepository alertRepository;
@@ -447,5 +453,52 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public List<ProductsStatsData> generateProductsStats() {
     return aliquotRepository.generateProductsStats();
+  }
+  
+  @Override
+  public boolean updateAliquotExpire(long id) {
+    Optional<Aliquot> aliquotExpire = aliquotRepository.findById(id);
+    
+    if (!aliquotExpire.isPresent()) {
+      return false;
+    }
+    
+    Aliquot newAliquot = aliquotExpire.get();
+    LocalDate dateExpire = newAliquot.getAliquotExpirationDate();
+    LocalDate currentDate = clock.now();
+    
+    if (currentDate.isBefore(dateExpire)) {
+      return false;
+    }
+    
+    List<Transaction> outdatedAliquot = transactionRepository.findOutdatedTransactionByAliquot(id);
+    if(!outdatedAliquot.isEmpty()) {
+      return false;
+    }
+    
+    int outdatedVisibleQuantity = toIntExact(newAliquot.getAliquotQuantityVisibleStock());
+    int outdatedHiddenQuantity = toIntExact(newAliquot.getAliquotQuantityHiddenStock());
+    int outdatedQuantity = outdatedHiddenQuantity + outdatedVisibleQuantity;
+    
+    if(outdatedQuantity <= 0) {
+      return false;
+    }
+    
+    newAliquot.setAliquotQuantityVisibleStock(0);
+    newAliquot.setAliquotQuantityHiddenStock(0);
+    aliquotRepository.save(newAliquot);
+    
+    Transaction outdatedTransaction = new Transaction();
+    outdatedTransaction.setAliquot(newAliquot);
+    outdatedTransaction.setMember(null);
+    outdatedTransaction.setTransactionMotif(TransactionMotif.OUTDATED);
+    outdatedTransaction.setTransactionQuantity(outdatedHiddenQuantity + outdatedVisibleQuantity);
+    outdatedTransaction.setTransactionType(TransactionType.WITHDRAW);
+    outdatedTransaction.setTransactionDate(currentDate);
+    
+    transactionRepository.save(outdatedTransaction);
+    
+    return true;
+    
   }
 }

@@ -13,6 +13,7 @@ import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
@@ -26,6 +27,8 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,7 +54,9 @@ import java.util.Optional;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AdminServiceTest {
-
+  @MockBean
+  TimeFactory timeFactory;
+  
   @MockBean
   ProductRepository productRepository;
 
@@ -447,6 +452,51 @@ public class AdminServiceTest {
     Mockito.verify(aliquotRepository, Mockito.times(3)).save(Mockito.any());
 
 
+  }
+  
+  @Test
+  public void updateAliquotExpire() {
+    Aliquot aliquot = new Aliquot();
+    Long aliquotNLot = 1L;
+    aliquot.setAliquotNLot(aliquotNLot);
+
+    // An invalid aliquot id should fail.
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.empty());
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+
+    // An aliquot with an expiration date lesser than the current date should fail.
+    aliquot.setAliquotExpirationDate(LocalDate.of(2019, 4, 3));
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.of(aliquot));
+    Mockito.when(timeFactory.now()).thenReturn(LocalDate.of(2019, 4, 2));
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+    Mockito.verify(timeFactory, Mockito.times(1)).now();
+
+    // An aliquot already set as outdated should not be added again.
+    Mockito.when(timeFactory.now()).thenReturn(LocalDate.of(2019, 4, 4));
+
+    List<Transaction> aliquotOutdatedTransactions = new ArrayList<>();
+    aliquotOutdatedTransactions.add(new Transaction());
+
+    Mockito.when(transactionRepository.findOutdatedTransactionByAliquot(Mockito.eq(aliquotNLot)))
+        .thenReturn(aliquotOutdatedTransactions);
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+    Mockito.verify(transactionRepository, Mockito.times(1)).findOutdatedTransactionByAliquot(aliquotNLot);
+
+    // An aliquot with zero quantity in visible and hidden stock should not be added.
+    Mockito.when(transactionRepository.findOutdatedTransactionByAliquot(Mockito.eq(aliquotNLot)))
+    .thenReturn(new ArrayList<>());
+    
+    aliquot.setAliquotQuantityHiddenStock(0);
+    aliquot.setAliquotQuantityVisibleStock(0);
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.of(aliquot));
+    
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+    
+    // An outdated aliquot should be updated.
+    aliquot.setAliquotQuantityVisibleStock(1);
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.of(aliquot));
+    
+    Assert.assertEquals(true, adminService.updateAliquotExpire(aliquotNLot));
   }
 
 
