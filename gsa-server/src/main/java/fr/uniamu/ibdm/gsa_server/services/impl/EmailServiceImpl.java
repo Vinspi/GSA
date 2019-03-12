@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.services.impl;
 
 import fr.uniamu.ibdm.gsa_server.conf.CustomConfig;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.dao.UserRepository;
 import fr.uniamu.ibdm.gsa_server.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -16,7 +17,7 @@ public class EmailServiceImpl implements EmailService {
 
   private JavaMailSender emailSender;
   private AdminServiceImpl adminService;
-  private CustomConfig config;
+  private UserRepository userRepository;
 
   /**
    * Constructor for the EmailServiceImpl service.
@@ -26,17 +27,16 @@ public class EmailServiceImpl implements EmailService {
    * @param config       autowired property.
    */
   @Autowired
-  public EmailServiceImpl(JavaMailSender emailSender, AdminServiceImpl adminService, CustomConfig config) {
+  public EmailServiceImpl(JavaMailSender emailSender, AdminServiceImpl adminService, UserRepository userRepository) {
     this.emailSender = emailSender;
     this.adminService = adminService;
-    this.config = config;
+    this.userRepository = userRepository;
   }
 
   @Override
   @Scheduled(cron = "0 0 0 ? * MON *")
   public void sendAlertMessage() {
 
-    System.out.println(config.getAdminAddresses());
 
 
     StringBuilder sb = new StringBuilder();
@@ -57,7 +57,7 @@ public class EmailServiceImpl implements EmailService {
       sb.append("\r\r");
     });
 
-    for (String address : config.getAdminAddresses()) {
+    for (String address : userRepository.findAllAdminEmail()) {
       SimpleMailMessage message = new SimpleMailMessage();
 
       message.setTo(address);
