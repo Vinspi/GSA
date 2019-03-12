@@ -1,6 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
 import fr.uniamu.ibdm.gsa_server.conf.CustomConfig;
+import fr.uniamu.ibdm.gsa_server.conf.MaintenanceBean;
 import fr.uniamu.ibdm.gsa_server.models.Member;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.LoginData;
@@ -37,6 +38,9 @@ public class AuthController {
 
   @Autowired
   CustomConfig appconfig;
+
+  @Autowired
+  MaintenanceBean maintenanceBean;
 
   /**
    * REST endpoint for login request.

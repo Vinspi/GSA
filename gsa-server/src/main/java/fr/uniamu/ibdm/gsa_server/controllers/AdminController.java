@@ -1,5 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import fr.uniamu.ibdm.gsa_server.conf.CustomConfig;
+import fr.uniamu.ibdm.gsa_server.conf.MaintenanceBean;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
@@ -15,11 +17,13 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.SetupMaintenanceForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
+import org.openqa.selenium.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -45,6 +49,12 @@ public class AdminController {
   @Autowired
   UserService userService;
 
+  @Autowired
+  MaintenanceBean maintenanceBean;
+
+  @Autowired
+  CustomConfig config;
+
   final double minPrice = 0.0001;
 
   /**
@@ -55,6 +65,10 @@ public class AdminController {
    */
   @PostMapping("/stats")
   public JsonResponse<List<StatsWithdrawQuery>> getWithdrawStats(@RequestBody WithdrawStatsForm form) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
 
     if (this.isAdmin()) {
       return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getWithdrawStats(form));
@@ -71,6 +85,11 @@ public class AdminController {
    */
   @GetMapping("/allspeciesnames")
   public JsonResponse<List<String>> getAllSpeciesNames() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (this.isAdmin()) {
       List<String> names = adminService.getAllSpeciesNames();
       if (names != null) {
@@ -93,6 +112,11 @@ public class AdminController {
    */
   @PostMapping("/addproduct")
   public JsonResponse<AddProductForm> addProduct(@RequestBody AddProductForm form) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (this.isAdmin()) {
       JsonResponse<AddProductForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
       failedRequestResponse.setData(form);
@@ -128,6 +152,10 @@ public class AdminController {
   @PostMapping("/addAliquote")
   public JsonResponse<AddAliquoteForm> addAliquote(@RequestBody AddAliquoteForm form) {
 
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       JsonResponse<AddAliquoteForm> failedRequestResponse = new JsonResponse<>(RequestStatus.FAIL);
       failedRequestResponse.setData(form);
@@ -159,6 +187,11 @@ public class AdminController {
    */
   @GetMapping("/allProducts")
   public JsonResponse<List<String>> getAllProductsName() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       List<String> productsName = userService.getAllProductName();
       if (productsName != null) {
@@ -179,6 +212,11 @@ public class AdminController {
    */
   @GetMapping("/triggeredAlerts")
   public JsonResponse<List<TriggeredAlertsQuery>> getTriggeredAlerts() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getTriggeredAlerts());
     } else {
@@ -195,6 +233,11 @@ public class AdminController {
    */
   @GetMapping("/getAllAlerts")
   public JsonResponse<List<AlertsData>> getAllAlerts() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllAlerts());
     } else {
@@ -211,6 +254,11 @@ public class AdminController {
    */
   @PostMapping("/removeAlert")
   public JsonResponse<Boolean> removeAlert(@RequestBody RemoveAlertForm form) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       if (adminService.removeAlert(form.getAlertId())) {
         return new JsonResponse<>(RequestStatus.SUCCESS, true);
@@ -231,6 +279,10 @@ public class AdminController {
    */
   @PostMapping("/updateAlert")
   public JsonResponse<Boolean> updateAlert(@RequestBody UpdateAlertForm form) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
 
     if (isAdmin()) {
       if (form.getSeuil() < 1) {
@@ -257,6 +309,11 @@ public class AdminController {
    */
   @PostMapping("/transfertAliquot")
   public JsonResponse<TransfertAliquotForm> transfertAliquot(@RequestBody TransfertAliquotForm form) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       JsonResponse<TransfertAliquotForm> response;
       boolean success;
@@ -289,6 +346,10 @@ public class AdminController {
   @PostMapping("/addAlert")
   public JsonResponse<AddAlertForm> addAlert(@RequestBody AddAlertForm form) {
 
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       JsonResponse<AddAlertForm> failRequest = new JsonResponse<>(RequestStatus.FAIL);
       failRequest.setData(form);
@@ -316,6 +377,11 @@ public class AdminController {
    */
   @GetMapping("/getAllProductsWithAliquots")
   public JsonResponse<List<Product>> getAllProductsWithAliquots() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllProductsWithAliquots());
     } else {
@@ -332,6 +398,11 @@ public class AdminController {
    */
   @PostMapping("/handleInventory")
   public JsonResponse<List<InventoryForm>> handleInventory(@RequestBody List<InventoryForm> forms) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       for (InventoryForm form : forms) {
         if (!form.validate()) {
@@ -355,6 +426,11 @@ public class AdminController {
    */
   @GetMapping("/getProvidersStats")
   public JsonResponse<List<ProvidersStatsData>> getProvidersStats() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProvidersStats());
     } else {
@@ -370,6 +446,11 @@ public class AdminController {
    */
   @GetMapping("/getAlertsNotification")
   public JsonResponse<Integer> getAlertsNotification() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
     } else {
@@ -386,6 +467,11 @@ public class AdminController {
    */
   @GetMapping("/getNextReport")
   public JsonResponse<NextReportData> getNextReport() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getNextReportData());
     } else {
@@ -401,6 +487,11 @@ public class AdminController {
    */
   @GetMapping("/getProductsStats")
   public JsonResponse<List<ProductsStatsData>> getProductsStats() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isAdmin()) {
       return new JsonResponse<>(RequestStatus.SUCCESS, adminService.generateProductsStats());
     } else {
@@ -409,6 +500,25 @@ public class AdminController {
 
   }
 
+  /**
+   * REST endpoint, allow a superAdministrator to set up maintenance mode.
+   *
+   * @param form wrapper containing mode and super admin password to activate maintenance mode.
+   * @return a JsonResponse containing the set up mode.
+   */
+  @PostMapping("/setupMaintenanceMode")
+  public JsonResponse<SetupMaintenanceForm> setUpMaintenanceMode(@RequestBody SetupMaintenanceForm form) {
+
+    if (isAdmin() && form.validate() && form.getPassword().equals(config.getSuperAdminPassword())){
+
+      maintenanceBean.setMaintenanceMode(form.isMode());
+
+      return new JsonResponse<>(RequestStatus.SUCCESS, form);
+    }
+
+    return new JsonResponse<>(RequestStatus.FAIL, form);
+
+  }
 
   /**
    * Utility function to tell us if the user logged in is admin or not.

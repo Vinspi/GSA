@@ -5,6 +5,7 @@ body {
     font-family: 'Roboto', sans-serif;
     overflow: hidden;
     background-color: #f2f7fb;
+    background-image: url('assets/img/swirl_pattern.png');
     height: 100vh;
 }
 

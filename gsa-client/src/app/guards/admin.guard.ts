@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AuthentificationService } from './authentification.service';
+import { AuthentificationService } from '../services/authentification.service';
 import { Router } from '@angular/router';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { User } from '../user';
@@ -9,8 +9,8 @@ import { User } from '../user';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
-
+export class AdminGuard implements CanActivate {
+  
   constructor(private authService: AuthentificationService, private router : Router, private localStorage: LocalStorage) { }
 
   canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {
@@ -29,7 +29,7 @@ export class AuthGuard implements CanActivate {
           resolve(false);
         }
         else {
-          resolve(true);
+          resolve((<User> user).admin);
         }
       })
     })

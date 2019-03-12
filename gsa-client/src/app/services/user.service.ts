@@ -31,4 +31,8 @@ export class UserService {
     return this.http.get<JsonResponse>(environment.API_URL+'/getAllProductName');
   }
 
+  isMaintenance(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(environment.API_URL+'/isMaintenanceMode', {withCredentials: true});
+  }
+
 }
