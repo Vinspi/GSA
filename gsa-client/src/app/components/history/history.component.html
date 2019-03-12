@@ -4,17 +4,17 @@
   <form class="form-inline">
     <div class="form-group">
       <div class="input-group">
-        <input class="form-control" placeholder="Begin date (yyyy-mm-dd)" type="text"
+        <input id="beginDate" class="form-control" placeholder="Begin date (yyyy-mm-dd)"
                name="begin" [(ngModel)]="begin" ngbDatepicker #d="ngbDatepicker"
-               title="begin date of the period">
+               title="Begin date of the period" type="text">
         <div class="input-group-append">
           <button (click)="d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
         </div>
       </div>
       <div class="input-group">
-        <input class="form-control" placeholder="End date (yyyy-mm-dd)" type="text"
+        <input id="endDate" class="form-control" placeholder="End date (yyyy-mm-dd)"
                name="end" [(ngModel)]="end" ngbDatepicker #d2="ngbDatepicker"
-               title="end date of the period">
+               title="End date of the period" type="text">
         <div class="input-group-append">
           <button (click)="d2.toggle()" type="button"><i class="fa fa-calendar"></i></button>
         </div>
@@ -25,13 +25,9 @@
     </div>
   </form>
 
-  <pre *ngIf="begin !== null">{{ begin | json }}</pre>
-  <pre *ngIf="end !== null">{{ end | json }} </pre>
-  <!--*<button class="html5">CSV</button>-->
-
-  <div>
-    <table id="datatable" datatable data-paging="false" [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" data-info="false" class="custom-table row-border hover" style="width: 100%;">
-      <!----><thead>
+  <div class="table">
+    <table id="datatable" datatable [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" data-info="false" class="row-border hover" style="width: 100%;">
+      <thead>
         <tr>
           <th>Date</th>
           <th>User</th>
@@ -45,14 +41,15 @@
         <tr *ngFor="let item of history">
           <td>{{item.date}}</td>
           <td>{{item.userName}}</td>
-          <td>{{item.aliquotName}}</td>
+          <td>{{item.aliquotName}}</ td>
           <td>{{item.teamName}}</td>
           <td>{{item.quantity}}</td>
           <td>{{item.price}}</td>
         </tr>
-      </tbody><!---->
+      </tbody>
     </table>
   </div>
 
-  <button class="csv btn btn-outline-dark">Export to CSV</button>
+  <button class="btn btn-lg btn-outline-dark" (click)="exportToCsv()">Export to CSV</button>
 </div>
+

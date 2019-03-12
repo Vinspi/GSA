@@ -1,18 +1,14 @@
+import { formatDate } from '@angular/common';
+
 export class Date {
-  year: number;
-  month: number;
-  day: number;
-
-  constructor() {
+  constructor(public year: number, public month: number, public day: number) {
   }
 
-  getDate(): Array<number> {
-    return [this.year, this.month, this.day];
-  }
-
-  setDate(data: any) {
-    this.year = data.year;
-    this.month = data.month;
-    this.day = data.day;
+  get date() {
+    if (this.year !== null) {
+      return formatDate(this.year.toString() + '-' + this.month.toString() + '-' + this.day.toString(), 'yyyy-MM-dd', 'en-US');
+    } else {
+      return '';
+    }
   }
 }

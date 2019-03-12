@@ -1,80 +1,44 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { AdminService } from 'src/app/services/admin.service';
 import { Transaction } from 'src/app/transaction';
-import { Subject } from 'rxjs';
+import { Subject, from } from 'rxjs';
+import { Date } from 'src/app/date';
+import { DataTableDirective } from 'angular-datatables';
+import { AngularCsv, CsvConfigConsts } from 'angular7-csv/dist/Angular-csv';
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
   styleUrls: ['./history.component.css']
 })
-export class HistoryComponent implements OnInit {
+export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
+
+  dtTrigger: Subject<any> = new Subject();
+  dtOptions: any = {};
+  @ViewChild(DataTableDirective)
+  dtElement: DataTableDirective;
 
   history: Array<Transaction>;
-  dtOptions: any = {};
-  dtTrigger: Subject<any> = new Subject();
-  begin: any;
-  end: any;
+  begin: Date;
+  end: Date;
+  stringBegin: string;
+  stringEnd: string;
 
   constructor(private adminService: AdminService) {
   }
 
   ngOnInit() {
-    this.dtOptions = {
-      /*columns: [{
-        title: 'Date',
-        data: 'date'
-      }, {
-        title: 'User',
-        data: 'userName'
-      }, {
-        title: 'Aliquot',
-        data: 'aliquotName'
-      },
-      {
-        title: 'Team',
-        data: 'teamName'
-      },
-      {
-        title: 'Quantity',
-        data: 'quantity'
-      },
-      {
-        title: 'Price',
-        data: 'price'
-      }],
-      ajax: {
-        url: 'http://localhost:8080/admin/history',
-        method: 'POST',
-        data: {
-          begin: this.begin,
-          end: this.end
-        }
-      },
-      // Declare the use of the extension in the dom parameter
-      dom: 'Bfrtip',
-      // Configure the buttons
-      buttons: [
-        'columnsToggle',
-        'colvis',
-        'copy',
-        'print',
-        'excel',
-        {
-          text: 'Some button',
-          key: '1',
-          action: function (e, dt, node, config) {
-            alert('Button activated');
-          }
-        }
-      ],*/
-      retrieve: true
-    };
-    /*$('datatable').DataTable({
-      retrieve: true
-    });*/
+    $('#beginDate').attr('readonly', 'true');
+    $('#endDate').attr('readonly', 'true');
 
-    this.begin = null;
-    this.end = null;
+    this.dtOptions = {
+      retrieve: true,
+      paging: true,
+      lengthChange: false,
+      pageLength: 10,
+      responsive: true,
+      deferRender: true,
+    };
+
     this.sendData();
   }
 
@@ -82,35 +46,75 @@ export class HistoryComponent implements OnInit {
     this.setupDate();
 
     this.adminService.getWithdrawalsHistory({
-      begin: this.begin,
-      end: this.end
+      begin: this.stringBegin,
+      end: this.stringEnd
     }).subscribe(res => {
       this.history = <Array<Transaction>> res.data;
-      this.dtTrigger.next();
+      this.rerender();
     });
   }
 
   setupDate() {
-    if (this.begin === null || this.begin === [null, null, null]) {
-      this.begin = [];
+    if (this.begin) {
+      this.begin = new Date(this.begin.year, this.begin.month, this.begin.day);
+      this.stringBegin = this.begin.date;
     } else {
-      this.begin = [this.begin.year, this.begin.month, this.begin.day];
+      this.stringBegin = '';
     }
 
-    if (this.end === null || this.end === [null, null, null]) {
-      this.end = [];
+    if (this.end) {
+      this.end = new Date(this.end.year, this.end.month, this.end.day);
+      this.stringEnd = this.end.date;
     } else {
-      this.end = [this.end.year, this.end.month, this.end.day];
+      return '';
     }
   }
-  /*private extractData(res: JsonResponse) {
-    const body = res;
-    return body.data || {};
-  }*/
 
-  // tslint:disable-next-line:use-life-cycle-interface
-  /*ngOnDestroy() {
-    this.dtTrigger.unsubscribe();
-  }*/
+  ngAfterViewInit(): void {
+    this.dtTrigger.next();
+  }
 
+  ngOnDestroy(): void {
+    this.dtTrigger.unsubscribe(); // Do not forget to unsubscribe the event
+  }
+
+  rerender(): void {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+      dtInstance.destroy(); // Destroy the table first
+      this.dtTrigger.next(); // Call the dtTrigger to rerender again
+    });
+  }
+
+  exportToCsv() {
+    console.log(this.history);
+
+    const csvOptions = {
+      fieldSeparator: ';',
+      quoteStrings: '"',
+      decimalseparator: '.',
+      showLabels: true,
+      showTitle: true,
+      useBom: true,
+      headers: [
+        'date',
+        'userName',
+        'aliquotName',
+        'teamName',
+        'quantity',
+        'price'
+      ]
+    };
+
+    if (this.begin && this.end) {
+      return new AngularCsv(<Object> this.history, 'Transactions-since-' + this.stringBegin + '-until-' + this.stringEnd, csvOptions);
+    } else if (this.begin && !this.end) {
+      return new AngularCsv(<Object> this.history, 'Transactions-since-' + this.stringBegin, csvOptions);
+    } else if (!this.begin && this.end) {
+      return new AngularCsv(<Object> this.history, 'Transactions-until-' + this.stringEnd, csvOptions);
+    } else {
+      return new AngularCsv(<Object> this.history, 'All transactions', csvOptions);
+    }
+  }
+
+  filterDate()
 }
