@@ -449,5 +449,85 @@ public class AdminServiceTest {
 
   }
 
+  @Test
+  public void getAllOutdatedAliquot() {
+
+    Product product = new Product();
+
+    List<Aliquot> aliquots = new ArrayList<>();
+    Aliquot a;
+
+    for (int i=0;i<10;i++){
+      if (i < 5) {
+        /* all those aliquots will be outdated */
+        a = new Aliquot();
+        a.setAliquotExpirationDate(LocalDate.of(2017,01,01));
+        a.setAliquotQuantityVisibleStock(0);
+        a.setAliquotQuantityHiddenStock(0);
+      }
+      else {
+        /* all those aliquots will be quantity == 0 */
+        a = new Aliquot();
+        a.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));
+        a.setAliquotQuantityVisibleStock(5);
+        a.setAliquotQuantityHiddenStock(0);
+      }
+      aliquots.add(a);
+    }
+
+    /* and we add an aliquot really outdated */
+    a = new Aliquot();
+    a.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
+    a.setAliquotQuantityVisibleStock(5);
+    a.setAliquotQuantityHiddenStock(0);
+    aliquots.add(a);
+
+    product.setAliquots(aliquots);
+
+    List<Product> products = new ArrayList<>();
+    products.add(product);
+
+    Mockito.when(productRepository.findAllOutdatedProduct()).thenReturn(products);
+
+    /* the result should be a list with only the last aliquot */
+    List<Product> result = adminService.getAllOutdatedAliquot();
+
+    Assert.assertNotNull(result);
+    Assert.assertEquals(1, result.size());
+    Assert.assertEquals(1, result.get(0).getAliquots().size());
+    Assert.assertEquals(a, ((List) result.get(0).getAliquots()).get(0));
+
+  }
+
+  @Test
+  public void deleteOutdatedAliquot() {
+
+    Aliquot aliquot = new Aliquot();
+    aliquot.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));
+    aliquot.setAliquotNLot(0);
+
+    Mockito.when(aliquotRepository.findById(0L)).thenReturn(Optional.empty());
+    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(aliquot));
+
+    boolean success;
+
+    /* with an aliquot that doesn't exist */
+    success = adminService.deleteOutdatedAliquot(aliquot);
+
+    Assert.assertFalse(success);
+
+    /* now the aliquot exist but is not outdated */
+    aliquot.setAliquotNLot(1);
+    success = adminService.deleteOutdatedAliquot(aliquot);
+
+    Assert.assertFalse(success);
+
+    /* finallu the aliquot exist end id not outdated */
+    aliquot.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
+    success = adminService.deleteOutdatedAliquot(aliquot);
+
+    Assert.assertTrue(success);
+
+  }
 
 }

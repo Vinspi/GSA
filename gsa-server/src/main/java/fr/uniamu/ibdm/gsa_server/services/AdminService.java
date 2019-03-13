@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
@@ -142,5 +143,19 @@ public interface AdminService {
    * @return a list of products stats.
    */
   List<ProductsStatsData> generateProductsStats();
+
+  /**
+   * This method return all outdated aliquot left in the stocks.
+   *
+   * @return a list of Aliquot.
+   */
+  List<Product> getAllOutdatedAliquot();
+
+  /**
+   * This method remove an outdated aliquot from the database.
+   *
+   * @return true if we can do it, false otherwise.
+   */
+  boolean deleteOutdatedAliquot(Aliquot a);
 
 }

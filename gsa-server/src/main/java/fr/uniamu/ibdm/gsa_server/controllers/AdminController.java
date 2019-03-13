@@ -4,6 +4,7 @@ import fr.uniamu.ibdm.gsa_server.conf.CustomConfig;
 import fr.uniamu.ibdm.gsa_server.conf.MaintenanceBean;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
@@ -517,6 +518,40 @@ public class AdminController {
     }
 
     return new JsonResponse<>(RequestStatus.FAIL, form);
+
+  }
+
+  /**
+   * REST endpoint, retrieve all outdated aliquot left in the stocks.
+   *
+   * @return a JsonResponse containing a list of all outdated aliquot.
+   */
+  @GetMapping("/getAllOutdatedAliquot")
+  public JsonResponse<List<Product>> getAllOutdatedAliquot() {
+
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllOutdatedAliquot());
+    }
+    return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+
+  }
+
+  /**
+   * REST endpoint, delete an outdated aliquot.
+   *
+   * @return a JsonResponse containing the deleted aliquot.
+   */
+  @PostMapping("/deleteOutdatedAliquot")
+  public JsonResponse<Aliquot> deleteOutdatedAliquot(@RequestBody Aliquot aliquot) {
+
+    if (isAdmin()) {
+      boolean success = adminService.deleteOutdatedAliquot(aliquot);
+
+      if (success) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, aliquot);
+      }
+    }
+    return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
 
   }
 
