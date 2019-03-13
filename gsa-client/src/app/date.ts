@@ -6,7 +6,7 @@ export class Date {
 
   get date() {
     if (this.year !== null) {
-      return formatDate(this.year.toString() + '-' + this.month.toString() + '-' + this.day.toString(), 'yyyy-MM-dd', 'en-US');
+      return formatDate(this.year + '-' + this.month + '-' + this.day, 'yyyy-MM-dd', 'en-US');
     } else {
       return '';
     }

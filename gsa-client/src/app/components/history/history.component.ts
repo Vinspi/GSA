@@ -4,7 +4,8 @@ import { Transaction } from 'src/app/transaction';
 import { Subject, from } from 'rxjs';
 import { Date } from 'src/app/date';
 import { DataTableDirective } from 'angular-datatables';
-import { AngularCsv, CsvConfigConsts } from 'angular7-csv/dist/Angular-csv';
+import { AngularCsv } from 'angular7-csv/dist/Angular-csv';
+import { NgbDatepickerConfig, NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
@@ -22,8 +23,9 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
   end: Date;
   stringBegin: string;
   stringEnd: string;
+  selectedDate: any;
 
-  constructor(private adminService: AdminService) {
+  constructor(private adminService: AdminService, private config: NgbDatepickerConfig, private calendar: NgbCalendar) {
   }
 
   ngOnInit() {
@@ -35,9 +37,12 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
       paging: true,
       lengthChange: false,
       pageLength: 10,
+      pagingType: 'full_numbers',
       responsive: true,
       deferRender: true,
+      processing: true
     };
+    this.config.markDisabled = (date: NgbDate) => this.calendar.getWeekday(date) >= 6;
 
     this.sendData();
   }
@@ -86,8 +91,6 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
   }
 
   exportToCsv() {
-    console.log(this.history);
-
     const csvOptions = {
       fieldSeparator: ';',
       quoteStrings: '"',
@@ -116,5 +119,26 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  filterDate()
+  reset() {
+    $('#beginDate').attr('readonly', 'true');
+    $('#endDate').attr('readonly', 'true');
+  }
+
+  setMinDate() {
+    this.config.minDate = this.begin;
+  }
+
+  setMaxDate() {
+    this.config.maxDate = this.end;
+  }
+
+  resetMinDate() {
+    console.log('reset min date');
+    this.config.minDate = null;
+  }
+
+  resetMaxDate() {
+    console.log('reset max date');
+    this.config.maxDate = null;
+  }
 }
