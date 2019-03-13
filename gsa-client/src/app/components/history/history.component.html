@@ -6,17 +6,17 @@
       <div class="input-group">
         <input id="beginDate" class="form-control" placeholder="Begin date"
                name="begin" [(ngModel)]="begin" ngbDatepicker #d="ngbDatepicker" readonly
-               title="Begin date of the period" (focus)="reset()" (dateSelect)="setMinDate()">
+               title="Begin date of the period" (focus)="resetInputs()" (dateSelect)="setMinDate()">
         <div class="input-group-append">
-          <button (click)="resetMinDate(); d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+          <button (click)="unsetMinDate(); d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
         </div>
       </div>
       <div class="input-group">
         <input id="endDate" class="form-control" placeholder="End date"
                name="end" [(ngModel)]="end" ngbDatepicker #d2="ngbDatepicker" readonly
-               title="End date of the period" (focus)="reset()" (dateSelect)="setMaxDate()">
+               title="End date of the period" (focus)="resetInputs()" (dateSelect)="setMaxDate()">
         <div class="input-group-append">
-          <button (click)="resetMaxDate(); d2.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+          <button (click)="unsetMaxDate(); d2.toggle()" type="button"><i class="fa fa-calendar"></i></button>
         </div>
       </div>
       <div class="btn-submit">

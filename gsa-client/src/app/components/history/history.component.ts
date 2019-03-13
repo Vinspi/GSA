@@ -119,7 +119,7 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
     }
   }
 
-  reset() {
+  resetInputs() {
     $('#beginDate').attr('readonly', 'true');
     $('#endDate').attr('readonly', 'true');
   }
@@ -132,13 +132,11 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
     this.config.maxDate = this.end;
   }
 
-  resetMinDate() {
-    console.log('reset min date');
+  unsetMinDate() {
     this.config.minDate = null;
   }
 
-  resetMaxDate() {
-    console.log('reset max date');
+  unsetMaxDate() {
     this.config.maxDate = null;
   }
 }
