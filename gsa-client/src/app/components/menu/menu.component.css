@@ -65,6 +65,10 @@
     padding: 15px;
 }
 
+.maintenance {
+    color: #dc3545 !important;
+}
+
 .panel-icon-container span {
     font-size: 13pt;
 }

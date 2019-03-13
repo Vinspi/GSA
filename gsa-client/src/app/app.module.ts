@@ -33,6 +33,7 @@ import { StatsProductsComponent } from './components/admin-homepage/stats-produc
 import { MaintenanceComponent } from './components/maintenance/maintenance.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
+import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 
 
 @NgModule({
@@ -63,7 +64,8 @@ import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-
     StatsProductsComponent,
     MaintenanceComponent,
     NotFoundComponent,
-    AdminMaintenanceComponent
+    AdminMaintenanceComponent,
+    OutdatedManagementComponent
   ],
   imports: [
     BrowserModule,

@@ -89,4 +89,12 @@ export class AdminService {
   setMaintenanceMode(data: any): Observable<JsonResponse> {
     return this.http.post<JsonResponse>(this.BASE_URL+'/setupMaintenanceMode', data, {withCredentials: true});
   }
+
+  getAllOutdatedAliquot(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/getAllOutdatedAliquot', {withCredentials: true});
+  }
+
+  deleteOutdatedAliquot(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL+'/deleteOutdatedAliquot', data, {withCredentials: true});
+  }
 }

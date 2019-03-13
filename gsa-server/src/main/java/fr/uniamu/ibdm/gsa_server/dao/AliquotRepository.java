@@ -22,4 +22,5 @@ public interface AliquotRepository extends CrudRepository<Aliquot, Long> {
   @Query("SELECT new fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData(p.source, p.target, AVG(a.aliquotPrice)) FROM Aliquot a JOIN a.product p GROUP BY p.source, p.target")
   List<ProductsStatsData> generateProductsStats();
 
+
 }
