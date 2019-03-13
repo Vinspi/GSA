@@ -16,6 +16,7 @@ import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
@@ -28,6 +29,8 @@ import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import fr.uniamu.ibdm.gsa_server.util.EnumConvertor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import static java.lang.Math.toIntExact;
+import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -57,6 +60,10 @@ public class AdminServiceImpl implements AdminService {
 	 * @param speciesRepository Autowired repository.
 	 * @param alertRepository   Autowired repository.
 	 */
+	
+	  @Autowired
+	  private TimeFactory clock;
+	
 	@Autowired
 	public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository,
 			SpeciesRepository speciesRepository, AlertRepository alertRepository) {
@@ -331,8 +338,58 @@ public class AdminServiceImpl implements AdminService {
 	public List<Aliquot> getAllAliquots() {
 		return (List<Aliquot>) aliquotRepository.getAliquots();
 	}
-
+	
+	
 	@Override
+	  public boolean updateAliquotExpire(long id) {
+	    Optional<Aliquot> aliquotExpire = aliquotRepository.findById(id);
+
+	    if (!aliquotExpire.isPresent()) {
+	      return false;
+	    }
+
+	    Aliquot newAliquot = aliquotExpire.get();
+	    LocalDate dateExpire = newAliquot.getAliquotExpirationDate();
+	    LocalDate currentDate = clock.now();
+
+	    if (currentDate.isBefore(dateExpire)) {
+	      return false;
+	    }
+
+	    List<Transaction> outdatedAliquot = transactionRepository.findOutdatedTransactionByAliquot(id);
+	    if(!outdatedAliquot.isEmpty()) {
+	      return false;
+	    }
+
+	    int outdatedVisibleQuantity = toIntExact(newAliquot.getAliquotQuantityVisibleStock());
+	    int outdatedHiddenQuantity = toIntExact(newAliquot.getAliquotQuantityHiddenStock());
+	    int outdatedQuantity = outdatedHiddenQuantity + outdatedVisibleQuantity;
+
+	    if(outdatedQuantity <= 0) {
+	      return false;
+	    }
+
+	    newAliquot.setAliquotQuantityVisibleStock(0);
+	    newAliquot.setAliquotQuantityHiddenStock(0);
+	    aliquotRepository.save(newAliquot);
+
+	    Transaction outdatedTransaction = new Transaction();
+	    outdatedTransaction.setAliquot(newAliquot);
+	    outdatedTransaction.setMember(null);
+	    outdatedTransaction.setTransactionMotif(TransactionMotif.OUTDATED);
+	    outdatedTransaction.setTransactionQuantity(outdatedHiddenQuantity + outdatedVisibleQuantity);
+	    outdatedTransaction.setTransactionType(TransactionType.WITHDRAW);
+	    outdatedTransaction.setTransactionDate(currentDate);
+
+	    transactionRepository.save(outdatedTransaction);
+
+	    return true;
+
+	  }
+	
+	
+
+	/*@Override
 	public boolean updateAliquotExpire(long id) {
 
 		Optional<Aliquot> aliquotExpire = aliquotRepository.findById(id);
@@ -341,11 +398,11 @@ public class AdminServiceImpl implements AdminService {
 			Aliquot newAliquot = aliquotExpire.get();
 			LocalDate dateExpire = newAliquot.getAliquotExpirationDate();
 			LocalDate currentDate = LocalDate.now();
-			if (dateExpire.isBefore(currentDate)) {
+			if (dateExpire.isBefore(currentDate)) {//work
 				newAliquot.setAliquotQuantityVisibleStock(0);
 				newAliquot.setAliquotQuantityHiddenStock(0);
-				aliquotRepository.save(newAliquot);
-				Transaction transactionAliquotExpire = transactionRepository.findByAliquot(id);
+				aliquotRepository.save(newAliquot);*/
+				/*Transaction transactionAliquotExpire = transactionRepository.findByAliquot(id);
 				System.out.println("haaahyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa avant"+transactionAliquotExpire);
 				if (transactionAliquotExpire!= null) {
 					//Transaction transaction = transactionAliquotExpire;// null ????
@@ -354,6 +411,13 @@ public class AdminServiceImpl implements AdminService {
 					System.out.println("haaahyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa apres"+transactionAliquotExpire.getTransactionMotif());
 				} else {
 					System.out.println("transaction not exist");
+				}*/
+/*
+				List<Transaction> transactionAliquotExpires = transactionRepository.getTransactionsByAliquot(id);
+				for(Transaction transactionAliquotExpire : transactionAliquotExpires) {
+					transactionAliquotExpire.setTransactionMotif(TransactionMotif.OUTDATED);
+					transactionRepository.save(transactionAliquotExpire);
+					System.out.println("haaahyaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"+transactionAliquotExpire.getTransactionMotif());
 				}
 				System.out.println("haaahoowaaaaaaaaaaaaa updaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaate");
 				return true;
@@ -365,9 +429,12 @@ public class AdminServiceImpl implements AdminService {
 			System.out.println("walooooooooooooooooooooooooo");
 			return false;
 		}
-	}
-
+	} 
+	*/
 	
+	// select source and target et appel la fonction getProductName()
+//findbyidandtransactionLike findbytranstypelike --> apres .out
+	// utiliser JPA 
 /*	public Transaction getTransactionByAliquot(Aliquot aliquot) {
 		return transactionRepository.findByAliquot(aliquot);
 	}
@@ -384,5 +451,17 @@ public class AdminServiceImpl implements AdminService {
 	public List<Transaction> getTransactionsByAliquots(Collection<Aliquot> aliquots) {
 		return getTransactionStreamFromBdd(aliquots).collect(Collectors.toList());
 	}*/
+	
+//	@Override
+//	  public List<String> getProductName(long id) {
+//
+//	    List<String> productNames = new ArrayList<>();
+//
+//	    productRepository.findByAliquotId
+//	    productRepository.findAllById(id).forEach(element -> {
+//	      productNames.add(element.getProductName());
+//	    });
+//	    return productNames;
+//	  }
 
 }

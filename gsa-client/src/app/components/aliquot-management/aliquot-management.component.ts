@@ -23,7 +23,7 @@ export class AliquotManagementComponent implements OnInit {
   constructor(private userService: UserService, private localStorage: LocalStorage, private adminService: AdminService) { }
 
   ngOnInit() {
-    console.log(this.adminService.getAliquots());
+    console.log("liste aliquot"+this.adminService.getAliquots());
     this.adminService.getAliquots().subscribe(res => {
       this.aliquoList = res.data;
       res.data.forEach(el => {
@@ -36,7 +36,7 @@ export class AliquotManagementComponent implements OnInit {
         if(this.adminService.updateAliquot(aliquot.id)){
           aliquot.expire = true;
           console.log('haaaaaaaaaaahowaaaaaaaaaaaaaaaaaaaaaaaaaa \n'+aliquot.expire );
-          console.log('aaaaaaaa'+aliquot);
+          console.log("aaaaaaaa"+aliquot);
         } else {
           aliquot.expire = false;
         }

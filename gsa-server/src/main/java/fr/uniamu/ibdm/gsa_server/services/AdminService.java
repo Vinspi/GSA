@@ -98,10 +98,11 @@ public interface AdminService {
 	boolean addAlert(AddAlertForm form);
 
 	List<Aliquot> getAllAliquots();
-
-	//void deleteAliquot(long id);
 	
 	boolean updateAliquotExpire(long id);
+	
+	
+	//List<String> getAllProductName();
 	
 	/*List<Transaction> getTransactionsByAliquots(Collection<Aliquot> aliquots);
 	Iterator<Transaction> transformAliquotsToTransactions(Collection<Aliquot>aliquots);*/

@@ -69,9 +69,9 @@ public class Transaction implements Serializable {
     this.member = member;
   }
   
-  public Transaction(TransactionMotif transactionMotif, Aliquot aliquot) {
+  public Transaction(TransactionMotif transactionMotif, int transactionQuantity) {
 	    this.transactionMotif = transactionMotif;
-	    this.aliquot = aliquot;
+	    this.transactionQuantity = transactionQuantity;
 	  }
 
   public long getTransactionId() {

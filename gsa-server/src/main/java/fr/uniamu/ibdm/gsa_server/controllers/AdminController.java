@@ -273,14 +273,34 @@ public class AdminController {
 	 *
 	 * @return a JSON formatted response.
 	 */
-	@PostMapping("/update-aliquot/{id}")
+	/*@PostMapping("/update-aliquot/{id}")
 	public JsonResponse<Boolean> updateAliquotExpire(@PathVariable long id) {
 		if (adminService.updateAliquotExpire(id)) {
 			return new JsonResponse<>(RequestStatus.SUCCESS, true);
 		} else {
 			return new JsonResponse<>("Nooooo updaaaaaaaaaaaaaaaaaaate", RequestStatus.FAIL);
 		}
-	}
+	}*/
+	
+	
+	 /**
+	   * REST endpoint for /update-aliquot/{id} call, update visibleQuantity and
+	   * HiddenQuantity.
+	   *
+	   * @return a JSON formatted response.
+	   */
+	  @PostMapping("/update-aliquot/{id}")
+	  public JsonResponse<Boolean> updateAliquotExpire(@PathVariable long id) {
+	    //if (isAdmin()) {
+	      if (adminService.updateAliquotExpire(id)) {
+	        return new JsonResponse<>(RequestStatus.SUCCESS, true);
+	      } else {
+	        return new JsonResponse<>("The aliquot could not be updated", RequestStatus.FAIL);
+	      }
+	    /*} else {
+	      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+	    }*/
+	  }
 	
 
 	
