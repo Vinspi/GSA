@@ -6,10 +6,12 @@ import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
@@ -20,6 +22,8 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +52,23 @@ public class AdminServiceTest {
 
   @MockBean
   ProductRepository productRepository;
+  
+  @MockBean
+  AliquotRepository aliquotRepository;
 
+  @MockBean
+  TransactionRepository transactionRepository;
+
+  @MockBean
+  SpeciesRepository speciesRepository;
+  
+  @MockBean
+  AlertRepository alertRepository;
+  
+  @MockBean
+  TimeFactory timeFactory;
+  
+  
   @InjectMocks
   AdminServiceImpl adminService;
 
@@ -204,80 +224,73 @@ public class AdminServiceTest {
   @Test
   public void getTriggeredAlerts() {
 
-    Object[] queryVisible = new Object[6];
-    Object[] queryHidden = new Object[6];
-    Object[] queryGeneral = new Object[6];
+	    Object[] queryVisible = new Object[6];
+	    Object[] queryHidden = new Object[6];
+	    Object[] queryGeneral = new Object[6];
 
-    queryVisible[0] = "SOURCE";
-    queryVisible[1] = "TARGET";
-    queryVisible[2] = BigDecimal.valueOf(30);
-    queryVisible[3] = 40;
-    queryVisible[4] = "VISIBLE_STOCK";
-    queryVisible[5] = BigInteger.valueOf(0);
+	    queryVisible[0] = "SOURCE";
+	    queryVisible[1] = "TARGET";
+	    queryVisible[2] = BigDecimal.valueOf(30);
+	    queryVisible[3] = 40;
+	    queryVisible[4] = "VISIBLE_STOCK";
+	    queryVisible[5] = BigInteger.valueOf(0);
 
-    queryHidden[0] = "SOURCE";
-    queryHidden[1] = "TARGET";
-    queryHidden[2] = BigDecimal.valueOf(30);
-    queryHidden[3] = 40;
-    queryHidden[4] = "HIDDEN_STOCK";
-    queryHidden[5] = BigInteger.valueOf(1);
+	    queryHidden[0] = "SOURCE";
+	    queryHidden[1] = "TARGET";
+	    queryHidden[2] = BigDecimal.valueOf(30);
+	    queryHidden[3] = 40;
+	    queryHidden[4] = "HIDDEN_STOCK";
+	    queryHidden[5] = BigInteger.valueOf(1);
 
-    queryGeneral[0] = "SOURCE";
-    queryGeneral[1] = "TARGET";
-    queryGeneral[2] = BigDecimal.valueOf(30);
-    queryGeneral[3] = 40;
-    queryGeneral[4] = "GENERAL";
-    queryGeneral[5] = BigInteger.valueOf(2);
+	    queryGeneral[0] = "SOURCE";
+	    queryGeneral[1] = "TARGET";
+	    queryGeneral[2] = BigDecimal.valueOf(30);
+	    queryGeneral[3] = 40;
+	    queryGeneral[4] = "GENERAL";
+	    queryGeneral[5] = BigInteger.valueOf(2);
 
-    List<Object[]> listQueryVisible = new ArrayList<>();
-    listQueryVisible.add(queryVisible);
+	    List<Object[]> listQueryVisible = new ArrayList<>();
+	    listQueryVisible.add(queryVisible);
 
-    List<Object[]> listQueryHidden = new ArrayList<>();
-    listQueryHidden.add(queryHidden);
+	    List<Object[]> listQueryHidden = new ArrayList<>();
+	    listQueryHidden.add(queryHidden);
 
-    List<Object[]> listQueryGeneral = new ArrayList<>();
-    listQueryGeneral.add(queryGeneral);
+	    List<Object[]> listQueryGeneral = new ArrayList<>();
+	    listQueryGeneral.add(queryGeneral);
 
-    Mockito.when(productRepository.getTriggeredAlertsVisible()).thenReturn(listQueryVisible);
-    Mockito.when(productRepository.getTriggeredAlertsHidden()).thenReturn(listQueryHidden);
-    Mockito.when(productRepository.getTriggeredAlertsGeneral()).thenReturn(listQueryGeneral);
+	    Mockito.when(productRepository.getTriggeredAlertsVisible()).thenReturn(listQueryVisible);
+	    Mockito.when(productRepository.getTriggeredAlertsHidden()).thenReturn(listQueryHidden);
+	    Mockito.when(productRepository.getTriggeredAlertsGeneral()).thenReturn(listQueryGeneral);
 
-    Object[] aliquotQuery = new Object[4];
+	    Object[] aliquotQuery = new Object[4];
 
-    aliquotQuery[0] = BigInteger.valueOf(5);
-    aliquotQuery[1] = new Timestamp(1254891);
-    aliquotQuery[2] = BigInteger.valueOf(30);
-    aliquotQuery[3] = BigInteger.valueOf(30);
+	    aliquotQuery[0] = BigInteger.valueOf(5);
+	    aliquotQuery[1] = new Timestamp(1254891);
+	    aliquotQuery[2] = BigInteger.valueOf(30);
+	    aliquotQuery[3] = BigInteger.valueOf(30);
 
-    List<Object[]> listAliquotQuery = new ArrayList<>();
+	    List<Object[]> listAliquotQuery = new ArrayList<>();
 
-    listAliquotQuery.add(aliquotQuery);
+	    listAliquotQuery.add(aliquotQuery);
 
-    Mockito.when(aliquotRepository.findAllBySourceAndTargetQuery("SOURCE", "TARGET")).thenReturn(listAliquotQuery);
+	    Mockito.when(aliquotRepository.findAllBySourceAndTargetQuery("SOURCE", "TARGET"))
+	        .thenReturn(listAliquotQuery);
 
-    List<TriggeredAlertsQuery> triggeredAlertsQueries = adminService.getTriggeredAlerts();
+	    List<TriggeredAlertsQuery> triggeredAlertsQueries = adminService.getTriggeredAlerts();
 
-    Assert.assertEquals(3, triggeredAlertsQueries.size());
+	    Assert.assertEquals(3, triggeredAlertsQueries.size());
 
+	    for (TriggeredAlertsQuery tr : triggeredAlertsQueries) {
+	      Assert.assertEquals(1, tr.getAliquots().size());
+	      Assert.assertEquals(triggeredAlertsQueries.indexOf(tr), tr.getAlertId());
+	      Assert.assertEquals(30, tr.getQte());
+	      Assert.assertTrue(40 == tr.getSeuil());
+	      Assert.assertEquals("SOURCE", tr.getSource());
+	      Assert.assertEquals("TARGET", tr.getTarget());
 
-    for (TriggeredAlertsQuery tr : triggeredAlertsQueries) {
-      Assert.assertEquals(1, tr.getAliquots().size());
-      Assert.assertEquals(triggeredAlertsQueries.indexOf(tr), tr.getAlertId());
-      Assert.assertEquals(30, tr.getQte());
-      Assert.assertTrue(40 == tr.getSeuil());
-      Assert.assertEquals("SOURCE", tr.getSource());
-      Assert.assertEquals("TARGET", tr.getTarget());
+	    }
 
-    for (int i=0;i<list.size();i++){
-      System.out.println(list.get(i).getMonth()+" - "+list.get(i).getWithdraw());
-      Assert.assertEquals(list.get(i).getMonth(),i+2);
-      if ((i+1)%2 == 0)
-        Assert.assertEquals(list.get(i).getWithdraw(),0);
-      else
-        Assert.assertEquals(list.get(i).getWithdraw(), 12);
-    }
-
-  }
+	  }
 
   @Test
   public void addAliquote() {
@@ -403,6 +416,52 @@ public class AdminServiceTest {
     Assert.assertFalse(success);
 
 
+  }
+  
+  
+  @Test
+  public void updateAliquotExpire() {
+    Aliquot aliquot = new Aliquot();
+    Long aliquotNLot = 1L;
+    aliquot.setAliquotNLot(aliquotNLot);
+
+    // An invalid aliquot id should fail.
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.empty());
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+
+    // An aliquot with an expiration date lesser than the current date should fail.
+    aliquot.setAliquotExpirationDate(LocalDate.of(2019, 4, 3));
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.of(aliquot));
+    Mockito.when(timeFactory.now()).thenReturn(LocalDate.of(2019, 4, 2));
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+    Mockito.verify(timeFactory, Mockito.times(1)).now();
+
+    // An aliquot already set as outdated should not be added again.
+    Mockito.when(timeFactory.now()).thenReturn(LocalDate.of(2019, 4, 4));
+
+    List<Transaction> aliquotOutdatedTransactions = new ArrayList<>();
+    aliquotOutdatedTransactions.add(new Transaction());
+
+    Mockito.when(transactionRepository.findOutdatedTransactionByAliquot(Mockito.eq(aliquotNLot)))
+        .thenReturn(aliquotOutdatedTransactions);
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+    Mockito.verify(transactionRepository, Mockito.times(1)).findOutdatedTransactionByAliquot(aliquotNLot);
+
+    // An aliquot with zero quantity in visible and hidden stock should not be added.
+    Mockito.when(transactionRepository.findOutdatedTransactionByAliquot(Mockito.eq(aliquotNLot)))
+    .thenReturn(new ArrayList<>());
+
+    aliquot.setAliquotQuantityHiddenStock(0);
+    aliquot.setAliquotQuantityVisibleStock(0);
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.of(aliquot));
+
+    Assert.assertEquals(false, adminService.updateAliquotExpire(aliquotNLot));
+
+    // An outdated aliquot should be updated.
+    aliquot.setAliquotQuantityVisibleStock(1);
+    Mockito.when(aliquotRepository.findById(Mockito.eq(aliquotNLot))).thenReturn(Optional.of(aliquot));
+
+    Assert.assertEquals(true, adminService.updateAliquotExpire(aliquotNLot));
   }
 
 

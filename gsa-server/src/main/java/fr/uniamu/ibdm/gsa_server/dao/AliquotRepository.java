@@ -1,13 +1,17 @@
 package fr.uniamu.ibdm.gsa_server.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 
 @Repository
 public interface AliquotRepository extends CrudRepository<Aliquot, Long> {
@@ -20,8 +24,10 @@ public interface AliquotRepository extends CrudRepository<Aliquot, Long> {
 	List<Aliquot> getAliquots();
 
 	// envoyer le nom du produit getProductName();
-
+//	@Query(value = "SELECT aliquotnlot, aliquot_expiration_date, aliquot_quantity_visible_stock, aliquot_quantity_hidden_stock FROM aliquot WHERE (source LIKE :source AND target LIKE :target)", nativeQuery = true)
+//	Product findByAliquotId(long id);
 
 		
+	Optional<Product> findProductByAliquot(Aliquot aliquot);
 	
 }

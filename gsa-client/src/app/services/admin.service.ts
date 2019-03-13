@@ -71,4 +71,9 @@ export class AdminService {
      return this.http.post<JsonResponse>(this.BASE_URL+'/update-aliquot/'+id, {id : id},{withCredentials: true})
    }
 
+
+   isExpire(id: number): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL+'/expire-Aliquot/'+id,{withCredentials: true})
+  }
+   
 }

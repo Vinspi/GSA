@@ -101,6 +101,9 @@ public interface AdminService {
 	
 	boolean updateAliquotExpire(long id);
 	
+	boolean isExpire(long id);
+	
+	//String getProductName(long id);
 	
 	//List<String> getAllProductName();
 	

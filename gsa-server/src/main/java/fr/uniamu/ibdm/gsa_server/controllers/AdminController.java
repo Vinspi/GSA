@@ -291,16 +291,28 @@ public class AdminController {
 	   */
 	  @PostMapping("/update-aliquot/{id}")
 	  public JsonResponse<Boolean> updateAliquotExpire(@PathVariable long id) {
-	    //if (isAdmin()) {
 	      if (adminService.updateAliquotExpire(id)) {
 	        return new JsonResponse<>(RequestStatus.SUCCESS, true);
 	      } else {
 	        return new JsonResponse<>("The aliquot could not be updated", RequestStatus.FAIL);
 	      }
-	    /*} else {
-	      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
-	    }*/
 	  }
+	  
+	  
+	  /**
+		 * REST endpoint, an aliquot is expire or not.
+		 *
+		 * @param id aliquot.
+		 * @return SUCCESS status if the aliquot is expire, FAIL status otherwise.
+		 */
+	  @PostMapping("/expire-Aliquot/{id}")//à RE
+		public JsonResponse<Boolean> isExpire(@PathVariable long id) {
+			if (adminService.isExpire(id)) {
+				return new JsonResponse<>(RequestStatus.SUCCESS, true);
+			} else {
+				return new JsonResponse<>("The the aliquot not expire", RequestStatus.FAIL);
+			}
+		}
 	
 
 	
