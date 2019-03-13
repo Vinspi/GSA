@@ -71,31 +71,39 @@ export class AdminService {
   }
 
   getQuarterlyWithdrawnTransactionsByTeamNameAndYear(teamName: string, quarter: string, year: string): Observable<JsonResponse> {
-    console.log(this.BASE_URL + '/withdrawnTransactions?teamName=' + teamName + '&quarter=' + quarter + '&year=' + year);
     return this.http.get<JsonResponse>(this.BASE_URL + '/withdrawnTransactions?teamName=' + teamName + '&quarter=' + quarter + '&year=' + year, { withCredentials: true });
   }
-  
+
+  getReportLosses(quarter: string, year: string): Observable<JsonResponse> {
+    console.log(this.BASE_URL + '/teamReportLosses?quarter=' + quarter + '&year=' + year);
+    return this.http.get<JsonResponse>(this.BASE_URL + '/teamReportLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  }
+
+  getQuarterAndYearValuesOfEditableReports() {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/quarterYearOfEditableReports', { withCredentials: true });
+  }
+
   getAllProductsWithAliquots(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(this.BASE_URL+'/getAllProductsWithAliquots', {withCredentials: true});
+    return this.http.get<JsonResponse>(this.BASE_URL + '/getAllProductsWithAliquots', { withCredentials: true });
   }
 
   postInventoryForm(form: any): Observable<JsonResponse> {
-    return this.http.post<JsonResponse>(this.BASE_URL+'/handleInventory',form, {withCredentials: true});
+    return this.http.post<JsonResponse>(this.BASE_URL + '/handleInventory', form, { withCredentials: true });
   }
 
   getProvidersStats(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(this.BASE_URL+'/getProvidersStats', {withCredentials: true});
+    return this.http.get<JsonResponse>(this.BASE_URL + '/getProvidersStats', { withCredentials: true });
   }
 
   getAlertNotification(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(this.BASE_URL+'/getAlertsNotification', {withCredentials: true});
+    return this.http.get<JsonResponse>(this.BASE_URL + '/getAlertsNotification', { withCredentials: true });
   }
 
   getReportNotification(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(this.BASE_URL+'/getNextReport', {withCredentials: true});
+    return this.http.get<JsonResponse>(this.BASE_URL + '/getNextReport', { withCredentials: true });
   }
 
   getProductsStats(): Observable<JsonResponse> {
-    return this.http.get<JsonResponse>(this.BASE_URL+'/getProductsStats', {withCredentials: true});
+    return this.http.get<JsonResponse>(this.BASE_URL + '/getProductsStats', { withCredentials: true });
   }
 }

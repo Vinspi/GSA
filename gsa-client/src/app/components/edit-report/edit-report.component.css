@@ -5,3 +5,6 @@
     margin-right: auto;
 }
 
+#remainingLosses {
+    color: red;
+}

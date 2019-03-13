@@ -23,32 +23,33 @@ public class TransactionLossesData {
   }
 
   public class ProductLossData {
-    private Float productLoss;
-    private String productName;
+    private Float loss;
+    private String name;
 
     public ProductLossData() {
     }
-
-    public ProductLossData(Float productLoss, String productName) {
-      this.productLoss = productLoss;
-      this.productName = productName;
+    
+    public ProductLossData(Float loss, String name) {
+      this.loss = loss;
+      this.name = name;
+    }
+    
+    public Float getLoss() {
+      return loss;
     }
 
-    public Float getProductLoss() {
-      return productLoss;
+    public void setLoss(Float loss) {
+      this.loss = loss;
     }
 
-    public void setProductLoss(Float productLoss) {
-      this.productLoss = productLoss;
+    public String getName() {
+      return name;
     }
 
-    public String getProductName() {
-      return productName;
+    public void setName(String name) {
+      this.name = name;
     }
 
-    public void setProductName(String productName) {
-      this.productName = productName;
-    }
   }
 
 }

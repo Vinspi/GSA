@@ -19,15 +19,14 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   dtElement: ReloadableDatatableComponent;
 
   // Cost variables
-  cost: any = {
-    totalLosses: 0,
-    teamCost: 0,
-    remainingLosses: 0
-  };
+  totalLosses: number;
+  remainingLosses: number;
+
 
   headers: Array<string> = ['Date', 'User name', 'Product name', 'Withdrawn quantity', 'Unit price'];
-  private _noTeam: string;
-  isOnTransactionMode: boolean;
+
+  productLosses: Map<string, number>;
+  teamLosses: Map<string, number>;
 
   // Form variables
   quarters: Array<string> = [
@@ -41,6 +40,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   selectedTeam: string;
   selectedQuarter: string;
   selectedYear: string;
+  private noTeam: string;
 
   constructor(
     private userService: UserService,
@@ -48,17 +48,45 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   ) { }
 
   ngOnInit() {
-    this._noTeam = "No teams";
-    this.isOnTransactionMode = true;
+    this.noTeam = "No teams";
 
     this.years = ["2019"]; // Need to request the year of the earliest quarterly report.
     this.selectedQuarter = this.quarters[0];
     this.selectedYear = this.years[0];
+    this.selectedTeam = this.noTeam;
 
     this.adminService.getQuarterlyTransactionLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(res => {
-      this.cost.totalLosses = res.data.totalCost;
-      this.cost.remainingLosses = res.data.totalCost;
+      this.totalLosses = res.data.totalLosses;
+      this.remainingLosses = res.data.totalLosses;
+      console.log(this.remainingLosses);
+      this.productLosses = new Map<string, number>();
+      res.data.productLosses.forEach(productLoss => {
+        this.productLosses.set(productLoss.name, productLoss.loss);
+      });
     });
+
+    this.teamLosses = new Map<string, number>();
+    this.teamLosses.set('Team A', 0);
+    this.teamLosses.set('Team B', 6.65);
+    this.teamLosses.set('Team C', 5.65);
+    this.teamLosses.set('Team D', 5.65);
+    this.teamLosses.set('Team E', 8.65);
+    this.teamLosses.set('Team F', 5.65);
+    this.teamLosses.set('Team G', 5.65);
+    this.teamLosses.set('Team H', 0);
+    this.teamLosses.set('Team J', 0);
+    this.teamLosses.set('Team K', 0);
+    this.teamLosses.set('Team L', 0);
+    this.teamLosses.set('Team M', 5.65);
+    
+
+
+    /*this.adminService.getReportLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(res => {
+        this.teamLosses = new Map<string, number>();
+        res.data.forEach(teamLoss => {
+          this.teamLosses.set(teamLoss.name, teamLoss.loss);
+        });
+    });*/
 
   }
 
@@ -70,8 +98,8 @@ export class EditReportComponent implements AfterViewInit, OnInit {
         this.selectedTeam = this.teamNames[8];
         this.updateTransactionData();
       } else {
-        this.teamNames = [this._noTeam];
-        this.selectedTeam = this._noTeam;
+        this.teamNames = [this.noTeam];
+        this.selectedTeam = this.noTeam;
       }
     });
   }
@@ -99,22 +127,16 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   public updateTransactionData() {
-    if (this.selectedTeam !== this._noTeam) {
+    if (this.selectedTeam !== this.noTeam) {
       this.fetchTransactions()
-      .then(data => {
-        if(this.isOnTransactionMode) {
+        .then(data => {
           this.dtElement.items = this.transactionValuesToArray(<Array<Transaction>>data.transactions);
           this.dtElement.reRenderData();
-        }
-        this.cost.currentBill = data.totalPrice;
-      })
-      .catch(e => {
-        this.dtElement.items = [];
-        this.cost.currentBill = 0;
-        if (this.isOnTransactionMode) {
+        })
+        .catch(e => {
+          this.dtElement.items = [];
           this.dtElement.reRenderData();
-        }
-      });
+        });
     }
   }
 
@@ -130,14 +152,5 @@ export class EditReportComponent implements AfterViewInit, OnInit {
       transactionValues.push(values);
     }
     return transactionValues;
-  }
-
-  public toggle(): void {
-    this.isOnTransactionMode = !this.isOnTransactionMode;
-    if(this.isOnTransactionMode) {
-      this.updateTransactionData();
-    } else {
-
-    }
   }
 }

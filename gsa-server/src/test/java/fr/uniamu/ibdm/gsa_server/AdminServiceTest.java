@@ -46,7 +46,7 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
@@ -58,6 +58,7 @@ import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamPriceLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -464,7 +465,7 @@ public class AdminServiceTest {
 
   @Test
   public void getWithdrawnTransactionsByTeamNameAndQuarterAndYear() {
-    ReportData reportTransactions = adminService
+    TeamWithdrawnTransactionsData reportTransactions = adminService
         .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(null, Quarter.QUARTER_1.name(), 2019);
     Assert.assertNull(reportTransactions);
 
@@ -503,10 +504,18 @@ public class AdminServiceTest {
 
     float sum = 0F;
     for (ProductLossData loss : data.getProductLosses()) {
-      sum += loss.getProductLoss();
+      sum += loss.getLoss();
     }
     Assert.assertEquals(198.90F, sum, 2);
 
+  }
+  
+  @Test
+  public void getReportLossesAndTeamNameByYearAndQuarter() {
+    List<TeamPriceLossesData> losses = adminService.getReportLossesAndTeamNameByYearAndQuarter("anyQuarter",
+        2019);
+
+    Assert.assertNull(losses);
   }
 
   public void makeInventory() {

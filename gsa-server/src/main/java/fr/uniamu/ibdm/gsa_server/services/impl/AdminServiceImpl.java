@@ -25,17 +25,19 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.EditableReportYearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamPriceLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData.ReportTransactionData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData.WithdrawnTransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
@@ -379,9 +381,7 @@ public class AdminServiceImpl implements AdminService {
 
     // Checking that the quarter is over in order to save
     LocalDate now = clock.now();
-    System.out.println("NOW " + now.toString());
     LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(form.getQuarter(), form.getYear());
-    System.out.println("lastDay : " + lastDay);
     if (now.isBefore(lastDay)) {
       return false;
     }
@@ -423,8 +423,8 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public ReportData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName,
-      String quarter, int year) {
+  public TeamWithdrawnTransactionsData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(
+      String teamName, String quarter, int year) {
     if (teamName == null || quarter == null) {
       return null;
     }
@@ -441,13 +441,13 @@ public class AdminServiceImpl implements AdminService {
     List<Object[]> resultQuery = transactionRepository.getWithdrawnTransactionsByTeamNameAndQuarter(
         teamName, firstDay.toString(), lastDay.toString());
 
-    ReportData data = new ReportData();
-    List<ReportTransactionData> transactions = new ArrayList<>();
+    TeamWithdrawnTransactionsData data = new TeamWithdrawnTransactionsData();
+    List<WithdrawnTransactionData> transactions = new ArrayList<>();
     BigDecimal totalPrice = BigDecimal.ZERO;
 
     for (Object[] o : resultQuery) {
 
-      ReportTransactionData transactionData = data.new ReportTransactionData();
+      WithdrawnTransactionData transactionData = data.new WithdrawnTransactionData();
 
       transactionData.setAliquotPrice(((BigDecimal) o[0]).floatValue());
       transactionData.setTransactionDate((String) o[1].toString());
@@ -462,7 +462,8 @@ public class AdminServiceImpl implements AdminService {
       // get() function won't return null as the source and the target are well-defined in the
       // aliquot table.
       transactionData.setProductName(productRepository.findById(productPk).get().getProductName());
-      BigDecimal withdrawnAliquotsCost = ((BigDecimal) o[0]).multiply(BigDecimal.valueOf(transactionData.getTransactionQuantity()));
+      BigDecimal withdrawnAliquotsCost = ((BigDecimal) o[0])
+          .multiply(BigDecimal.valueOf(transactionData.getTransactionQuantity()));
       totalPrice = totalPrice.add(withdrawnAliquotsCost);
 
       transactions.add(transactionData);
@@ -498,11 +499,11 @@ public class AdminServiceImpl implements AdminService {
       Float loss = ((BigDecimal) row[0]).floatValue();
 
       ProductLossData productLoss = data.new ProductLossData();
-      productLoss.setProductLoss(loss);
+      productLoss.setLoss(loss);
       Product p = new Product();
       p.setTarget(new Species((String) row[1]));
       p.setSource(new Species((String) row[2]));
-      productLoss.setProductName(p.getProductName());
+      productLoss.setName(p.getProductName());
 
       productLosses.add(productLoss);
       totalLosses = totalLosses.add((BigDecimal) row[0]);
@@ -510,6 +511,45 @@ public class AdminServiceImpl implements AdminService {
 
     data.setProductLosses(productLosses);
     data.setTotalLosses(totalLosses.floatValue());
+
+    return data;
+  }
+
+  @Override
+  public List<EditableReportYearQuarterData> getQuarterAndYearOfEditableReports() {
+    List<EditableReportYearQuarterData> yearQuarterData = new ArrayList<>();
+    List<Object[]> resultQuery = teamTrimestrialReportRepository
+        .findQuarterAndYearOfEditableReports();
+
+    for (Object[] row : resultQuery) {
+      EditableReportYearQuarterData data = new EditableReportYearQuarterData();
+      data.setQuarter((String) row[0]);
+      data.setYear((Integer) row[1]);
+      yearQuarterData.add(data);
+    }
+
+    return yearQuarterData;
+  }
+
+  @Override
+  public List<TeamPriceLossesData> getReportLossesAndTeamNameByYearAndQuarter(String quarter,
+      int year) {
+
+    // Checking that the stringified quarter is a valid value of Quarter Enum.
+    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet())
+        .contains(quarter)) {
+      return null;
+    }
+
+    List<TeamPriceLossesData> data = new ArrayList<>();
+    List<Object[]> queryResult = teamTrimestrialReportRepository
+        .findLossesAndTeamNameByYearAndQuarter(year, Quarter.valueOf(quarter));
+    for (Object[] row : queryResult) {
+      TeamPriceLossesData lossesData = new TeamPriceLossesData();
+      lossesData.setTeamName((String) row[0]);
+      lossesData.setLosses((Float) row[1]);
+      data.add(lossesData);
+    }
 
     return data;
   }
@@ -529,7 +569,8 @@ public class AdminServiceImpl implements AdminService {
         /* if we got losses */
         long losses = form.getQuantity() - actualOne.get().getAliquotQuantityVisibleStock();
         if (losses < 0) {
-          Transaction lossesTransaction = new Transaction(TransactionMotif.INVENTORY, TransactionType.WITHDRAW, LocalDate.now(), (int) -losses, actualOne.get(), null);
+          Transaction lossesTransaction = new Transaction(TransactionMotif.INVENTORY,
+              TransactionType.WITHDRAW, LocalDate.now(), (int) -losses, actualOne.get(), null);
           transactionRepository.save(lossesTransaction);
         }
         actualOne.get().setAliquotQuantityVisibleStock(form.getQuantity());
@@ -549,7 +590,6 @@ public class AdminServiceImpl implements AdminService {
     List<Object[]> queryResult = productRepository.getTriggeredAlertsVisible();
     queryResult.addAll(productRepository.getTriggeredAlertsHidden());
     queryResult.addAll(productRepository.getTriggeredAlertsGeneral());
-
 
     return queryResult.size();
   }
@@ -578,24 +618,33 @@ public class AdminServiceImpl implements AdminService {
     /* step 3 : search for a report */
     List<TeamTrimestrialReport> listReports = new ArrayList<>();
     switch (quarter) {
-      case QUARTER_1:
-        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.MARCH, 31));
-        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year - 1, Quarter.QUARTER_4);
-        break;
-      case QUARTER_2:
-        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.JUNE, 30));
-        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_1);
-        break;
-      case QUARTER_3:
-        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.SEPTEMBER, 31));
-        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_2);
-        break;
-      case QUARTER_4:
-        daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, Month.DECEMBER, 31));
-        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_3);
-        break;
-      default:
-        listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.QUARTER_3);
+    case QUARTER_1:
+      daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(),
+          LocalDate.of(year, Month.MARCH, 31));
+      listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year - 1,
+          Quarter.QUARTER_4);
+      break;
+    case QUARTER_2:
+      daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(),
+          LocalDate.of(year, Month.JUNE, 30));
+      listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year,
+          Quarter.QUARTER_1);
+      break;
+    case QUARTER_3:
+      daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(),
+          LocalDate.of(year, Month.SEPTEMBER, 31));
+      listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year,
+          Quarter.QUARTER_2);
+      break;
+    case QUARTER_4:
+      daysUntilNextOne = ChronoUnit.DAYS.between(LocalDate.now(),
+          LocalDate.of(year, Month.DECEMBER, 31));
+      listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year,
+          Quarter.QUARTER_3);
+      break;
+    default:
+      listReports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year,
+          Quarter.QUARTER_3);
     }
 
     boolean todo = false;
@@ -622,4 +671,5 @@ public class AdminServiceImpl implements AdminService {
   public List<ProductsStatsData> generateProductsStats() {
     return aliquotRepository.generateProductsStats();
   }
+
 }

@@ -4,11 +4,13 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.EditableReportYearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamPriceLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -48,17 +50,16 @@ public interface AdminService {
   /**
    * This method adds a new aliquote.
    *
-   * @param  form Wrapper containing informations about the aliquot.
+   * @param form Wrapper containing informations about the aliquot.
    * @return true if adding the aliquote is successful, false otherwise.
    */
   boolean addAliquot(AddAliquoteForm form);
 
   /**
-   * This method retrieve all products on which an
-   * alert has been triggered.
+   * This method retrieve all products on which an alert has been triggered.
    *
-   * @return A list of wrapper containing product names, the quantity left
-   *     and the threshold of the alert.
+   * @return A list of wrapper containing product names, the quantity left and the threshold of the
+   *         alert.
    */
   List<TriggeredAlertsQuery> getTriggeredAlerts();
 
@@ -110,8 +111,8 @@ public interface AdminService {
    * 
    * @return a list of transactions and the total price or null if an error occurred.
    */
-  ReportData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName, String quarter,
-      int year);
+  TeamWithdrawnTransactionsData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName,
+      String quarter, int year);
 
   /**
    * This method saves a team trimestrial report in the database if it is still editable. Used to
@@ -130,21 +131,38 @@ public interface AdminService {
    * @param quarter value of Quarter enumeration
    * @param year year value
    * 
-   * @return total price losses and its details (product's name and its associated loss).
+   * @return total cost losses and its details (product's name and its associated loss).
    */
   TransactionLossesData getTransactionLossesByQuarterAndYear(String quarter, int year);
-  
+
   /**
-   * This method retrieve all products and their aliquots
-   *     from the database.
+   * This method returns the quarter and year of all editable reports.
+   *
+   * @return a list of quarter and year.
+   */
+  List<EditableReportYearQuarterData> getQuarterAndYearOfEditableReports();
+
+  /**
+   * This method returns the current losses of each team in the database.
+   * 
+   * @param quarter value of Quarter enumeration
+   * @param year year value
+   * 
+   * @return a list of cost losses and their associated team name or null if the quarter parameter
+   *         is invalid.
+   */
+  List<TeamPriceLossesData> getReportLossesAndTeamNameByYearAndQuarter(String quarter, int year);
+
+  /**
+   * This method retrieve all products and their aliquots from the database.
    *
    * @return a list of products.
    */
   List<Product> getAllProductsWithAliquots();
 
   /**
-   * This method perform the inventory. It add losses transactions
-   *     for every aliquot lost and restore the database to the user inputs.
+   * This method perform the inventory. It add losses transactions for every aliquot lost and
+   * restore the database to the user inputs.
    *
    * @param forms a list of form containing aliquotNLot and quantity.
    */

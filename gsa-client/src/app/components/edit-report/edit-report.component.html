@@ -1,44 +1,94 @@
-<div>
-  <h1>Edit a quarterly report</h1>
-</div>
-<div class="row">
-  <form class="col">
+<div class="card">
+  <div class="card-body">
+    <form>
+      <div class="row">
+        <div class="col form-group">
+          <label for="select-quarter">Quarter</label>
+          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col"
+            (change)="updateTransactionData()" name="quarter">
+            <option *ngFor="let quarter of quarters">{{ quarter }}</option>
+          </select>
+        </div>
+        <div class="col form-group">
+          <label for="select-year">Year</label>
+          <select [(ngModel)]="selectedYear" id="select-year" class="form-control col"
+            (change)="updateTransactionData()" name="year">
+            <option *ngFor="let year of years">{{ year }}</option>
+          </select>
+        </div>
+        <div class="col form-group">
+          <label for="select-team">Team</label>
+          <select [(ngModel)]="selectedTeam" id="select-team" class="form-control col"
+            (change)="updateTransactionData()" name="team">
+            <option *ngFor="let name of teamNames">{{ name }}</option>
+          </select>
+        </div>
+      </div>
+    </form>
     <div class="row">
-      <div class="col">
-        <label for="select-quarter" class="control-label">Quarter</label>
-        <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col"
-          (change)="updateTransactionData()" name="quarter">
-          <option *ngFor="let quarter of quarters">{{ quarter }}</option>
-        </select>
+        <div class="col-sm-7">
+          <div>
+              <app-reloadable-datatable [headers]="headers"></app-reloadable-datatable>
+          </div>
+          <div *ngIf="productLosses && productLosses.size > 0; else noProducts" class="card-body">
+            <h5 class="card-title center">Outdated and lost products</h5>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <div class="row">
+                  <div class="col-md-7 center">Product name</div>
+                  <div class="col-md-5 center">Losses</div>
+                </div>
+              </li>
+              <li *ngFor="let product of productLosses | keyvalue" class="list-group-item">
+                <div class="row">
+                  <div class="col-md-7 center">
+                    {{product.key}}
+                  </div>
+                  <div class="col-md-5 center">
+                    {{product.value}}€
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <ng-template #noProducts><div class="center"><h4>No outdated nor lost products.</h4></div></ng-template>
+        </div>
+      <div class="col-sm-5">
+        <div *ngIf="teamLosses && teamLosses.size > 0; else noTeams">
+          <p id="remainingLosses" class="center card-text"><b>Remaining losses : {{remainingLosses}}</b></p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="row">
+                <div class="col-md-5 center">Team name</div>
+                <div class="col-md-7 center">Losses</div>
+              </div>
+            </li>
+            <li *ngFor="let teamLoss of teamLosses | keyvalue" class="list-group-item justify-content-center align-items-center">
+              <div class="row">
+                <div class="col-md-5 center">
+                  {{teamLoss.key}}
+                </div>
+                <div class="col-md-7 center">
+                  <input type="text" [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
+                </div>
+              </div>
+            </li>
+          </ul>
+          <div class="card-body form-group row">
+            <div class="button-container col-sm-6 justify-content-sm-end">
+              <button class="btn btn-primary" type="button">
+                Save
+              </button>
+            </div>
+            <div class="button-container col-sm-6 justify-content-sm-start">
+              <button class="btn btn-danger" type="button">
+                Validate
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #noTeams><div class="center"><h4>No teams are bound to this report.</h4></div></ng-template>
       </div>
-
-      <div class="col">
-        <label for="select-year" class="control-label">Year</label>
-        <select [(ngModel)]="selectedYear" id="select-year" class="form-control col" (change)="updateTransactionData()"
-          name="year">
-          <option *ngFor="let year of years">{{ year }}</option>
-        </select>
-      </div>
-
-      <div class="col">
-        <label for="select-team" class="control-label">Team</label>
-        <select [(ngModel)]="selectedTeam" id="select-team" class="form-control col" (change)="updateTransactionData()"
-          name="team">
-          <option *ngFor="let name of teamNames">{{ name }}</option>
-        </select>
-      </div>
-    </div>
-  </form>
-  <div class="col">
-    <div class="custom-control custom-switch">
-      <input type="checkbox" id="dt-switch" class="custom-control-input" (click)="toggle()">
-      <label *ngIf="isOnTransactionMode" class="custom-control-label" for="dt-switch">Change to withrawn
-        aliquots</label>
-      <label *ngIf="!isOnTransactionMode" class="custom-control-label" for="dt-switch">Change to current bill
-        overview</label>
-    </div>
-    <div *ngIf="isOnTransactionMode">
-      <app-reloadable-datatable [headers]="headers"></app-reloadable-datatable>
     </div>
   </div>
 </div>

@@ -13,17 +13,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.EditableReportYearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamPriceLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -39,7 +42,8 @@ import fr.uniamu.ibdm.gsa_server.services.UserService;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
+@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200", "http://localhost",
+    "http://51.77.147.140" })
 public class AdminController {
 
   @Autowired
@@ -220,7 +224,8 @@ public class AdminController {
       if (adminService.removeAlert(form.getAlertId())) {
         return new JsonResponse<>(RequestStatus.SUCCESS, true);
       } else {
-        return new JsonResponse<>("This alert doesn't exists or has already been removed", RequestStatus.FAIL);
+        return new JsonResponse<>("This alert doesn't exists or has already been removed",
+            RequestStatus.FAIL);
       }
     } else {
       return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
@@ -260,7 +265,8 @@ public class AdminController {
    * @return SUCCESS status if the operation can be done, FAIL status otherwise.
    */
   @PostMapping("/transfertAliquot")
-  public JsonResponse<TransfertAliquotForm> transfertAliquot(@RequestBody TransfertAliquotForm form) {
+  public JsonResponse<TransfertAliquotForm> transfertAliquot(
+      @RequestBody TransfertAliquotForm form) {
     if (isAdmin()) {
       JsonResponse<TransfertAliquotForm> response;
       boolean success;
@@ -324,20 +330,24 @@ public class AdminController {
   @PostMapping("/saveReport")
   public JsonResponse<AddTeamTrimestrialReportForm> addTeamTrimestrialReport(
       @RequestBody AddTeamTrimestrialReportForm form) {
-    JsonResponse<AddTeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(
-        RequestStatus.FAIL);
-    failedRequestResponse.setData(form);
+    if (isAdmin()) {
+      JsonResponse<AddTeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(
+          RequestStatus.FAIL);
+      failedRequestResponse.setData(form);
 
-    if (!form.validate()) {
-      failedRequestResponse.setError("Missing attributes within request body");
-      return failedRequestResponse;
-    }
+      if (!form.validate()) {
+        failedRequestResponse.setError("Missing attributes within request body");
+        return failedRequestResponse;
+      }
 
-    if (adminService.saveTeamTrimestrialReport(form)) {
-      return new JsonResponse<>(RequestStatus.SUCCESS);
+      if (adminService.saveTeamTrimestrialReport(form)) {
+        return new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        failedRequestResponse.setError("Report could not be saved");
+        return failedRequestResponse;
+      }
     } else {
-      failedRequestResponse.setError("Report could not be saved");
-      return failedRequestResponse;
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
   }
 
@@ -348,15 +358,19 @@ public class AdminController {
    * @return JSON response containing all relevant information.
    */
   @GetMapping("/withdrawnTransactions")
-  public JsonResponse<ReportData> getWithdrawnTransactionsByTeamAndQuarterAndYear(
+  public JsonResponse<TeamWithdrawnTransactionsData> getWithdrawnTransactionsByTeamAndQuarterAndYear(
       @RequestParam String teamName, @RequestParam String quarter, @RequestParam int year) {
-    ReportData reportTransactions = adminService
+    TeamWithdrawnTransactionsData reportTransactions = adminService
         .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(teamName, quarter, year);
 
-    if (reportTransactions != null) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, reportTransactions);
+    if (isAdmin()) {
+      if (reportTransactions != null) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, reportTransactions);
+      } else {
+        return new JsonResponse<>("Could not retrieve a list of transactions", RequestStatus.FAIL);
+      }
     } else {
-      return new JsonResponse<>("Could not retrieve a list of transactions", RequestStatus.FAIL);
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
   }
 
@@ -369,12 +383,56 @@ public class AdminController {
   @GetMapping("/transactionLosses")
   public JsonResponse<TransactionLossesData> getTransactionLossesByQuarterAndYear(
       @RequestParam String quarter, @RequestParam Integer year) {
-    TransactionLossesData data = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
 
-    if (data == null) {
-      return new JsonResponse<>("Could not retrieve any transaction losses", RequestStatus.FAIL);
+    if (isAdmin()) {
+      TransactionLossesData data = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
+
+      if (data == null) {
+        return new JsonResponse<>("Could not retrieve any transaction losses", RequestStatus.FAIL);
+      }
+      return new JsonResponse<>(RequestStatus.SUCCESS, data);
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
-    return new JsonResponse<>(RequestStatus.SUCCESS, data);
+  }
+
+  /**
+   * REST endpoint returning the quarter and year of all editable reports.
+   *
+   * @return JSON response containing a list of quarter and year.
+   */
+  @GetMapping("/quarterYearOfEditableReports")
+  public JsonResponse<List<EditableReportYearQuarterData>> getQuarterAndYearOfEditableReports() {
+    if (isAdmin()) {
+      return new JsonResponse<>(RequestStatus.SUCCESS,
+          adminService.getQuarterAndYearOfEditableReports());
+
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
+  }
+
+  /**
+   * REST endpoint returning all team names and their associated loss of a trimestrial report.
+   *
+   * @return JSON response containing a list of team names and losses.
+   */
+  @GetMapping("/teamReportLosses")
+  public JsonResponse<List<TeamPriceLossesData>> getQuarterAndYearOfEditableReports(
+      @RequestParam String quarter, @RequestParam Integer year) {
+    if (isAdmin()) {
+      List<TeamPriceLossesData> data = adminService
+          .getReportLossesAndTeamNameByYearAndQuarter(quarter, year);
+      if (data != null) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, data);
+      } else {
+        return new JsonResponse<>("Could not retrieve any report losses", RequestStatus.FAIL);
+      }
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
   }
 
   /**
@@ -446,7 +504,6 @@ public class AdminController {
 
   }
 
-
   /**
    * REST endpoint, retrieve the number of days until the next report.
    *
@@ -477,7 +534,6 @@ public class AdminController {
 
   }
 
-
   /**
    * Utility function to tell us if the user logged in is admin or not.
    *
@@ -488,6 +544,7 @@ public class AdminController {
       return false;
     }
     return ((User) session.getAttribute("user")).isAdmin();
+    //return true;
   }
 
 }

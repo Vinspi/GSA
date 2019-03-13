@@ -2,14 +2,14 @@ package fr.uniamu.ibdm.gsa_server.requests.JsonData;
 
 import java.util.List;
 
-public class ReportData {
+public class TeamWithdrawnTransactionsData {
   private Float totalPrice;
-  private List<ReportTransactionData> transactions;
+  private List<WithdrawnTransactionData> transactions;
   
-  public ReportData() {
+  public TeamWithdrawnTransactionsData() {
   }
 
-  public ReportData(Float totalPrice, List<ReportTransactionData> transactions) {
+  public TeamWithdrawnTransactionsData(Float totalPrice, List<WithdrawnTransactionData> transactions) {
     this.totalPrice = totalPrice;
     this.transactions = transactions;
   }
@@ -22,22 +22,22 @@ public class ReportData {
     this.totalPrice = totalPrice;
   }
 
-  public List<ReportTransactionData> getTransactions() {
+  public List<WithdrawnTransactionData> getTransactions() {
     return transactions;
   }
 
-  public void setTransactions(List<ReportTransactionData> transactions) {
+  public void setTransactions(List<WithdrawnTransactionData> transactions) {
     this.transactions = transactions;
   }
   
-  public class ReportTransactionData {
+  public class WithdrawnTransactionData {
     private float aliquotPrice;
     private String productName;
     private String transactionDate;
     private int transactionQuantity;
     private String userName;
 
-    public ReportTransactionData() {
+    public WithdrawnTransactionData() {
     }
 
     /**
@@ -49,7 +49,7 @@ public class ReportData {
      * @param transactionQuantity int
      * @param userName String
      */
-    public ReportTransactionData(float aliquotPrice, String productName, String transactionDate,
+    public WithdrawnTransactionData(float aliquotPrice, String productName, String transactionDate,
         int transactionQuantity, String userName) {
       this.aliquotPrice = aliquotPrice;
       this.productName = productName;
