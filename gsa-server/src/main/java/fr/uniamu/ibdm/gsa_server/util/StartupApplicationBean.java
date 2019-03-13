@@ -1,11 +1,11 @@
 package fr.uniamu.ibdm.gsa_server.util;
 
+import fr.uniamu.ibdm.gsa_server.services.impl.EmailServiceImpl;
+import fr.uniamu.ibdm.gsa_server.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
-
-import fr.uniamu.ibdm.gsa_server.services.impl.UserServiceImpl;
 
 @Component
 public class StartupApplicationBean implements ApplicationListener<ContextRefreshedEvent> {
@@ -13,10 +13,14 @@ public class StartupApplicationBean implements ApplicationListener<ContextRefres
   @Autowired
   private UserServiceImpl userService;
 
+  @Autowired
+  private EmailServiceImpl emailService;
+
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-    userService.registerAccount("Michel", "michel@univ-amu.fr", "pantoufle", "WOCKHARDT LIMITED", false);
-    userService.registerAccount("Rosa", "rosa@univ-amu.fr", "pantoufle", "WOCKHARDT LIMITED", true);
+    userService.registerAccount("Michel", "michel@univ-amu.fr", "pantoufle", "Walgreen Company", false);
+    userService.registerAccount("Rosa", "rosa@univ-amu.fr", "pantoufle", "Walgreen Company", true);
+    userService.registerAccount("test", "vinspi13@gmail.com", "test", "Walgreen Company", true);
 
     System.out.println("application started");
   }

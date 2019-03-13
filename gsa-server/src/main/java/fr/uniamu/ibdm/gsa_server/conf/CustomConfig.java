@@ -10,7 +10,6 @@ public class CustomConfig {
   private String ipTechArea;
   private String superAdminPassword;
 
-
   public CustomConfig() {
   }
 
@@ -29,4 +28,5 @@ public class CustomConfig {
   public void setSuperAdminPassword(String superAdminPassword) {
     this.superAdminPassword = superAdminPassword;
   }
+
 }

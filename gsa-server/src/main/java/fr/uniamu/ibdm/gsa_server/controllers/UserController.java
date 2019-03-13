@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import fr.uniamu.ibdm.gsa_server.conf.MaintenanceBean;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
@@ -27,6 +28,9 @@ public class UserController {
   @Autowired
   UserServiceImpl userService;
 
+  @Autowired
+  MaintenanceBean maintenanceBean;
+
   /**
    * REST controller for the stockOverview request.
    *
@@ -34,6 +38,10 @@ public class UserController {
    */
   @GetMapping("/stockOverview")
   public JsonResponse<List<ProductOverviewData>> stockOverview() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
 
     List<ProductOverviewData> data = userService.getAllOverviewProducts();
 
@@ -47,6 +55,11 @@ public class UserController {
    */
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     if (isLoggedIn() && ((boolean) session.getAttribute("techArea"))) {
       boolean data = userService.withdrawCart(form, (User) session.getAttribute("user"));
       JsonResponse<Boolean> response;
@@ -70,6 +83,10 @@ public class UserController {
   @PostMapping("/getProductName")
   public JsonResponse<String> getProductName(@RequestBody GetProductNameForm form) {
 
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     String productName = userService.getProductNameFromNlot(form.getNlot());
     JsonResponse<String> response;
 
@@ -90,6 +107,10 @@ public class UserController {
   @GetMapping("/getAllTeamName")
   public JsonResponse<List<String>> getAllTeamName() {
 
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllTeamName());
   }
 
@@ -101,10 +122,28 @@ public class UserController {
   @GetMapping("/getAllProductName")
   public JsonResponse<List<String>> getAllProductName() {
 
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllProductName());
   }
 
+  /**
+   * REST endpoint, this endpoint let us know if the app is in maintenance mode.
+   *
+   * @return A JsonResponse containing a boolean.
+   */
+  @GetMapping("/isMaintenanceMode")
+  public JsonResponse<Boolean> isMaintenanceMode() {
+    return new JsonResponse<>(RequestStatus.SUCCESS, maintenanceBean.isMaintenanceMode());
+  }
 
+  /**
+   * Utility function, tell us if the user is logged in or not.
+   *
+   * @return tru if user is logged, false otherwise.
+   */
   private boolean isLoggedIn() {
     if (session.getAttribute("user") == null) {
       return false;
