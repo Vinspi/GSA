@@ -8,12 +8,21 @@
       <div class="card-body d-flex w-100 flex-direction-row justify-content-between">
         <div *ngIf="item.alertType == 'VISIBLE_STOCK'" class="icon-bell-container color-visible">
           <i class="fas fa-bell"></i>
+          <div class="alt-color">
+            stock
+          </div>
         </div>
         <div *ngIf="item.alertType == 'HIDDEN_STOCK'" class="icon-bell-container color-hidden">
           <i class="fas fa-bell"></i>
+          <div class="alt-color">
+            reserve
+          </div>
         </div>
         <div *ngIf="item.alertType == 'GENERAL'" class="icon-bell-container color-general">
           <i class="fas fa-bell"></i>
+          <div class="alt-color">
+            general
+          </div>
         </div>
         <div class="card-product-name">
           {{item.productName}}
