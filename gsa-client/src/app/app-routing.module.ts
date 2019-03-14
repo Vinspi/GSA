@@ -18,7 +18,7 @@ import { OutdatedManagementComponent } from './components/outdated-management/ou
 
 const routes: Routes = [
   {path: '', canActivate: [AdminGuard, MaintenanceGuard], component: AdminHomepageComponent},
-  {path: 'login', canActivate: [MaintenanceGuard], component: ConnectionFormComponent},
+  {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', canActivate: [MaintenanceGuard], component: StockOverviewComponent},
   {path: 'withdraw', canActivate: [AuthGuard, MaintenanceGuard],component: WithdrawComponent},
   {path: 'alerts', canActivate: [AdminGuard, MaintenanceGuard], component: AlertsPanelComponent},
