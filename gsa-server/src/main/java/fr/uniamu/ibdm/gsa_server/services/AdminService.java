@@ -1,25 +1,25 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
+import java.util.List;
+import java.util.Map;
+
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.EditableReportYearQuarterData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamPriceLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-
-import java.util.List;
 
 public interface AdminService {
 
@@ -115,15 +115,19 @@ public interface AdminService {
       String quarter, int year);
 
   /**
-   * This method saves a team trimestrial report in the database if it is still editable. Used to
-   * archive trimestrial bills of each team.
+   * This method saves a list of team trimestrial reports in the database if there are still all
+   * editable and if the quarter is over. If a team trimestrial report of the list is not valid,
+   * then none of them will be added in the database.
    * 
-   * @param form TeamTrimestrialReport attributes request body wrapper. Its attributes must not be
-   *          null.
+   * @param teamReportLosses a list of teamNames and their associated loss.
+   * @param finalFlag set to true if the report is final, false otherwise
+   * @param year integer
+   * @param quarterStr value of Quarter enumeration
    * 
    * @return true if the saving process is successful, false otherwise.
    */
-  boolean saveTeamTrimestrialReport(AddTeamTrimestrialReportForm form);
+  public boolean saveTeamTrimestrialReport(Map<String, Float> teamReportLosses, boolean finalFlag,
+      int year, String quarterStr);
 
   /**
    * This method returns the sum of prices of outdated and lost aliquots and details of each loss.
@@ -140,7 +144,7 @@ public interface AdminService {
    *
    * @return a list of quarter and year.
    */
-  List<EditableReportYearQuarterData> getQuarterAndYearOfEditableReports();
+  List<YearQuarterData> getQuarterAndYearOfAllEditableReports();
 
   /**
    * This method returns the current losses of each team in the database.
@@ -151,7 +155,7 @@ public interface AdminService {
    * @return a list of cost losses and their associated team name or null if the quarter parameter
    *         is invalid.
    */
-  List<TeamPriceLossesData> getReportLossesAndTeamNameByYearAndQuarter(String quarter, int year);
+  List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(String quarter, int year);
 
   /**
    * This method retrieve all products and their aliquots from the database.

@@ -5,14 +5,14 @@
         <div class="col form-group">
           <label for="select-quarter">Quarter</label>
           <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col"
-            (change)="updateTransactionData()" name="quarter">
+            (change)="updateAllData()" name="quarter">
             <option *ngFor="let quarter of quarters">{{ quarter }}</option>
           </select>
         </div>
         <div class="col form-group">
           <label for="select-year">Year</label>
           <select [(ngModel)]="selectedYear" id="select-year" class="form-control col"
-            (change)="updateTransactionData()" name="year">
+            (change)="updateAllData()" name="year">
             <option *ngFor="let year of years">{{ year }}</option>
           </select>
         </div>
@@ -69,18 +69,13 @@
                   {{teamLoss.key}}
                 </div>
                 <div class="col-md-7 center">
-                  <input type="text" [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
+                  <input type="text" (change)="onTeamLossInputChange(teamLoss.key, $event)" [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
                 </div>
               </div>
             </li>
           </ul>
           <div class="card-body form-group row">
-            <div class="button-container col-sm-6 justify-content-sm-end">
-              <button class="btn btn-primary" type="button">
-                Save
-              </button>
-            </div>
-            <div class="button-container col-sm-6 justify-content-sm-start">
+            <div (click)="validateReport()" class="button-container col justify-content-center">
               <button class="btn btn-danger" type="button">
                 Validate
               </button>

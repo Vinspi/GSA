@@ -7,7 +7,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -31,9 +33,6 @@ import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
@@ -51,21 +50,13 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamPriceLossesData;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 
 
 @RunWith(SpringRunner.class)
@@ -405,31 +396,41 @@ public class AdminServiceTest {
 
   @Test
   public void saveTeamTrimestrialReport() {
-    AddTeamTrimestrialReportForm form = new AddTeamTrimestrialReportForm();
-    form.setFinalFlag(false);
-    form.setLosses(100F);
-    form.setYear(2019);
-    form.setTeamName("Some team");
-
+    Boolean finalFlag = false;
+    Map<String, Float> teamReportLosses = new HashMap<>();
+    Integer year = 2019;
+    String teamName = "Some team";
+    teamReportLosses.put(teamName, 100F);
+    String quarter;
+    
     // Saving a report should fail when the specified quarter does not match the values of the
     // Quarter enumeration.
-    form.setQuarter("anyQuarter");
-    Boolean success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
+    quarter = "anyQuarter";
+    Boolean success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
 
     // Saving a report when the quarter is not over should fail
-    form.setQuarter("QUARTER_1");
+    quarter = "QUARTER_1";
     LocalDate now = LocalDate.of(2019, 3, 31);
     Mockito.when(clock.now()).thenReturn(now);
-    success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(clock, Mockito.times(1)).now();
 
     now = LocalDate.of(2019, 4, 1);
+    Mockito.when(clock.now()).thenReturn(now);
 
     // Saving a report should fail when the team name does not match a team.
-    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(null);
-    success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
+    Mockito.when(teamRepository.findByTeamName(teamName)).thenReturn(null);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, teamName);
+    Assert.assertFalse(success);
+    Mockito.verify(teamRepository, Mockito.times(1)).findByTeamName(teamName);
+
+    
+    Team team = new Team();
+    team.setTeamName(teamName);
+    team.setTeamId(1L);
+    Mockito.when(teamRepository.findByTeamName(teamName)).thenReturn(team);
 
     // Saving a non-editable report should not be updated.
     TeamTrimestrialReport currentReport = new TeamTrimestrialReport();
@@ -438,29 +439,31 @@ public class AdminServiceTest {
     TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
     teamTrimestrialReportPk.setQuarter(Quarter.QUARTER_1);
     teamTrimestrialReportPk.setTeam(1L);
-    teamTrimestrialReportPk.setYear(2019);
+    teamTrimestrialReportPk.setYear(year);
 
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
         .thenReturn(Optional.of(currentReport));
-    success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(false, success);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).findById(Mockito.any());
 
     // Saving an existing report with a correct form should be updated in the database.
     currentReport.setFinalFlag(false);
-    Team team = new Team();
-    team.setTeamId(1L);
-    Mockito.when(teamRepository.findByTeamName(form.getTeamName())).thenReturn(team);
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
         .thenReturn(Optional.of(currentReport));
-    success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(true, success);
+    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any())).thenReturn(null);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertTrue(success);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).save(Mockito.any());
+    
 
     // Saving a new report with a correct form should be added in the database.
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
         .thenReturn(Optional.empty());
-    success = adminService.saveTeamTrimestrialReport(form);
-    Assert.assertEquals(true, success);
-
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertTrue(success);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(2)).save(Mockito.any());
+    
   }
 
   @Test
@@ -512,7 +515,7 @@ public class AdminServiceTest {
   
   @Test
   public void getReportLossesAndTeamNameByYearAndQuarter() {
-    List<TeamPriceLossesData> losses = adminService.getReportLossesAndTeamNameByYearAndQuarter("anyQuarter",
+    List<TeamReportLossForm> losses = adminService.getReportLossesAndTeamNameByYearAndQuarter("anyQuarter",
         2019);
 
     Assert.assertNull(losses);

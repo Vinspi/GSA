@@ -62,8 +62,8 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/addAlert', data, {withCredentials: true});
   }
 
-  editReport(data: any): Observable<JsonResponse> {
-    return this.http.post<JsonResponse>(this.BASE_URL + '/editReport', data, { withCredentials: true });
+  saveTeamReport(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL + '/saveReport', data, { withCredentials: true });
   }
 
   getQuarterlyTransactionLosses(quarter: string, year: string): Observable<JsonResponse> {
