@@ -17,11 +17,11 @@ const routes: Routes = [
   {path: 'lorem', component: LoremComponent},
   {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', component: StockOverviewComponent},
-  {path: 'withdraw', canActivate: [AuthGuard],component: WithdrawComponent},
-  {path: 'add-aliquote',canActivate:[AdminGuard], component: AddAliquoteComponent},
+  {path: 'withdraw', canActivate: [AuthGuard], component: WithdrawComponent},
+  {path: 'add-aliquote', canActivate: [AdminGuard], component: AddAliquoteComponent},
   {path: 'stats', canActivate: [AdminGuard], component: StatsComponent},
   {path: 'addproduct', canActivate: [AdminGuard], component: AddProductComponent},
-  {path: 'history', canActivate: [AdminGuard], component: HistoryComponent},
+  {path: 'history', canActivate: [AuthGuard], component: HistoryComponent},
   {path: 'alerts', canActivate: [AdminGuard], component: AlertsPanelComponent}
 ];
 

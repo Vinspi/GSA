@@ -31,10 +31,10 @@ export class ConnectionFormComponent implements OnInit {
         this.error = false;
         this.localStorage.setItem("user", response.data).subscribe(() => {});
         console.log("navigate to index page ...");
-        
+
         this.localStorage.getItem("user").subscribe(user => {
           console.log(user);
-          
+
         })
         window.location.reload();
         this.router.navigate(["/"]);

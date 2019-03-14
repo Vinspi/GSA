@@ -25,8 +25,8 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL + '/addproduct', data, {withCredentials: true});
   }
 
-  getWithdrawalsHistory(period: any): Observable<JsonResponse> {
-    return this.http.post<JsonResponse>(this.BASE_URL + '/history', period, {withCredentials: true});
+  getWithdrawalsHistory(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL + '/history', data, {withCredentials: true});
   }
   getTriggeredAlerts(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL + '/triggeredAlerts');

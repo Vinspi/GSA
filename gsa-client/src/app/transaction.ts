@@ -1,6 +1,6 @@
 export class Transaction {
   date: string;
-  userName: string;
+  userName: String;
   aliquotName: string;
   teamName: string;
   quantity: number;

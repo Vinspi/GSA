@@ -6,6 +6,11 @@ import { Date } from 'src/app/date';
 import { DataTableDirective } from 'angular-datatables';
 import { AngularCsv } from 'angular7-csv/dist/Angular-csv';
 import { NgbDatepickerConfig, NgbCalendar, NgbDate } from '@ng-bootstrap/ng-bootstrap';
+import { User } from 'src/app/user';
+import { LocalStorage } from '@ngx-pwa/local-storage';
+import { UserService } from 'src/app/services/user.service';
+
+
 @Component({
   selector: 'app-history',
   templateUrl: './history.component.html',
@@ -25,10 +30,22 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
   stringEnd: string;
   selectedDate: any;
 
-  constructor(private adminService: AdminService, private config: NgbDatepickerConfig, private calendar: NgbCalendar) {
+  user: User;
+
+  constructor(private adminService: AdminService,
+              private userService: UserService,
+              private config: NgbDatepickerConfig,
+              private calendar: NgbCalendar,
+              private localStorage: LocalStorage) {
+
+    this.localStorage.getItem('user').subscribe(user => {
+      this.user = <User> user;
+    });
   }
 
   ngOnInit() {
+
+
     $('#beginDate').attr('readonly', 'true');
     $('#endDate').attr('readonly', 'true');
 
@@ -50,13 +67,24 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
   sendData() {
     this.setupDate();
 
-    this.adminService.getWithdrawalsHistory({
-      begin: this.stringBegin,
-      end: this.stringEnd
-    }).subscribe(res => {
-      this.history = <Array<Transaction>> res.data;
-      this.rerender();
-    });
+    if (this.user.admin) {
+      this.adminService.getWithdrawalsHistory({
+        begin: this.stringBegin,
+        end: this.stringEnd
+      }).subscribe(res => {
+        this.history = <Array<Transaction>> res.data;
+        this.rerender();
+      });
+    } else {
+      this.userService.getWithdrawalsHistory({
+        userName: this.user.userName,
+        begin: this.stringBegin,
+        end: this.stringEnd
+      }).subscribe(res => {
+        this.history = <Array<Transaction>> res.data;
+        this.rerender();
+      });
+    }
   }
 
   setupDate() {
