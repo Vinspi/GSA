@@ -3,7 +3,6 @@ import {
   AfterViewInit,
   OnInit,
   ViewChild,
-  Output
 } from '@angular/core';
 import { AdminService } from 'src/app/services/admin.service';
 import { UserService } from 'src/app/services/user.service';
@@ -32,21 +31,14 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   productLosses: Map<string, number>;
   teamLosses: Map<string, number>;
 
-  quarters: Array<any>;
-
   years: Array<string>;
   teamNames: Array<string>;
   selectedTeam: string;
   selectedQuarter: string;
-  selectedYear: string;
 
   headers: Array<string> = ['Date', 'User name', 'Product name', 'Withdrawn quantity', 'Unit price'];
-  quartersText: Array<string> = [
-    'First quarter',
-    'Second quarter',
-    'Third quarter',
-    'Fourth quarter'
-  ];
+  quartersText: Array<string>;
+  quarters: Map<string, any>;
 
   constructor(
     private userService: UserService,
@@ -55,31 +47,67 @@ export class EditReportComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
 
-    /*this.adminService.getQuarterAndYearValuesOfEditableReports().subscribe(res => {
-      if (res.status === 'SUCCESS') {
-        this.quarters = res.data;
-      }
-
-    });*/
-
-    this.years = ['2018', '2019']; // Need to request the year of the earliest quarterly report.
-    this.selectedQuarter = this.quartersText[0];
-    this.selectedYear = this.years[0];
-
   }
 
   ngAfterViewInit(): void {
     // Need to be sure that the items property is defined in the datatable child component.
-    this.userService.getAllTeamName().subscribe(res => {
-      if (res && res.data.length > 0) {
-        this.teamNames = res.data;
-        this.selectedTeam = this.teamNames[0];
+    this.initializeQuarters().then(() =>
+      this.userService.getAllTeamName().subscribe(res => {
+        if (res && res.data.length > 0) {
+          this.teamNames = res.data;
+          this.selectedTeam = this.teamNames[0];
+          this.updateAllData();
+        }
+      })
+    );
+  }
 
-        this.updateTransactionData();
-        this.updateTeamLosses();
-        this.updateProductLosses();
-      }
+  private initializeQuarters(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.adminService.getQuarterAndYearValuesOfAllEditableReports().subscribe(res => {
+        if (res.status === 'SUCCESS') {
+          this.quartersText = new Array();
+          this.quarters = new Map();
+          for (const obj of res.data) {
+            const key = this.quarterToText(obj.quarter) + obj.year;
+            this.quartersText.push(key);
+            this.quarters.set(key, obj);
+          }
+
+          if (this.quarters.size > 0) {
+            this.selectedQuarter = this.quartersText[0];
+            resolve();
+          } else {
+            reject();
+          }
+        }
+        reject();
+      });
     });
+  }
+
+  private getSelectedQuarter(): string {
+    return this.quarters.get(this.selectedQuarter).quarter;
+  }
+
+  private getSelectedYear(): string {
+    return this.quarters.get(this.selectedQuarter).year;
+  }
+  private quarterToText(quarter: string): string {
+    if (quarter === 'QUARTER_1') {
+      return 'First quarter of ';
+    }
+    if (quarter === 'QUARTER_2') {
+      return 'Second quarter of ';
+    }
+    if (quarter === 'QUARTER_3') {
+      return 'Third quarter of ';
+    }
+    if (quarter === 'QUARTER_4') {
+      return 'Fourth quarter of ';
+    } else {
+      return null;
+    }
   }
 
   private saveTeamReportData(teamLosses: Map<string, number>, finalFlag: boolean): Promise<any> {
@@ -95,8 +123,8 @@ export class EditReportComponent implements AfterViewInit, OnInit {
       const data: any = {};
       data.teamReportLosses = teamLossesAsArray;
       data.finalFlag = finalFlag;
-      data.year = this.selectedYear;
-      data.quarter = this.selectedQuarterToParamValue();
+      data.year = this.getSelectedYear();
+      data.quarter = this.getSelectedQuarter();
 
       this.adminService.saveTeamReport(data).subscribe(res => {
         if (res.status === 'SUCCESS') {
@@ -110,28 +138,27 @@ export class EditReportComponent implements AfterViewInit, OnInit {
 
   public updateAllData() {
     this.updateTransactionData();
-    this.updateProductLosses();
-    this.updateTeamLosses();
+    // report needs to be initialised and saved first before being able of getting the sum of losses of this quarter
+    this.updateTeamLosses()
+    .then(() => this.updateProductLosses());
   }
 
   public validateReport() {
     if (this.remainingLosses === 0) {
       this.saveTeamReportData(this.teamLosses, true)
         .then(() => {
+          this.initializeQuarters().then(() => this.updateAllData());
           this.toastBody = 'The report was successfully validated.';
           this.toastHeader = 'Success';
           this.toastType = 'success';
           this.toastTrigger.next();
-        })
-        .catch(() => console.log('Could not save'));
+        });
     } else {
-
       this.toastBody = 'The report could not be validated';
       this.toastHeader = 'Error';
       this.toastType = 'danger';
       this.toastTrigger.next();
     }
-
   }
 
   public onTeamLossInputChange(teamName: string, event) {
@@ -145,37 +172,34 @@ export class EditReportComponent implements AfterViewInit, OnInit {
       .then(() => {
         this.remainingLosses -= newLossValue - oldLossValue;
         this.remainingLosses = Number(this.remainingLosses.toFixed(2));
-      })
-      .catch(() => {
-        console.log('Could not save input');
       });
-
   }
 
   public updateTeamLosses() {
-    this.adminService.getReportLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(response => {
-      if (response.status === 'SUCCESS') {
-        this.teamLosses = new Map<string, number>();
-        for (const teamLoss of response.data) {
-          this.teamLosses.set(teamLoss.teamName, teamLoss.loss);
-        }
-
-        if (this.teamLosses.size === 0) {
-          for (let index = 0; index < this.teamNames.length; index++) {
-            this.teamLosses.set(this.teamNames[index], 0);
+    return new Promise((resolve, reject) =>
+      this.adminService.getReportLosses(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
+        if (response.status === 'SUCCESS') {
+          this.teamLosses = new Map<string, number>();
+          for (const teamLoss of response.data) {
+            this.teamLosses.set(teamLoss.teamName, teamLoss.loss);
           }
-          this.saveTeamReportData(this.teamLosses, false)
-            .catch(() => console.log('Could not save'));
-        }
-      } else {
-        // failed request
-      }
 
-    });
+          if (this.teamLosses.size === 0) {
+            for (let index = 0; index < this.teamNames.length; index++) {
+              this.teamLosses.set(this.teamNames[index], 0);
+            }
+            this.saveTeamReportData(this.teamLosses, false).then(() => resolve());
+          } else {
+            resolve();
+          }
+        } else {
+          reject();
+        }
+      }));
   }
 
   public updateProductLosses() {
-    this.adminService.getQuarterlyTransactionLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(res => {
+    this.adminService.getQuarterlyTransactionLosses(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(res => {
       if (res.status === 'SUCCESS') {
         this.productLosses = new Map<string, number>();
         res.data.productLosses.forEach(productLoss => {
@@ -183,16 +207,14 @@ export class EditReportComponent implements AfterViewInit, OnInit {
         });
 
         this.totalLosses = res.data.totalLosses;
-        this.adminService.getSumOfQuarterLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(response => {
+        this.adminService.getSumOfQuarterLosses(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
           if (response.status === 'SUCCESS') {
             this.remainingLosses = this.totalLosses - response.data;
             this.remainingLosses = Number(this.remainingLosses.toFixed(2));
           } else {
-            this.remainingLosses = 0;
+            this.remainingLosses = -1;
           }
         });
-      } else {
-        //Failed request
       }
     });
   }
@@ -203,8 +225,8 @@ export class EditReportComponent implements AfterViewInit, OnInit {
       this.adminService
         .getQuarterlyWithdrawnTransactionsByTeamNameAndYear(
           this.selectedTeam,
-          this.selectedQuarterToParamValue(),
-          this.selectedYear
+          this.getSelectedQuarter(),
+          this.getSelectedYear()
         )
         .subscribe(transactionResponse => {
           if (transactionResponse.status === 'SUCCESS') {
@@ -217,7 +239,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   public updateTransactionData() {
-    if (this.teamNames.length > 0) {
+    if (this.quarters.size > 0) {
       this.fetchTransactions()
         .then(data => {
           this.dtElement.items = this.transactionValuesToArray(<Array<Transaction>>data.transactions);
@@ -228,10 +250,6 @@ export class EditReportComponent implements AfterViewInit, OnInit {
           this.dtElement.reRenderData();
         });
     }
-  }
-
-  private selectedQuarterToParamValue() {
-    return 'QUARTER_' + (this.quartersText.indexOf(this.selectedQuarter) + 1);
   }
 
   private transactionValuesToArray(transactions: Array<any>): Array<any> {

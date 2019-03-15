@@ -78,8 +78,8 @@ export class AdminService {
     return this.http.get<JsonResponse>(this.BASE_URL + '/teamReportLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
   }
 
-  getQuarterAndYearValuesOfEditableReports() {
-    return this.http.get<JsonResponse>(this.BASE_URL + '/quarterYearOfEditableReports', { withCredentials: true });
+  getQuarterAndYearValuesOfAllEditableReports() {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/quarterYearOfAllEditableReports', { withCredentials: true });
   }
 
   getSumOfQuarterLosses(quarter: string, year: string) {

@@ -1,24 +1,17 @@
-<div class="card">
+<div class="card" *ngIf="quartersText && quartersText.length > 0; else noReport">
   <div class="card-body">
     <form>
       <div class="row">
         <div class="col form-group">
           <label for="select-quarter">Quarter</label>
-          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col" (change)="updateAllData()"
-            name="quarter">
-            <option *ngFor="let quarter of quarters">{{ quarter }}</option>
-          </select>
-        </div>
-        <div class="col form-group">
-          <label for="select-year">Year</label>
-          <select [(ngModel)]="selectedYear" id="select-year" class="form-control col" (change)="updateAllData()"
-            name="year">
-            <option *ngFor="let year of years">{{ year }}</option>
+          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col-md-6"
+            (change)="updateAllData()" name="quarter">
+            <option *ngFor="let quarter of quartersText">{{ quarter }}</option>
           </select>
         </div>
         <div class="col form-group">
           <label for="select-team">Team</label>
-          <select [(ngModel)]="selectedTeam" id="select-team" class="form-control col"
+          <select [(ngModel)]="selectedTeam" id="select-team" class="form-control col-md-6"
             (change)="updateTransactionData()" name="team">
             <option *ngFor="let name of teamNames">{{ name }}</option>
           </select>
@@ -100,4 +93,10 @@
     </div>
   </div>
 </div>
-<app-toast [toastHeader]="toastHeader" [toastBody]="toastBody" [event]="toastTrigger" [timeout]="2000" [toastType]="toastType"></app-toast>
+<ng-template #noReport>
+  <div class="card-body center">
+    <h4>No report available.</h4>
+  </div>
+</ng-template>
+<app-toast [toastHeader]="toastHeader" [toastBody]="toastBody" [event]="toastTrigger" [timeout]="2000"
+  [toastType]="toastType"></app-toast>
