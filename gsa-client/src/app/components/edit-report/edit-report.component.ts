@@ -2,26 +2,37 @@ import {
   Component,
   AfterViewInit,
   OnInit,
-  ViewChild
-} from "@angular/core";
-import { AdminService } from "src/app/services/admin.service";
-import { UserService } from "src/app/services/user.service";
+  ViewChild,
+  Output
+} from '@angular/core';
+import { AdminService } from 'src/app/services/admin.service';
+import { UserService } from 'src/app/services/user.service';
 import { ReloadableDatatableComponent } from '../reloadable-datatable/reloadable-datatable.component';
 import { Transaction } from 'src/app/transaction';
+import { EventEmitter } from '@angular/core';
+import { Subject } from 'rxjs';
 
 @Component({
-  selector: "app-edit-report",
-  templateUrl: "./edit-report.component.html",
-  styleUrls: ["./edit-report.component.css"]
+  selector: 'app-edit-report',
+  templateUrl: './edit-report.component.html',
+  styleUrls: ['./edit-report.component.css']
 })
 export class EditReportComponent implements AfterViewInit, OnInit {
   @ViewChild(ReloadableDatatableComponent)
   dtElement: ReloadableDatatableComponent;
 
+  toast: EventEmitter<any> = new EventEmitter();
+  toastTrigger: Subject<void> = new Subject();
+  toastBody: String;
+  toastHeader: String;
+  toastType: String;
+
   totalLosses: number;
   remainingLosses: number;
   productLosses: Map<string, number>;
   teamLosses: Map<string, number>;
+
+  quarters: Array<any>;
 
   years: Array<string>;
   teamNames: Array<string>;
@@ -30,11 +41,11 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   selectedYear: string;
 
   headers: Array<string> = ['Date', 'User name', 'Product name', 'Withdrawn quantity', 'Unit price'];
-  quarters: Array<string> = [
-    "First quarter",
-    "Second quarter",
-    "Third quarter",
-    "Fourth quarter"
+  quartersText: Array<string> = [
+    'First quarter',
+    'Second quarter',
+    'Third quarter',
+    'Fourth quarter'
   ];
 
   constructor(
@@ -44,11 +55,17 @@ export class EditReportComponent implements AfterViewInit, OnInit {
 
   ngOnInit() {
 
-    this.years = ["2018", "2019"]; // Need to request the year of the earliest quarterly report.
-    this.selectedQuarter = this.quarters[0];
+    /*this.adminService.getQuarterAndYearValuesOfEditableReports().subscribe(res => {
+      if (res.status === 'SUCCESS') {
+        this.quarters = res.data;
+      }
+
+    });*/
+
+    this.years = ['2018', '2019']; // Need to request the year of the earliest quarterly report.
+    this.selectedQuarter = this.quartersText[0];
     this.selectedYear = this.years[0];
 
-    this.updateProductLosses();
   }
 
   ngAfterViewInit(): void {
@@ -56,13 +73,11 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     this.userService.getAllTeamName().subscribe(res => {
       if (res && res.data.length > 0) {
         this.teamNames = res.data;
-        this.selectedTeam = this.teamNames[6];
+        this.selectedTeam = this.teamNames[0];
 
         this.updateTransactionData();
         this.updateTeamLosses();
-
-      } else {
-        // Handle no team situation
+        this.updateProductLosses();
       }
     });
   }
@@ -102,13 +117,22 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   public validateReport() {
     if (this.remainingLosses === 0) {
       this.saveTeamReportData(this.teamLosses, true)
-        .catch(() => console.log("Could not save"));
+        .then(() => {
+          this.toastBody = 'The report was successfully validated.';
+          this.toastHeader = 'Success';
+          this.toastType = 'success';
+          this.toastTrigger.next();
+        })
+        .catch(() => console.log('Could not save'));
     } else {
 
+      this.toastBody = 'The report could not be validated';
+      this.toastHeader = 'Error';
+      this.toastType = 'danger';
+      this.toastTrigger.next();
     }
 
   }
-
 
   public onTeamLossInputChange(teamName: string, event) {
     const newLossValue: number = event.target.value;
@@ -120,48 +144,56 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     this.saveTeamReportData(teamLoss, false)
       .then(() => {
         this.remainingLosses -= newLossValue - oldLossValue;
+        this.remainingLosses = Number(this.remainingLosses.toFixed(2));
       })
       .catch(() => {
-        console.log("Could not save input");
+        console.log('Could not save input');
       });
 
   }
 
   public updateTeamLosses() {
     this.adminService.getReportLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(response => {
-      this.teamLosses = new Map<string, number>();
-      for (const teamLoss of response.data) {
-        this.teamLosses.set(teamLoss.teamName, teamLoss.loss);
-      }
-
-      if (this.teamLosses.size === 0) {
-        this.totalLosses = 0;
-        this.remainingLosses = 0;
-        for (let index = 0; index < this.teamNames.length; index++) {
-          this.teamLosses.set(this.teamNames[index], 0);
+      if (response.status === 'SUCCESS') {
+        this.teamLosses = new Map<string, number>();
+        for (const teamLoss of response.data) {
+          this.teamLosses.set(teamLoss.teamName, teamLoss.loss);
         }
-        this.saveTeamReportData(this.teamLosses, false)
-          .catch(() => console.log('Could not save'));
-      } else {
 
+        if (this.teamLosses.size === 0) {
+          for (let index = 0; index < this.teamNames.length; index++) {
+            this.teamLosses.set(this.teamNames[index], 0);
+          }
+          this.saveTeamReportData(this.teamLosses, false)
+            .catch(() => console.log('Could not save'));
+        }
+      } else {
+        // failed request
       }
+
     });
   }
 
   public updateProductLosses() {
     this.adminService.getQuarterlyTransactionLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(res => {
-      this.productLosses = new Map<string, number>();
-      res.data.productLosses.forEach(productLoss => {
-        this.productLosses.set(productLoss.name, productLoss.loss);
-      });
       if (res.status === 'SUCCESS') {
+        this.productLosses = new Map<string, number>();
+        res.data.productLosses.forEach(productLoss => {
+          this.productLosses.set(productLoss.name, productLoss.loss);
+        });
+
         this.totalLosses = res.data.totalLosses;
-        this.remainingLosses = res.data.totalLosses;
+        this.adminService.getSumOfQuarterLosses(this.selectedQuarterToParamValue(), this.selectedYear).subscribe(response => {
+          if (response.status === 'SUCCESS') {
+            this.remainingLosses = this.totalLosses - response.data;
+            this.remainingLosses = Number(this.remainingLosses.toFixed(2));
+          } else {
+            this.remainingLosses = 0;
+          }
+        });
       } else {
-        this.totalLosses = res.data.totalLosses;
-        this.remainingLosses = res.data.totalLosses;
+        //Failed request
       }
-      console.log('totalLosses : ' + this.totalLosses + " this.remainingLosses : " + this.remainingLosses);
     });
   }
 
@@ -175,7 +207,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
           this.selectedYear
         )
         .subscribe(transactionResponse => {
-          if (transactionResponse.status === "SUCCESS") {
+          if (transactionResponse.status === 'SUCCESS') {
             resolve(transactionResponse.data);
           } else {
             reject();
@@ -199,7 +231,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   private selectedQuarterToParamValue() {
-    return "QUARTER_" + (this.quarters.indexOf(this.selectedQuarter) + 1);
+    return 'QUARTER_' + (this.quartersText.indexOf(this.selectedQuarter) + 1);
   }
 
   private transactionValuesToArray(transactions: Array<any>): Array<any> {

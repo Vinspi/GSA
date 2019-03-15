@@ -75,12 +75,15 @@ export class AdminService {
   }
 
   getReportLosses(quarter: string, year: string): Observable<JsonResponse> {
-    console.log(this.BASE_URL + '/teamReportLosses?quarter=' + quarter + '&year=' + year);
     return this.http.get<JsonResponse>(this.BASE_URL + '/teamReportLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
   }
 
   getQuarterAndYearValuesOfEditableReports() {
     return this.http.get<JsonResponse>(this.BASE_URL + '/quarterYearOfEditableReports', { withCredentials: true });
+  }
+
+  getSumOfQuarterLosses(quarter: string, year: string) {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/sumQuarterLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
   }
 
   getAllProductsWithAliquots(): Observable<JsonResponse> {

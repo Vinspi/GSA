@@ -4,15 +4,15 @@
       <div class="row">
         <div class="col form-group">
           <label for="select-quarter">Quarter</label>
-          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col"
-            (change)="updateAllData()" name="quarter">
+          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col" (change)="updateAllData()"
+            name="quarter">
             <option *ngFor="let quarter of quarters">{{ quarter }}</option>
           </select>
         </div>
         <div class="col form-group">
           <label for="select-year">Year</label>
-          <select [(ngModel)]="selectedYear" id="select-year" class="form-control col"
-            (change)="updateAllData()" name="year">
+          <select [(ngModel)]="selectedYear" id="select-year" class="form-control col" (change)="updateAllData()"
+            name="year">
             <option *ngFor="let year of years">{{ year }}</option>
           </select>
         </div>
@@ -26,36 +26,43 @@
       </div>
     </form>
     <div class="row">
-        <div class="col-sm-7">
-          <div>
-              <app-reloadable-datatable [headers]="headers"></app-reloadable-datatable>
-          </div>
-          <div *ngIf="productLosses && productLosses.size > 0; else noProducts" class="card-body">
-            <h5 class="card-title center">Outdated and lost products</h5>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item">
-                <div class="row">
-                  <div class="col-md-7 center">Product name</div>
-                  <div class="col-md-5 center">Losses</div>
-                </div>
-              </li>
-              <li *ngFor="let product of productLosses | keyvalue" class="list-group-item">
-                <div class="row">
-                  <div class="col-md-7 center">
-                    {{product.key}}
-                  </div>
-                  <div class="col-md-5 center">
-                    {{product.value}}€
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-          <ng-template #noProducts><div class="center"><h4>No outdated nor lost products.</h4></div></ng-template>
+      <div class="col-sm-7">
+        <div>
+          <app-reloadable-datatable [headers]="headers"></app-reloadable-datatable>
         </div>
+        <div *ngIf="productLosses && productLosses.size > 0; else noProducts" class="card-body">
+          <h5 class="card-title center">Outdated and lost products</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <div class="row">
+                <div class="col-md-7 center">Product name</div>
+                <div class="col-md-5 center">Losses</div>
+              </div>
+            </li>
+            <li *ngFor="let product of productLosses | keyvalue" class="list-group-item">
+              <div class="row">
+                <div class="col-md-7 center">
+                  {{product.key}}
+                </div>
+                <div class="col-md-5 center">
+                  {{product.value}}€
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <ng-template #noProducts>
+          <div class="card-body center">
+            <h4>No outdated nor lost products.</h4>
+          </div>
+        </ng-template>
+      </div>
       <div class="col-sm-5">
         <div *ngIf="teamLosses && teamLosses.size > 0; else noTeams">
-          <p id="remainingLosses" class="center card-text"><b>Remaining losses : {{remainingLosses}}</b></p>
+          <p id="remainingLosses" class="center card-text"><b>Remaining losses : {{remainingLosses}} €</b></p>
+          <div [hidden]="remainingLosses >= 0" class="alert alert-danger">
+            The remaining losses cannot be negative.
+          </div>
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <div class="row">
@@ -63,13 +70,15 @@
                 <div class="col-md-7 center">Losses</div>
               </div>
             </li>
-            <li *ngFor="let teamLoss of teamLosses | keyvalue" class="list-group-item justify-content-center align-items-center">
+            <li *ngFor="let teamLoss of teamLosses | keyvalue"
+              class="list-group-item justify-content-center align-items-center">
               <div class="row">
-                <div class="col-md-5 center">
+                <div class="col-md-7 center">
                   {{teamLoss.key}}
                 </div>
-                <div class="col-md-7 center">
-                  <input type="text" (change)="onTeamLossInputChange(teamLoss.key, $event)" [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
+                <div class="col-md-5 center">
+                  <input type="text" (change)="onTeamLossInputChange(teamLoss.key, $event)" required price
+                    [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
                 </div>
               </div>
             </li>
@@ -82,8 +91,13 @@
             </div>
           </div>
         </div>
-        <ng-template #noTeams><div class="center"><h4>No teams are bound to this report.</h4></div></ng-template>
+        <ng-template #noTeams>
+          <div class="card-body center">
+            <h4>No teams are bound to this report.</h4>
+          </div>
+        </ng-template>
       </div>
     </div>
   </div>
 </div>
+<app-toast [toastHeader]="toastHeader" [toastBody]="toastBody" [event]="toastTrigger" [timeout]="2000" [toastType]="toastType"></app-toast>

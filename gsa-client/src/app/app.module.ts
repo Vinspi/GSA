@@ -36,6 +36,7 @@ import { StatsProductsComponent } from './components/admin-homepage/stats-produc
 import { MaintenanceComponent } from './components/maintenance/maintenance.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
+import { PriceDirective } from './directives/price.directive';
 
 
 @NgModule({
@@ -57,6 +58,7 @@ import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-
     ToastComponent,
     EditReportComponent,
     ReloadableDatatableComponent,
+    PriceDirective,
     InventoryComponent,
     DigitsOnlyDirective,
     ProductManagerComponent,
