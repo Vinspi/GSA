@@ -3,6 +3,7 @@ import { AuthentificationService } from '../../services/authentification.service
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { Router } from '@angular/router';
 import { User } from '../../user';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-connection-form',
@@ -14,6 +15,7 @@ export class ConnectionFormComponent implements OnInit {
   email: String;
   password: String;
   error: boolean;
+  toastTrigger:  Subject<void> = new Subject();
  
   constructor(
     private authentificationService: AuthentificationService,
@@ -43,6 +45,7 @@ export class ConnectionFormComponent implements OnInit {
         
       }
       else {
+        this.toastTrigger.next();
         this.error = true;
         this.email = "";
         this.password = "";

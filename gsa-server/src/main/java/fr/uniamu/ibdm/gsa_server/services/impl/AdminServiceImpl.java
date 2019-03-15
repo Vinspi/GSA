@@ -727,4 +727,43 @@ public class AdminServiceImpl implements AdminService {
   public List<ProductsStatsData> generateProductsStats() {
     return aliquotRepository.generateProductsStats();
   }
+
+  @Override
+  public List<Product> getAllOutdatedAliquot() {
+
+    List<Product> products = productRepository.findAllOutdatedProduct();
+
+    products.forEach(product -> {
+      product.getAliquots().removeIf(aliquot -> {
+        return aliquot.getAliquotExpirationDate().isAfter(LocalDate.now()) || (aliquot.getAliquotQuantityVisibleStock()+aliquot.getAliquotQuantityHiddenStock() == 0);
+      });
+    });
+
+    return products;
+  }
+
+  @Override
+  public boolean deleteOutdatedAliquot(Aliquot a) {
+
+    Optional<Aliquot> aliquotOpt = aliquotRepository.findById(a.getAliquotNLot());
+
+    if (aliquotOpt.isPresent() && aliquotOpt.get().getAliquotExpirationDate().isBefore(LocalDate.now())) {
+      /* we add a OUTDATED transaction  */
+      Transaction t = new Transaction(
+          TransactionMotif.OUTDATED,
+          TransactionType.WITHDRAW,
+          LocalDate.now(),
+          (int) (aliquotOpt.get().getAliquotQuantityHiddenStock()+aliquotOpt.get().getAliquotQuantityVisibleStock()),
+          aliquotOpt.get(),
+          null);
+      transactionRepository.save(t);
+      /* then we put all storage to 0 */
+      aliquotOpt.get().setAliquotQuantityVisibleStock(0);
+      aliquotOpt.get().setAliquotQuantityHiddenStock(0);
+      aliquotRepository.save(aliquotOpt.get());
+      return true;
+    }
+
+    return false;
+  }
 }

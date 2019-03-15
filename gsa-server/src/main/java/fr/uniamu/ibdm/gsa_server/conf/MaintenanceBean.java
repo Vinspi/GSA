@@ -13,7 +13,7 @@ public class MaintenanceBean {
 
   @PostConstruct
   public void postConstruct() {
-    System.out.println("i'm app scoped, this message should be displayed once");
+    
   }
 
   public MaintenanceBean() {

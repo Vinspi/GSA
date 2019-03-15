@@ -15,10 +15,11 @@ import { MaintenanceComponent } from './components/maintenance/maintenance.compo
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
 import { EditReportComponent } from './components/edit-report/edit-report.component';
+import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 
 const routes: Routes = [
   {path: '', canActivate: [AdminGuard, MaintenanceGuard], component: AdminHomepageComponent},
-  {path: 'login', canActivate: [MaintenanceGuard], component: ConnectionFormComponent},
+  {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', canActivate: [MaintenanceGuard], component: StockOverviewComponent},
   {path: 'withdraw', canActivate: [AuthGuard, MaintenanceGuard],component: WithdrawComponent},
   {path: 'alerts', canActivate: [AdminGuard, MaintenanceGuard], component: AlertsPanelComponent},
@@ -27,6 +28,7 @@ const routes: Routes = [
   {path: 'maintenance', component: MaintenanceComponent},
   {path: 'admin-maintenance', canActivate: [AdminGuard], component: AdminMaintenanceComponent},
   {path: 'editreport', canActivate: [AdminGuard], component: EditReportComponent},
+  {path: 'outdated-manager', canActivate:[AdminGuard, MaintenanceGuard], component: OutdatedManagementComponent},
   {path: '**', component: NotFoundComponent}
 ];
 

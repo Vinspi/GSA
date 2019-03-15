@@ -37,6 +37,7 @@ import { MaintenanceComponent } from './components/maintenance/maintenance.compo
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
 import { PriceDirective } from './directives/price.directive';
+import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 
 
 @NgModule({
@@ -70,7 +71,8 @@ import { PriceDirective } from './directives/price.directive';
     StatsProductsComponent,
     MaintenanceComponent,
     NotFoundComponent,
-    AdminMaintenanceComponent
+    AdminMaintenanceComponent,
+    OutdatedManagementComponent
   ],
   imports: [
     BrowserModule,

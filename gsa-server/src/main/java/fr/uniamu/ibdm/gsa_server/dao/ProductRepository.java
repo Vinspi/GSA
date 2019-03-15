@@ -56,5 +56,9 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
       + "HAVING (qte < seuil AND alert_type LIKE 'GENERAL')", nativeQuery = true)
   List<Object[]> getTriggeredAlertsGeneral();
 
+  @Query("SELECT DISTINCT p FROM Product p JOIN p.aliquots a WHERE (a.aliquotExpirationDate < current_date AND ((a.aliquotQuantityHiddenStock+a.aliquotQuantityVisibleStock) > 0))")
+  List<Product> findAllOutdatedProduct();
+
+
 
 }

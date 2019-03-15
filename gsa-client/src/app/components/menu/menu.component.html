@@ -32,6 +32,11 @@
           <i class="fa fa-flask" aria-hidden="true"></i> <span style="display: none;">Product manager</span>
         </div>
       </a>
+      <a routerLink="/outdated-manager">
+        <div class="panel-icon-container">
+          <i class="fas fa-calendar-times"></i> <span style="display: none;">Outdated manager</span>
+        </div>
+      </a>
       <a *ngIf='user.techArea' routerLink="/withdraw">
         <div class="panel-icon-container">
           <i class="fas fa-cart-arrow-down"></i> <span style="display: none;">Withdraw</span>
@@ -63,7 +68,7 @@
         </div>
       </a>
       <a data-toggle="modal" data-target="#modalMaintenance">
-        <div class="panel-icon-container">
+        <div class="panel-icon-container maintenance">
             <i class="fas fa-power-off"></i> <span style="display: none;">Maintenance</span>
         </div>
       </a>
