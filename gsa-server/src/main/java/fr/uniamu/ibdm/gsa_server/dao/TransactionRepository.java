@@ -28,7 +28,7 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
       + "FROM transaction\n" + "JOIN aliquot ON (aliquot_id = aliquot.aliquotNLot)\n"
       + "WHERE (transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
       + "AND transaction.member_id IS NULL\n"
-      + "AND (transaction.transaction_motif LIKE 'OUTDATED' OR transaction.transaction_motif LIKE 'LOST'))"
+      + "AND (transaction.transaction_motif LIKE 'OUTDATED' OR transaction.transaction_motif LIKE 'INVENTORY'))"
       + "GROUP BY source, target\n"
       + "HAVING sum > 0", nativeQuery = true)
   List<Object[]> getTransactionLossesByQuarterAndYearGroupedByProducts(

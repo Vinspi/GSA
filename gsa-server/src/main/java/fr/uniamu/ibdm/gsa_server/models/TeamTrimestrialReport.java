@@ -1,6 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +19,7 @@ import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 @IdClass(TeamTrimestrialReportPk.class)
 public class TeamTrimestrialReport implements Serializable {
 
-  private float losses;
+  private BigDecimal losses;
 
   /* if final flag is up, the report can't be modified */
   private boolean finalFlag;
@@ -40,11 +41,11 @@ public class TeamTrimestrialReport implements Serializable {
   }
 
 
-  public float getLosses() {
+  public BigDecimal getLosses() {
     return losses;
   }
 
-  public void setLosses(float losses) {
+  public void setLosses(BigDecimal losses) {
     this.losses = losses;
   }
 

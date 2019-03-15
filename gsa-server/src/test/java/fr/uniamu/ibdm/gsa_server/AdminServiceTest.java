@@ -48,6 +48,7 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
@@ -57,7 +58,6 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -174,6 +174,7 @@ public class AdminServiceTest {
     Assert.assertEquals(false, adminService.addProduct(sourceName, targetName));
   }
 
+  @Test
   public void getAllAlerts() {
 
     List<Alert> alerts = new ArrayList<>();
@@ -402,11 +403,12 @@ public class AdminServiceTest {
     String teamName = "Some team";
     teamReportLosses.put(teamName, 100F);
     String quarter;
-    
+
     // Saving a report should fail when the specified quarter does not match the values of the
     // Quarter enumeration.
     quarter = "anyQuarter";
-    Boolean success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Boolean success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year,
+        quarter);
     Assert.assertFalse(success);
 
     // Saving a report when the quarter is not over should fail
@@ -426,7 +428,6 @@ public class AdminServiceTest {
     Assert.assertFalse(success);
     Mockito.verify(teamRepository, Mockito.times(1)).findByTeamName(teamName);
 
-    
     Team team = new Team();
     team.setTeamName(teamName);
     team.setTeamId(1L);
@@ -455,7 +456,6 @@ public class AdminServiceTest {
     success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
     Assert.assertTrue(success);
     Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).save(Mockito.any());
-    
 
     // Saving a new report with a correct form should be added in the database.
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
@@ -463,7 +463,7 @@ public class AdminServiceTest {
     success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
     Assert.assertTrue(success);
     Mockito.verify(teamTrimestrialReportRepository, Mockito.times(2)).save(Mockito.any());
-    
+
   }
 
   @Test
@@ -512,15 +512,46 @@ public class AdminServiceTest {
     Assert.assertEquals(198.90F, sum, 2);
 
   }
-  
+
   @Test
   public void getReportLossesAndTeamNameByYearAndQuarter() {
-    List<TeamReportLossForm> losses = adminService.getReportLossesAndTeamNameByYearAndQuarter("anyQuarter",
-        2019);
+    List<TeamReportLossForm> losses = adminService
+        .getReportLossesAndTeamNameByYearAndQuarter("anyQuarter", 2019);
 
     Assert.assertNull(losses);
   }
 
+  @Test
+  public void getQuarterAndYearOfAllEditableReports() {
+    List<Object[]> editableQuarters = new ArrayList<>();
+    List<Object[]> nonEditableQuarters = new ArrayList<>();
+    editableQuarters.add(new Object[] { Quarter.QUARTER_1.name(), 2022 });
+    nonEditableQuarters.add(new Object[] { Quarter.QUARTER_3.name(), 2022 });
+    nonEditableQuarters.add(new Object[] { Quarter.QUARTER_1.name(), 2023 });
+
+    List<YearQuarterData> expectedQuarters = new ArrayList<>();
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_1.name(), 2022));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_2.name(), 2022));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_4.name(), 2022));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_2.name(), 2023));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_3.name(), 2023));
+
+    Mockito.when(teamTrimestrialReportRepository.findQuarterAndYearOfEditableReports())
+        .thenReturn(editableQuarters);
+    Mockito.when(teamTrimestrialReportRepository.findQuarterAndYearOfNonEditableReports())
+        .thenReturn(nonEditableQuarters);
+    Mockito.when(clock.now()).thenReturn(LocalDate.of(2023, 10, 1));
+
+    List<YearQuarterData> results = adminService.getQuarterAndYearOfAllEditableReports();
+
+    for (YearQuarterData data : results) {
+      System.out.println(data.getQuarter() + data.getYear());
+    }
+
+    Assert.assertTrue(results.equals(expectedQuarters));
+  }
+
+  @Test
   public void makeInventory() {
 
     Aliquot mockAliquot = new Aliquot();
@@ -530,7 +561,6 @@ public class AdminServiceTest {
     Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(mockAliquot));
     Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(mockAliquot));
     Mockito.when(aliquotRepository.findById(3L)).thenReturn(Optional.of(mockAliquot));
-
 
     List<InventoryForm> forms = new ArrayList<>();
 

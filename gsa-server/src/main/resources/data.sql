@@ -101,8 +101,9 @@ insert into transaction (transaction_id, transaction_date, transaction_motif, tr
 
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (60, '2018-12-14', 'OUTDATED', 3, 'WITHDRAW', 2, null);
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (61, '2018-12-14', 'OUTDATED', 3, 'WITHDRAW', 2, null);
-insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (62, '2018-10-14', 'LOST', 3, 'WITHDRAW', 2, null);
-insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (63, '2018-11-14', 'LOST', 3, 'WITHDRAW', 3, null);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (62, '2018-10-14', 'INVENTORY', 3, 'WITHDRAW', 2, null);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (63, '2018-11-14', 'INVENTORY', 3, 'WITHDRAW', 3, null);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (64, '2018-09-14', 'INVENTORY', 3, 'WITHDRAW', 3, null);
 
 SET FOREIGN_KEY_CHECKS = 1;
 DELETE FROM `transaction` WHERE (transaction_date > '2019-04-30 00:00:00' AND transaction_date < '2019-06-01 00:00:00');

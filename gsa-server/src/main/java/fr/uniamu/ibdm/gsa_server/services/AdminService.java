@@ -158,6 +158,15 @@ public interface AdminService {
   List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(String quarter, int year);
 
   /**
+   * Gets the sum of all team losses of a given quarter.
+   * 
+   * @param quarter string value of Quarter enumeration
+   * @param year int 
+   * @return the sum of losses in a given quarter
+   */
+  Float getSumOfQuarterLosses(String quarter, Integer year);
+  
+  /**
    * This method retrieve all products and their aliquots from the database.
    *
    * @return a list of products.

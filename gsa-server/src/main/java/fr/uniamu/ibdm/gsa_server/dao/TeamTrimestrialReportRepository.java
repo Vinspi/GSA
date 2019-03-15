@@ -17,9 +17,22 @@ public interface TeamTrimestrialReportRepository
 
   @Query(value = "SELECT quarter, year\n"
       + "FROM team_trimestrial_report\n"
-      + "WHERE final_flag = 1\n"
+      + "WHERE final_flag = 0\n"
       + "GROUP BY quarter, year\n"
       + "ORDER BY quarter, year", nativeQuery = true)
   List<Object[]> findQuarterAndYearOfEditableReports();
+  
+  @Query(value = "SELECT quarter, year\n"
+      + "FROM team_trimestrial_report\n"
+      + "WHERE final_flag = 1\n"
+      + "GROUP BY quarter, year\n"
+      + "ORDER BY quarter, year", nativeQuery = true)
+  List<Object[]> findQuarterAndYearOfNonEditableReports();
+  
+  @Query(value = "SELECT SUM(losses)\n"
+      + "FROM team_trimestrial_report\n"
+      + "WHERE year = :year AND quarter LIKE :quarter\n"
+      + "GROUP BY quarter, year", nativeQuery = true)
+  Object getSumOfQuarterLosses(@Param("quarter") String quarter, @Param("year") int year);
 
 }

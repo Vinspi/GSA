@@ -529,6 +529,32 @@ public class AdminController {
   }
 
   /**
+   * REST endpoint returning the sum of all team quarter losses.
+   *
+   * @return JSON response containing a float value.
+   */
+  @GetMapping("/sumQuarterLosses")
+  public JsonResponse<Float> getSumOfQuarterLosses(@RequestParam String quarter,
+      @RequestParam Integer year) {
+
+    if (maintenanceBean.isMaintenanceMode()) {
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
+    if (isAdmin()) {
+      Float sum = adminService.getSumOfQuarterLosses(quarter, year);
+      if (sum != null) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, sum);
+      } else {
+        return new JsonResponse<>("Could not retrieve any losses", RequestStatus.FAIL);
+      }
+    } else {
+      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
+    }
+
+  }
+
+  /**
    * REST endpoint, retrieve all products and their aliquots.
    *
    * @return a JsonResponse containing a list of Products.

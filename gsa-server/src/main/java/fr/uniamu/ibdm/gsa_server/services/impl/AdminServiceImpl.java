@@ -419,7 +419,8 @@ public class AdminServiceImpl implements AdminService {
 
       TeamTrimestrialReport teamTrimestrialReport = new TeamTrimestrialReport();
       teamTrimestrialReport.setFinalFlag(finalFlag);
-      teamTrimestrialReport.setLosses(teamReportLosses.get(team.getTeamName()));
+      teamTrimestrialReport
+          .setLosses(new BigDecimal(Float.toString(teamReportLosses.get(team.getTeamName()))));
       teamTrimestrialReport.setQuarter(quarter);
       teamTrimestrialReport.setTeam(team);
       teamTrimestrialReport.setYear(year);
@@ -472,8 +473,6 @@ public class AdminServiceImpl implements AdminService {
       productPk.setSource(source);
       productPk.setTarget(target);
 
-      // get() function won't return null as the source and the target are well-defined in the
-      // aliquot table.
       transactionData.setProductName(productRepository.findById(productPk).get().getProductName());
       BigDecimal withdrawnAliquotsCost = ((BigDecimal) o[0])
           .multiply(BigDecimal.valueOf(transactionData.getTransactionQuantity()));
@@ -483,6 +482,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     data.setTotalPrice(totalPrice.floatValue());
+    System.out.println(totalPrice.floatValue());
     data.setTransactions(transactions);
 
     return data;
@@ -532,18 +532,51 @@ public class AdminServiceImpl implements AdminService {
   public List<YearQuarterData> getQuarterAndYearOfAllEditableReports() {
 
     List<YearQuarterData> editableQuarters = new ArrayList<>();
+    List<YearQuarterData> nonEditableQuartersTemp = new ArrayList<>();
+    List<YearQuarterData> nonEditableQuarters = new ArrayList<>();
 
     List<Object[]> resultQuery = teamTrimestrialReportRepository
         .findQuarterAndYearOfEditableReports();
-
     for (Object[] row : resultQuery) {
-      YearQuarterData data = new YearQuarterData();
-      data.setQuarter((String) row[0]);
-      data.setYear((Integer) row[1]);
-      editableQuarters.add(data);
+      String quarter = (String) row[0];
+      Integer year = (Integer) row[1];
+      editableQuarters.add(new YearQuarterData(quarter, year));
     }
 
-    return editableQuarters;
+    resultQuery = teamTrimestrialReportRepository.findQuarterAndYearOfNonEditableReports();
+    for (Object[] row : resultQuery) {
+      String quarter = (String) row[0];
+      Integer year = (Integer) row[1];
+      nonEditableQuartersTemp.add(new YearQuarterData(quarter, year));
+    }
+
+    for (YearQuarterData yearQuarter : nonEditableQuartersTemp) {
+      if (!editableQuarters.contains(yearQuarter)) {
+        nonEditableQuarters.add(yearQuarter);
+      }
+    }
+
+    LocalDate now = clock.now();
+    int year = now.getYear() - 1;
+    Quarter[] quarters = Quarter.values();
+    List<YearQuarterData> result = new ArrayList<>();
+
+    for (int index = 0; index < quarters.length; index++) {
+      YearQuarterData yearQuarter = new YearQuarterData(quarters[index].name(), year);
+      if (!nonEditableQuarters.contains(yearQuarter)) {
+        result.add(yearQuarter);
+      }
+    }
+
+    year++;
+    for (int index = 0; index < ((now.getMonthValue() - 1) / 3); index++) {
+      YearQuarterData yearQuarter = new YearQuarterData(quarters[index].name(), year);
+      if (!nonEditableQuarters.contains(yearQuarter)) {
+        result.add(yearQuarter);
+      }
+    }
+
+    return result;
   }
 
   @Override
@@ -558,12 +591,30 @@ public class AdminServiceImpl implements AdminService {
 
     List<TeamReportLossForm> data = new ArrayList<>();
 
-    List<TeamTrimestrialReport> reports = teamTrimestrialReportRepository.findAllByYearAndQuarter(year, Quarter.valueOf(quarter));
-    for(TeamTrimestrialReport report : reports) {
-      data.add(new TeamReportLossForm(report.getTeam().getTeamName(), report.getLosses()));
+    List<TeamTrimestrialReport> reports = teamTrimestrialReportRepository
+        .findAllByYearAndQuarter(year, Quarter.valueOf(quarter));
+    for (TeamTrimestrialReport report : reports) {
+      data.add(
+          new TeamReportLossForm(report.getTeam().getTeamName(), report.getLosses().floatValue()));
     }
 
     return data;
+  }
+
+  @Override
+  public Float getSumOfQuarterLosses(String quarter, Integer year) {
+    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet())
+        .contains(quarter)) {
+      return null;
+    }
+
+    Object sum = teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter, year);
+    if (sum == null) {
+      return null;
+    }
+
+    return ((BigDecimal) teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter, year))
+        .floatValue();
   }
 
   @Override
@@ -583,7 +634,7 @@ public class AdminServiceImpl implements AdminService {
         long losses = form.getQuantity() - actualOne.get().getAliquotQuantityVisibleStock();
         if (losses < 0) {
           Transaction lossesTransaction = new Transaction(TransactionMotif.INVENTORY,
-              TransactionType.WITHDRAW, LocalDate.now(), (int) -losses, actualOne.get(), null);
+              TransactionType.WITHDRAW, LocalDate.now(), (int) losses, actualOne.get(), null);
           transactionRepository.save(lossesTransaction);
         }
         actualOne.get().setAliquotQuantityVisibleStock(form.getQuantity());
