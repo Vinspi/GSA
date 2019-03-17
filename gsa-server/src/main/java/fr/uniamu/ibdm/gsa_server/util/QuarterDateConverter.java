@@ -10,43 +10,41 @@ public class QuarterDateConverter {
   /**
    * Gets the first day of quarter parameter value.
    * 
-   * @param quarter string value of Quarter enumeration
+   * @param quarter value of Quarter enumeration
    * @param year year value
    * 
-   * @return LocalDate if quarter is correctly defined, null otherwise.
+   * @return LocalDate
    */
-  public static LocalDate getQuarterFirstDay(String quarter, int year) {
-    if (quarter.equals(Quarter.QUARTER_1.name())) {
+  public static LocalDate getQuarterFirstDay(Quarter quarter, int year) {
+    if (quarter.equals(Quarter.QUARTER_1)) {
       return LocalDate.of(year, 1, 1);
-    } else if (quarter.equals(Quarter.QUARTER_2.name())) {
+    } else if (quarter.equals(Quarter.QUARTER_2)) {
       return LocalDate.of(year, 4, 1);
-    } else if (quarter.equals(Quarter.QUARTER_3.name())) {
+    } else if (quarter.equals(Quarter.QUARTER_3)) {
       return LocalDate.of(year, 7, 1);
-    } else if (quarter.equals(Quarter.QUARTER_4.name())) {
+    } else {
       return LocalDate.of(year, 10, 1);
     }
-    return null;
   }
 
   /**
    * Gets the last day of quarter parameter value.
    * 
-   * @param quarter string value of Quarter enumeration
+   * @param quarter value of Quarter enumeration
    * @param year year value
    * 
-   * @return LocalDate if quarter is correctly defined, null otherwise.
+   * @return LocalDate
    */
-  public static LocalDate getQuarterLastDay(String quarter, int year) {
-    if (quarter.equals(Quarter.QUARTER_1.name())) {
+  public static LocalDate getQuarterLastDay(Quarter quarter, int year) {
+    if (quarter.equals(Quarter.QUARTER_1)) {
       return LocalDate.of(year, 3, 31);
-    } else if (quarter.equals(Quarter.QUARTER_2.name())) {
+    } else if (quarter.equals(Quarter.QUARTER_2)) {
       return LocalDate.of(year, 6, 30);
-    } else if (quarter.equals(Quarter.QUARTER_3.name())) {
+    } else if (quarter.equals(Quarter.QUARTER_3)) {
       return LocalDate.of(year, 9, 30);
-    } else if (quarter.equals(Quarter.QUARTER_4.name())) {
+    } else {
       return LocalDate.of(year, 12, 31);
     }
-    return null;
   }
 
   /**

@@ -18,7 +18,7 @@ public class AddTeamTrimestrialReportForm implements Form {
    * @param losses bill
    * @param finalFlag is editable flag
    * @param year report year
-   * @param quarter value of Quarter enumeration
+   * @param quarter string value of Quarter enumeration
    * @param teamName String
    */
   public AddTeamTrimestrialReportForm(List<TeamReportLossForm> teamReportLoss, Boolean finalFlag,
@@ -64,6 +64,11 @@ public class AddTeamTrimestrialReportForm implements Form {
   @Override
   public boolean validate() {
     if (teamReportLosses == null || finalFlag == null || year == null || quarter == null) {
+      return false;
+    }
+
+    QuarterForm quarterForm = new QuarterForm(quarter);
+    if (!quarterForm.validate()) {
       return false;
     }
 

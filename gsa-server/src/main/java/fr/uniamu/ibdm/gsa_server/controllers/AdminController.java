@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,20 +23,22 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.User;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.QuarterForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.SetupMaintenanceForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
@@ -65,8 +68,6 @@ public class AdminController {
 
   @Autowired
   CustomConfig config;
-
-  final double minPrice = 0.0001;
 
   /**
    * REST endpoint for /stats call, return stats needed for building admin chart.
@@ -392,9 +393,10 @@ public class AdminController {
   @PostMapping("/saveReport")
   public JsonResponse<AddTeamTrimestrialReportForm> editTeamTrimestrialReport(
       @RequestBody AddTeamTrimestrialReportForm form) {
-    if (maintenanceBean.isMaintenanceMode()) {
+    
+    /*if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
+    }*/
 
     if (isAdmin()) {
       JsonResponse<AddTeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(
@@ -402,21 +404,22 @@ public class AdminController {
       failedRequestResponse.setData(form);
 
       if (!form.validate()) {
-        failedRequestResponse.setError("Missing attributes within request body");
+        failedRequestResponse.setError("bad form");
         return failedRequestResponse;
       }
 
-      Map<String, Float> teamReportLosses = new HashMap<>();
+      Map<String, BigDecimal> teamReportLosses = new HashMap<>();
       for (TeamReportLossForm teamLoss : form.getTeamReportLosses()) {
         if (teamReportLosses.containsKey(teamLoss.getTeamName())) {
           failedRequestResponse.setError("Duplicate team name " + teamLoss.getTeamName() + ".");
           return failedRequestResponse;
         }
+        
         teamReportLosses.put(teamLoss.getTeamName(), teamLoss.getLoss());
       }
 
       if (adminService.saveTeamTrimestrialReport(teamReportLosses, form.getFinalFlag(),
-          form.getYear(), form.getQuarter())) {
+          form.getYear(), Quarter.valueOf(form.getQuarter()))) {
         return new JsonResponse<>(RequestStatus.SUCCESS);
       } else {
         failedRequestResponse.setError("Report could not be saved");
@@ -436,12 +439,18 @@ public class AdminController {
   @GetMapping("/withdrawnTransactions")
   public JsonResponse<TeamWithdrawnTransactionsData> getWithdrawnTransactionsByTeamAndQuarterAndYear(
       @RequestParam String teamName, @RequestParam String quarter, @RequestParam int year) {
-    TeamWithdrawnTransactionsData reportTransactions = adminService
-        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(teamName, quarter, year);
-
+    
     if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
+
+    QuarterForm quarterForm = new QuarterForm(quarter);
+    if (!quarterForm.validate()) {
+      return new JsonResponse<>("Bad quarter value", RequestStatus.FAIL);
+    }
+    
+    TeamWithdrawnTransactionsData reportTransactions = adminService
+        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(teamName, Quarter.valueOf(quarter), year);
 
     if (isAdmin()) {
       if (reportTransactions != null) {
@@ -467,9 +476,14 @@ public class AdminController {
     if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
+    
+    QuarterForm quarterForm = new QuarterForm(quarter);
+    if (!quarterForm.validate()) {
+      return new JsonResponse<>("Bad quarter value", RequestStatus.FAIL);
+    }
 
     if (isAdmin()) {
-      TransactionLossesData data = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
+      TransactionLossesData data = adminService.getSumAndProductsOfOutdatedAndLostProductOfQuarter(Quarter.valueOf(quarter), year);
 
       if (data == null) {
         return new JsonResponse<>("Could not retrieve any transaction losses", RequestStatus.FAIL);
@@ -511,13 +525,18 @@ public class AdminController {
   public JsonResponse<List<TeamReportLossForm>> getQuarterAndYearOfEditableReports(
       @RequestParam String quarter, @RequestParam Integer year) {
 
+    QuarterForm quarterForm = new QuarterForm(quarter);
+    if (!quarterForm.validate()) {
+      return new JsonResponse<>("Bad quarter value", RequestStatus.FAIL);
+    }
+    
     if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
     if (isAdmin()) {
       List<TeamReportLossForm> data = adminService
-          .getReportLossesAndTeamNameByYearAndQuarter(quarter, year);
+          .getReportLossesAndTeamNameByYearAndQuarter(Quarter.valueOf(quarter), year);
       if (data != null) {
         return new JsonResponse<>(RequestStatus.SUCCESS, data);
       } else {
@@ -532,18 +551,24 @@ public class AdminController {
   /**
    * REST endpoint returning the sum of all team quarter losses.
    *
-   * @return JSON response containing a float value.
+   * @return JSON response containing a BigDecimal value.
    */
   @GetMapping("/sumQuarterLosses")
-  public JsonResponse<Float> getSumOfQuarterLosses(@RequestParam String quarter,
+  public JsonResponse<BigDecimal> getSumOfQuarterLosses(@RequestParam String quarter,
       @RequestParam Integer year) {
 
     if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
+    
+    QuarterForm quarterForm = new QuarterForm(quarter);
+    if (!quarterForm.validate()) {
+      return new JsonResponse<>("Bad quarter value", RequestStatus.FAIL);
+    }
+    
 
     if (isAdmin()) {
-      Float sum = adminService.getSumOfQuarterLosses(quarter, year);
+      BigDecimal sum = adminService.getSumOfQuarterLosses(Quarter.valueOf(quarter), year);
       if (sum != null) {
         return new JsonResponse<>(RequestStatus.SUCCESS, sum);
       } else {

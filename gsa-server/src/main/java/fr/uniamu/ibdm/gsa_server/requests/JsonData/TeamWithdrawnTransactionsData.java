@@ -1,24 +1,25 @@
 package fr.uniamu.ibdm.gsa_server.requests.JsonData;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class TeamWithdrawnTransactionsData {
-  private Float totalPrice;
+  private BigDecimal totalPrice;
   private List<WithdrawnTransactionData> transactions;
   
   public TeamWithdrawnTransactionsData() {
   }
 
-  public TeamWithdrawnTransactionsData(Float totalPrice, List<WithdrawnTransactionData> transactions) {
+  public TeamWithdrawnTransactionsData(BigDecimal totalPrice, List<WithdrawnTransactionData> transactions) {
     this.totalPrice = totalPrice;
     this.transactions = transactions;
   }
 
-  public Float getTotalPrice() {
+  public BigDecimal getTotalPrice() {
     return totalPrice;
   }
 
-  public void setTotalPrice(Float totalPrice) {
+  public void setTotalPrice(BigDecimal totalPrice) {
     this.totalPrice = totalPrice;
   }
 
@@ -31,7 +32,7 @@ public class TeamWithdrawnTransactionsData {
   }
   
   public class WithdrawnTransactionData {
-    private float aliquotPrice;
+    private BigDecimal aliquotPrice;
     private String productName;
     private String transactionDate;
     private int transactionQuantity;
@@ -43,13 +44,13 @@ public class TeamWithdrawnTransactionsData {
     /**
      * Contructor for ReportTransactionData.
      * 
-     * @param aliquotPrice float
+     * @param aliquotPrice BigDecimal
      * @param productName String
      * @param transactionDate String
      * @param transactionQuantity int
      * @param userName String
      */
-    public WithdrawnTransactionData(float aliquotPrice, String productName, String transactionDate,
+    public WithdrawnTransactionData(BigDecimal aliquotPrice, String productName, String transactionDate,
         int transactionQuantity, String userName) {
       this.aliquotPrice = aliquotPrice;
       this.productName = productName;
@@ -58,11 +59,11 @@ public class TeamWithdrawnTransactionsData {
       this.userName = userName;
     }
 
-    public float getAliquotPrice() {
+    public BigDecimal getAliquotPrice() {
       return aliquotPrice;
     }
 
-    public void setAliquotPrice(float aliquotPrice) {
+    public void setAliquotPrice(BigDecimal aliquotPrice) {
       this.aliquotPrice = aliquotPrice;
     }
 

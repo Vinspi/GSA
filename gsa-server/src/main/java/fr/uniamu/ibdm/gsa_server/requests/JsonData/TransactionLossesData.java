@@ -1,16 +1,17 @@
 package fr.uniamu.ibdm.gsa_server.requests.JsonData;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class TransactionLossesData {
-  private Float totalLosses;
+  private BigDecimal totalLosses;
   private List<ProductLossData> productLosses;
 
-  public Float getTotalLosses() {
+  public BigDecimal getTotalLosses() {
     return totalLosses;
   }
 
-  public void setTotalLosses(Float totalLosses) {
+  public void setTotalLosses(BigDecimal totalLosses) {
     this.totalLosses = totalLosses;
   }
 
@@ -23,22 +24,22 @@ public class TransactionLossesData {
   }
 
   public class ProductLossData {
-    private Float loss;
+    private BigDecimal loss;
     private String name;
 
     public ProductLossData() {
     }
     
-    public ProductLossData(Float loss, String name) {
+    public ProductLossData(BigDecimal loss, String name) {
       this.loss = loss;
       this.name = name;
     }
     
-    public Float getLoss() {
+    public BigDecimal getLoss() {
       return loss;
     }
 
-    public void setLoss(Float loss) {
+    public void setLoss(BigDecimal loss) {
       this.loss = loss;
     }
 

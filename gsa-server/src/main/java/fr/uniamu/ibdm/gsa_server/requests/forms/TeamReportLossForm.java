@@ -1,13 +1,15 @@
 package fr.uniamu.ibdm.gsa_server.requests.forms;
 
+import java.math.BigDecimal;
+
 public class TeamReportLossForm implements Form {
   private String teamName;
-  private Float loss;
+  private BigDecimal loss;
 
   public TeamReportLossForm() {
   }
 
-  public TeamReportLossForm(String teamName, Float loss) {
+  public TeamReportLossForm(String teamName, BigDecimal loss) {
     this.teamName = teamName;
     this.loss = loss;
   }
@@ -20,17 +22,22 @@ public class TeamReportLossForm implements Form {
     this.teamName = teamName;
   }
 
-  public Float getLoss() {
+  public BigDecimal getLoss() {
     return loss;
   }
 
-  public void setLoss(Float loss) {
+  public void setLoss(BigDecimal loss) {
     this.loss = loss;
   }
 
   @Override
   public boolean validate() {
     if (teamName == null || loss == null) {
+      return false;
+    }
+
+    PriceForm priceForm = new PriceForm(loss);
+    if (!priceForm.validate()) {
       return false;
     }
 

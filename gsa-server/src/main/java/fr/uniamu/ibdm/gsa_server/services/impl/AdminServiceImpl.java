@@ -7,12 +7,10 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -371,19 +369,13 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public boolean saveTeamTrimestrialReport(Map<String, Float> teamReportLosses, boolean finalFlag,
-      int year, String quarterStr) {
-
-    // Checking that the stringified quarter is a valid value of Quarter Enum.
-    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet())
-        .contains(quarterStr)) {
-      return false;
-    }
+  public boolean saveTeamTrimestrialReport(Map<String, BigDecimal> teamReportLosses,
+      boolean isValidated, int year, Quarter quarter) {
 
     // Checking that the quarter is over in order to save
     LocalDate now = clock.now();
-    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarterStr, year);
-    if (now.isBefore(lastDay)) {
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    if (!now.isAfter(lastDay)) {
       return false;
     }
 
@@ -397,7 +389,26 @@ public class AdminServiceImpl implements AdminService {
       teams.add(team);
     }
 
-    Quarter quarter = Quarter.valueOf(quarterStr);
+    /* TO DO
+     * BigDecimal teamReportCost = BigDecimal.ZERO; for (BigDecimal loss :
+     * teamReportLosses.values()) { teamReportCost.add(loss); }
+     * 
+     * BigDecimal dbTeamLoss = teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter.name(),
+     * year);
+     * 
+     * 
+     * // Checking that the sum of losses equals the cost of outdated and lost aliquots. if
+     * (isValidated) { LocalDate firstDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+     * if (teamReportLosses.size() < 1 && teamReportLosses.size() !=
+     * Math.toIntExact(teamRepository.count())) { return false; } BigDecimal outdatedProductsCost =
+     * transactionRepository .getSumOfOutdatedAndLostProductOfQuarter(firstDay.toString(),
+     * lastDay.toString()); if(outdatedProductsCost == null) { return false; }
+     * 
+     * 
+     * 
+     * }
+     */
+
     List<TeamTrimestrialReport> teamTrimestrialReports = new ArrayList<>();
 
     for (Team team : teams) {
@@ -418,9 +429,8 @@ public class AdminServiceImpl implements AdminService {
       }
 
       TeamTrimestrialReport teamTrimestrialReport = new TeamTrimestrialReport();
-      teamTrimestrialReport.setFinalFlag(finalFlag);
-      teamTrimestrialReport
-          .setLosses(new BigDecimal(Float.toString(teamReportLosses.get(team.getTeamName()))));
+      teamTrimestrialReport.setFinalFlag(isValidated);
+      teamTrimestrialReport.setLosses(teamReportLosses.get(team.getTeamName()));
       teamTrimestrialReport.setQuarter(quarter);
       teamTrimestrialReport.setTeam(team);
       teamTrimestrialReport.setYear(year);
@@ -438,19 +448,13 @@ public class AdminServiceImpl implements AdminService {
 
   @Override
   public TeamWithdrawnTransactionsData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(
-      String teamName, String quarter, int year) {
+      String teamName, Quarter quarter, int year) {
     if (teamName == null || quarter == null) {
       return null;
     }
 
     LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
-    if (firstDay == null) {
-      return null;
-    }
     LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
-    if (lastDay == null) {
-      return null;
-    }
 
     List<Object[]> resultQuery = transactionRepository.getWithdrawnTransactionsByTeamNameAndQuarter(
         teamName, firstDay.toString(), lastDay.toString());
@@ -463,7 +467,8 @@ public class AdminServiceImpl implements AdminService {
 
       WithdrawnTransactionData transactionData = data.new WithdrawnTransactionData();
 
-      transactionData.setAliquotPrice(((BigDecimal) o[0]).floatValue());
+      BigDecimal aliquotPrice = (BigDecimal) o[0];
+      transactionData.setAliquotPrice(aliquotPrice);
       transactionData.setTransactionDate((String) o[1].toString());
       transactionData.setTransactionQuantity((Integer) o[2]);
       transactionData.setUserName((String) o[3]);
@@ -474,42 +479,44 @@ public class AdminServiceImpl implements AdminService {
       productPk.setTarget(target);
 
       transactionData.setProductName(productRepository.findById(productPk).get().getProductName());
-      BigDecimal withdrawnAliquotsCost = ((BigDecimal) o[0])
+      BigDecimal withdrawnAliquotsCost = aliquotPrice
           .multiply(BigDecimal.valueOf(transactionData.getTransactionQuantity()));
       totalPrice = totalPrice.add(withdrawnAliquotsCost);
 
       transactions.add(transactionData);
     }
 
-    data.setTotalPrice(totalPrice.floatValue());
-    System.out.println(totalPrice.floatValue());
+    data.setTotalPrice(totalPrice);
     data.setTransactions(transactions);
 
     return data;
   }
 
   @Override
-  public TransactionLossesData getTransactionLossesByQuarterAndYear(String quarter, int year) {
+  public TransactionLossesData getSumAndProductsOfOutdatedAndLostProductOfQuarter(Quarter quarter,
+      int year) {
+    if (quarter == null) {
+      return null;
+    }
+
     LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
-    if (firstDay == null) {
-      return null;
-    }
     LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
-    if (lastDay == null) {
-      return null;
-    }
 
     TransactionLossesData data = new TransactionLossesData();
 
     List<Object[]> queryResult = transactionRepository
-        .getTransactionLossesByQuarterAndYearGroupedByProducts(firstDay.toString(),
+        .getSumAndProductsOfOutdatedAndLostProductOfQuarter(firstDay.toString(),
             lastDay.toString());
+
+    if (queryResult == null) {
+      return null;
+    }
 
     BigDecimal totalLosses = BigDecimal.ZERO;
     List<ProductLossData> productLosses = new ArrayList<>();
 
     for (Object[] row : queryResult) {
-      Float loss = ((BigDecimal) row[0]).floatValue();
+      BigDecimal loss = (BigDecimal) row[0];
 
       ProductLossData productLoss = data.new ProductLossData();
       productLoss.setLoss(loss);
@@ -519,11 +526,12 @@ public class AdminServiceImpl implements AdminService {
       productLoss.setName(p.getProductName());
 
       productLosses.add(productLoss);
-      totalLosses = totalLosses.add((BigDecimal) row[0]);
+      totalLosses = totalLosses.add(loss);
+      System.out.println(loss);
     }
 
     data.setProductLosses(productLosses);
-    data.setTotalLosses(totalLosses.floatValue());
+    data.setTotalLosses(totalLosses);
 
     return data;
   }
@@ -580,41 +588,31 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(String quarter,
+  public List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(Quarter quarter,
       int year) {
-
-    // Checking that the stringified quarter is a valid value of Quarter Enum.
-    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet())
-        .contains(quarter)) {
-      return null;
-    }
 
     List<TeamReportLossForm> data = new ArrayList<>();
 
     List<TeamTrimestrialReport> reports = teamTrimestrialReportRepository
-        .findAllByYearAndQuarter(year, Quarter.valueOf(quarter));
+        .findAllByYearAndQuarter(year, quarter);
     for (TeamTrimestrialReport report : reports) {
-      data.add(
-          new TeamReportLossForm(report.getTeam().getTeamName(), report.getLosses().floatValue()));
+      System.out.println("Report added with " + report.getLosses().toString());
+      data.add(new TeamReportLossForm(report.getTeam().getTeamName(), report.getLosses()));
     }
 
     return data;
   }
 
   @Override
-  public Float getSumOfQuarterLosses(String quarter, Integer year) {
-    if (!Arrays.stream(Quarter.values()).map(Quarter::name).collect(Collectors.toSet())
-        .contains(quarter)) {
-      return null;
-    }
+  public BigDecimal getSumOfQuarterLosses(Quarter quarter, Integer year) {
+    BigDecimal sum = (BigDecimal) teamTrimestrialReportRepository
+        .getSumOfQuarterLosses(quarter.name(), year);
 
-    Object sum = teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter, year);
     if (sum == null) {
       return null;
     }
 
-    return ((BigDecimal) teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter, year))
-        .floatValue();
+    return sum;
   }
 
   @Override
@@ -735,7 +733,9 @@ public class AdminServiceImpl implements AdminService {
 
     products.forEach(product -> {
       product.getAliquots().removeIf(aliquot -> {
-        return aliquot.getAliquotExpirationDate().isAfter(LocalDate.now()) || (aliquot.getAliquotQuantityVisibleStock()+aliquot.getAliquotQuantityHiddenStock() == 0);
+        return aliquot.getAliquotExpirationDate().isAfter(LocalDate.now())
+            || (aliquot.getAliquotQuantityVisibleStock()
+                + aliquot.getAliquotQuantityHiddenStock() == 0);
       });
     });
 
@@ -747,15 +747,13 @@ public class AdminServiceImpl implements AdminService {
 
     Optional<Aliquot> aliquotOpt = aliquotRepository.findById(a.getAliquotNLot());
 
-    if (aliquotOpt.isPresent() && aliquotOpt.get().getAliquotExpirationDate().isBefore(LocalDate.now())) {
-      /* we add a OUTDATED transaction  */
-      Transaction t = new Transaction(
-          TransactionMotif.OUTDATED,
-          TransactionType.WITHDRAW,
-          LocalDate.now(),
-          (int) (aliquotOpt.get().getAliquotQuantityHiddenStock()+aliquotOpt.get().getAliquotQuantityVisibleStock()),
-          aliquotOpt.get(),
-          null);
+    if (aliquotOpt.isPresent()
+        && aliquotOpt.get().getAliquotExpirationDate().isBefore(LocalDate.now())) {
+      /* we add a OUTDATED transaction */
+      Transaction t = new Transaction(TransactionMotif.OUTDATED, TransactionType.WITHDRAW,
+          LocalDate.now(), (int) (aliquotOpt.get().getAliquotQuantityHiddenStock()
+              + aliquotOpt.get().getAliquotQuantityVisibleStock()),
+          aliquotOpt.get(), null);
       transactionRepository.save(t);
       /* then we put all storage to 0 */
       aliquotOpt.get().setAliquotQuantityVisibleStock(0);

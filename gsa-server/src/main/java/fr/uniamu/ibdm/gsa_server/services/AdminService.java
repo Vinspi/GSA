@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -7,6 +8,7 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
@@ -113,7 +115,7 @@ public interface AdminService {
    * @return a list of transactions and the total price or null if an error occurred.
    */
   TeamWithdrawnTransactionsData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName,
-      String quarter, int year);
+      Quarter quarter, int year);
 
   /**
    * This method saves a list of team trimestrial reports in the database if there are still all
@@ -123,12 +125,12 @@ public interface AdminService {
    * @param teamReportLosses a list of teamNames and their associated loss.
    * @param finalFlag set to true if the report is final, false otherwise
    * @param year integer
-   * @param quarterStr value of Quarter enumeration
+   * @param quarter value of Quarter enumeration
    * 
    * @return true if the saving process is successful, false otherwise.
    */
-  public boolean saveTeamTrimestrialReport(Map<String, Float> teamReportLosses, boolean finalFlag,
-      int year, String quarterStr);
+  boolean saveTeamTrimestrialReport(Map<String, BigDecimal> teamReportLosses, boolean finalFlag,
+      int year, Quarter quarter);
 
   /**
    * This method returns the sum of prices of outdated and lost aliquots and details of each loss.
@@ -138,7 +140,7 @@ public interface AdminService {
    * 
    * @return total cost losses and its details (product's name and its associated loss).
    */
-  TransactionLossesData getTransactionLossesByQuarterAndYear(String quarter, int year);
+  TransactionLossesData getSumAndProductsOfOutdatedAndLostProductOfQuarter(Quarter quarter, int year);
 
   /**
    * This method returns the quarter and year of all editable reports.
@@ -156,16 +158,16 @@ public interface AdminService {
    * @return a list of cost losses and their associated team name or null if the quarter parameter
    *         is invalid.
    */
-  List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(String quarter, int year);
+  List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(Quarter quarter, int year);
 
   /**
    * Gets the sum of all team losses of a given quarter.
    * 
-   * @param quarter string value of Quarter enumeration
+   * @param quarter value of Quarter enumeration
    * @param year int 
    * @return the sum of losses in a given quarter
    */
-  Float getSumOfQuarterLosses(String quarter, Integer year);
+  BigDecimal getSumOfQuarterLosses(Quarter quarter, Integer year);
   
   /**
    * This method retrieve all products and their aliquots from the database.

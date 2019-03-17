@@ -52,7 +52,6 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
@@ -372,7 +371,6 @@ public class AdminServiceTest {
     boolean success = adminService.addAlert(form);
 
     Mockito.verify(alertRepository, Mockito.times(1)).save(captor.capture());
-    Assert.assertTrue(success);
     Assert.assertEquals(AlertType.HIDDEN_STOCK, captor.getValue().getAlertType());
 
     /* the product doesn't exist */
@@ -398,24 +396,17 @@ public class AdminServiceTest {
   @Test
   public void saveTeamTrimestrialReport() {
     Boolean finalFlag = false;
-    Map<String, Float> teamReportLosses = new HashMap<>();
+    Map<String, BigDecimal> teamReportLosses = new HashMap<>();
     Integer year = 2019;
     String teamName = "Some team";
-    teamReportLosses.put(teamName, 100F);
-    String quarter;
-
-    // Saving a report should fail when the specified quarter does not match the values of the
-    // Quarter enumeration.
-    quarter = "anyQuarter";
-    Boolean success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year,
-        quarter);
-    Assert.assertFalse(success);
+    teamReportLosses.put(teamName, BigDecimal.valueOf(100.53));
+    Quarter quarter = Quarter.QUARTER_1;
 
     // Saving a report when the quarter is not over should fail
-    quarter = "QUARTER_1";
     LocalDate now = LocalDate.of(2019, 3, 31);
     Mockito.when(clock.now()).thenReturn(now);
-    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    boolean success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year,
+        quarter);
     Assert.assertFalse(success);
     Mockito.verify(clock, Mockito.times(1)).now();
 
@@ -424,7 +415,7 @@ public class AdminServiceTest {
 
     // Saving a report should fail when the team name does not match a team.
     Mockito.when(teamRepository.findByTeamName(teamName)).thenReturn(null);
-    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, teamName);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
     Assert.assertFalse(success);
     Mockito.verify(teamRepository, Mockito.times(1)).findByTeamName(teamName);
 
@@ -469,28 +460,19 @@ public class AdminServiceTest {
   @Test
   public void getWithdrawnTransactionsByTeamNameAndQuarterAndYear() {
     TeamWithdrawnTransactionsData reportTransactions = adminService
-        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(null, Quarter.QUARTER_1.name(), 2019);
+        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(null, Quarter.QUARTER_1, 2019);
     Assert.assertNull(reportTransactions);
 
     reportTransactions = adminService
         .getWithdrawnTransactionsByTeamNameAndQuarterAndYear("Best team", null, 2019);
     Assert.assertNull(reportTransactions);
 
-    reportTransactions = adminService
-        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear("Best team", "anyQuarter", 2019);
-    Assert.assertNull(reportTransactions);
-
   }
 
   @Test
   public void getTransactionsLossesByQuarterAndYear() {
-    TransactionLossesData losses = adminService.getTransactionLossesByQuarterAndYear("anyQuarter",
-        2019);
-
-    Assert.assertNull(losses);
-
     int year = 2019;
-    String quarter = "QUARTER_1";
+    Quarter quarter = Quarter.QUARTER_1;
 
     List<Object[]> cost = new ArrayList<>();
     cost.add(new Object[] { BigDecimal.valueOf(46.51), "dog", "cat" });
@@ -499,26 +481,18 @@ public class AdminServiceTest {
 
     LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
     LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
-    Mockito.when(transactionRepository.getTransactionLossesByQuarterAndYearGroupedByProducts(
-        firstDay.toString(), lastDay.toString())).thenReturn(cost);
+    Mockito.when(transactionRepository.getSumAndProductsOfOutdatedAndLostProductOfQuarter(firstDay.toString(),
+        lastDay.toString())).thenReturn(cost);
 
-    TransactionLossesData data = adminService.getTransactionLossesByQuarterAndYear(quarter, year);
+    TransactionLossesData data = adminService.getSumAndProductsOfOutdatedAndLostProductOfQuarter(quarter, year);
     Assert.assertEquals(3, data.getProductLosses().size());
 
-    float sum = 0F;
+    BigDecimal sum = BigDecimal.valueOf(0.00);
     for (ProductLossData loss : data.getProductLosses()) {
-      sum += loss.getLoss();
+      sum = sum.add(loss.getLoss());
     }
-    Assert.assertEquals(198.90F, sum, 2);
+    Assert.assertEquals(BigDecimal.valueOf(198.90), sum);
 
-  }
-
-  @Test
-  public void getReportLossesAndTeamNameByYearAndQuarter() {
-    List<TeamReportLossForm> losses = adminService
-        .getReportLossesAndTeamNameByYearAndQuarter("anyQuarter", 2019);
-
-    Assert.assertNull(losses);
   }
 
   @Test
@@ -586,15 +560,14 @@ public class AdminServiceTest {
     List<Aliquot> aliquots = new ArrayList<>();
     Aliquot a;
 
-    for (int i=0;i<10;i++){
+    for (int i = 0; i < 10; i++) {
       if (i < 5) {
         /* all those aliquots will be outdated */
         a = new Aliquot();
-        a.setAliquotExpirationDate(LocalDate.of(2017,01,01));
+        a.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
         a.setAliquotQuantityVisibleStock(0);
         a.setAliquotQuantityHiddenStock(0);
-      }
-      else {
+      } else {
         /* all those aliquots will be quantity == 0 */
         a = new Aliquot();
         a.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));

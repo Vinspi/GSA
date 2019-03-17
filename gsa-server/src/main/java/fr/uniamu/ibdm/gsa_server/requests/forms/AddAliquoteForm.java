@@ -43,6 +43,7 @@ public class AddAliquoteForm implements Form {
   @Override
   public boolean validate() {
 
+    PriceForm priceForm = new PriceForm(aliquotPrice);
     Pattern patternProductName = Pattern.compile("^[A-Z]*_ANTI_[A-Z]*");
 
     /* validation for every input */
@@ -54,6 +55,7 @@ public class AddAliquoteForm implements Form {
             && aliquotPrice.compareTo(BigDecimal.ZERO) > 0
             && aliquotProvider.length() > 0
             && patternProductName.matcher(aliquotProduct).matches()
+            && priceForm.validate()
     ) {
       return true;
     }

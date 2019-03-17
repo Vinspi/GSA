@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.dao;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -29,10 +30,18 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
       + "WHERE (transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
       + "AND transaction.member_id IS NULL\n"
       + "AND (transaction.transaction_motif LIKE 'OUTDATED' OR transaction.transaction_motif LIKE 'INVENTORY'))"
-      + "GROUP BY source, target\n"
-      + "HAVING sum > 0", nativeQuery = true)
-  List<Object[]> getTransactionLossesByQuarterAndYearGroupedByProducts(
+      + "GROUP BY source, target\n" + "HAVING sum > 0", nativeQuery = true)
+  List<Object[]> getSumAndProductsOfOutdatedAndLostProductOfQuarter(
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
   
+  @Query(value = "SELECT SUM(aliquot_price * transaction_quantity) as sum\n"
+      + "FROM transaction\n" + "JOIN aliquot ON (aliquot_id = aliquot.aliquotNLot)\n"
+      + "WHERE (transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
+      + "AND transaction.member_id IS NULL\n"
+      + "AND (transaction.transaction_motif LIKE 'OUTDATED' OR transaction.transaction_motif LIKE 'INVENTORY'))", nativeQuery = true)
+  BigDecimal getSumOfOutdatedAndLostProductOfQuarter(
+      @Param("firstDayOfQuarter") String firstDayOfQuarter,
+      @Param("lastDayOfQuarter") String lastDayOfQuarter);
+
 }

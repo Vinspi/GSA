@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface TeamTrimestrialReportRepository
@@ -33,6 +34,6 @@ public interface TeamTrimestrialReportRepository
       + "FROM team_trimestrial_report\n"
       + "WHERE year = :year AND quarter LIKE :quarter\n"
       + "GROUP BY quarter, year", nativeQuery = true)
-  Object getSumOfQuarterLosses(@Param("quarter") String quarter, @Param("year") int year);
+  BigDecimal getSumOfQuarterLosses(@Param("quarter") String quarter, @Param("year") int year);
 
 }
