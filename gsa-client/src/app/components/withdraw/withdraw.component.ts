@@ -17,11 +17,12 @@ export class WithdrawComponent implements OnInit {
   teamChoosed: String;
   loaded: boolean = false;
 
-  toastTrigger: Subject<void> = new Subject();
+  toastTrigger: Subject<void>;
 
   constructor(private userService: UserService, private localStorage: LocalStorage) { }
 
   ngOnInit() {
+    this.toastTrigger = new Subject();
     this.localStorage.getItem('user').subscribe(user => {
       this.user = <User> user;
       this.teamChoosed = this.user.userTeams[0];
@@ -88,6 +89,8 @@ export class WithdrawComponent implements OnInit {
       if (response.status == 'SUCCESS'){
         this.cart = new Array();
         this.toastTrigger.next();
+        console.log("coucou");
+        
       }
     });
   }
