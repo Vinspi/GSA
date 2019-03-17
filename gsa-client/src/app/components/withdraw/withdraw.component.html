@@ -6,7 +6,7 @@
       <div class="input-group-prepend">
         <span class="input-group-text"><i class="fas fa-barcode"></i></span>
       </div>
-      <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode" >
+      <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode" appInputMaxLength="15" digitsOnly>
     </div>
     <div class="input-group mb-3 col-md-2">
         <!-- <label for="inputState">State</label> -->
@@ -19,7 +19,7 @@
     <div class="input-group-prepend">
       <span class="input-group-text"><i class="fas fa-barcode"></i></span>
     </div>
-    <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode">
+    <input (keyup.enter)="onKeyEnter()" [(ngModel)]="barcodeNlot" type="text" class="form-control" placeholder="Barcode" appInputMaxLength="15" digitsOnly>
   </div>
   <div *ngIf="cart.length > 0" class="cart">
     <div class="cart-header">

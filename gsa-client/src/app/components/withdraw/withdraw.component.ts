@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { User } from 'src/app/user';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-withdraw',
@@ -15,6 +16,8 @@ export class WithdrawComponent implements OnInit {
   user: User;
   teamChoosed: String;
   loaded: boolean = false;
+
+  toastTrigger: Subject<void> = new Subject();
 
   constructor(private userService: UserService, private localStorage: LocalStorage) { }
 
@@ -82,7 +85,10 @@ export class WithdrawComponent implements OnInit {
     });
 
     this.userService.withdrawCart(aliquotList).subscribe(response => {
-      this.cart = new Array();
+      if (response.status == 'SUCCESS'){
+        this.cart = new Array();
+        this.toastTrigger.next();
+      }
     });
   }
 }
