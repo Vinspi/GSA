@@ -24,7 +24,7 @@ public class EmailServiceImpl implements EmailService {
    *
    * @param emailSender  autowired property.
    * @param adminService autowired property.
-   * @param config       autowired property.
+   * @param userRepository autowired property.
    */
   @Autowired
   public EmailServiceImpl(JavaMailSender emailSender, AdminServiceImpl adminService, UserRepository userRepository) {

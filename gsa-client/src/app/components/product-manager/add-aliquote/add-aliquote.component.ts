@@ -13,6 +13,8 @@ export class AddAliquoteComponent implements OnInit, OnChanges {
   @Output() toast: EventEmitter<any> = new EventEmitter();
 
   public isViewable: boolean;
+
+  test: number = 12;
  
   data: String[];
   model: any = {};

@@ -34,6 +34,7 @@ import { MaintenanceComponent } from './components/maintenance/maintenance.compo
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
+import { InputMaxLengthDirective } from './directives/input-max-length.directive';
 
 
 @NgModule({
@@ -65,7 +66,8 @@ import { OutdatedManagementComponent } from './components/outdated-management/ou
     MaintenanceComponent,
     NotFoundComponent,
     AdminMaintenanceComponent,
-    OutdatedManagementComponent
+    OutdatedManagementComponent,
+    InputMaxLengthDirective
   ],
   imports: [
     BrowserModule,
