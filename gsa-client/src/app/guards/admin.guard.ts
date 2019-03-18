@@ -24,6 +24,8 @@ export class AdminGuard implements CanActivate {
     return new Promise<boolean>(resolve => {
       this.localStorage.getItem("user").subscribe(user => {
 
+        
+
         if (user === null ){
           this.router.navigate(['/login']);
           resolve(false);

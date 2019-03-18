@@ -4,6 +4,7 @@ import { LocalStorage } from '@ngx-pwa/local-storage';
 import { Router } from '@angular/router';
 import { User } from '../../user';
 import { Subject } from 'rxjs';
+import { Foo } from '../../foo';
 
 @Component({
   selector: 'app-connection-form',
@@ -41,7 +42,16 @@ export class ConnectionFormComponent implements OnInit {
         this.error = false;
         this.localStorage.setItem("user", response.data).subscribe(() => {});
 
-        window.location.reload();
+        console.log("submit triggered");
+
+        Foo.subj.next(response.data);
+
+        if(response.data.admin)
+          this.router.navigate(['/']);
+        else {
+          this.router.navigate(['/withdraw']);
+        }
+        // window.location.reload();
         
       }
       else {
