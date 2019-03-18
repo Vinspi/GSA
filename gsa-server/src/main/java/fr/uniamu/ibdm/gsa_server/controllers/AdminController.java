@@ -106,25 +106,21 @@ public class AdminController {
   public JsonResponse<List<TransactionData>> getWithdrawalsHistory(@RequestBody PeriodForm form) {
       List<TransactionData> withdrawalsHistory;
 
-      if(form.getBegin() != null && form.getEnd() != null) {
-          withdrawalsHistory = adminService.getWithdrawalsHistoryBetween(form.getBegin(), form.getEnd());
-      }
-      else if(form.getBegin() != null && form.getEnd() == null) {
-          withdrawalsHistory = adminService.getWithdrawalsHistorySince(form.getBegin());
-      }
-      else if(form.getBegin() == null && form.getEnd() != null) {
-          withdrawalsHistory = adminService.getWithdrawalsHistoryUpTo(form.getEnd());
-      }
-      else {
-          withdrawalsHistory = adminService.getWithdrawalsHistory();
-      }
+      if (form.validate()) {
+          if (form.getBegin() != null && form.getEnd() != null) {
+              withdrawalsHistory = adminService.getWithdrawalsHistoryBetween(form.getBegin(), form.getEnd());
+          } else if (form.getBegin() != null && form.getEnd() == null) {
+              withdrawalsHistory = adminService.getWithdrawalsHistorySince(form.getBegin());
+          } else if (form.getBegin() == null && form.getEnd() != null) {
+              withdrawalsHistory = adminService.getWithdrawalsHistoryUpTo(form.getEnd());
+          } else {
+              withdrawalsHistory = adminService.getWithdrawalsHistory();
+          }
 
-      if (withdrawalsHistory != null) {
           return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsHistory);
       }
-      else {
-          return new JsonResponse<>("Could not find all withdrawals", RequestStatus.FAIL);
-      }
+
+      return new JsonResponse<>("Could not find all withdrawals", RequestStatus.FAIL);
   }
 
   /**

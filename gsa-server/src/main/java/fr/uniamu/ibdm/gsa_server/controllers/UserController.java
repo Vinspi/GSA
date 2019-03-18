@@ -115,25 +115,25 @@ public class UserController {
   public JsonResponse<List<TransactionData>> getUserWithdrawalsHistory(@RequestBody PeriodForm form) {
     List<TransactionData> withdrawalsHistory;
 
-    if(form.getBegin() != null && form.getEnd() != null) {
-      withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(form.getUserName(), form.getBegin(), form.getEnd());
-    }
-    else if(form.getBegin() != null && form.getEnd() == null) {
-      withdrawalsHistory = userService.getUserWithdrawalsHistorySince(form.getUserName(), form.getBegin());
-    }
-    else if(form.getBegin() == null && form.getEnd() != null) {
-      withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(form.getUserName(), form.getEnd());
-    }
-    else {
-      withdrawalsHistory = userService.getUserWithdrawalsHistory(form.getUserName());
+    if (form.validate()) {
+        if (form.getBegin() != null && form.getEnd() != null) {
+            withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(form.getUserName(), form.getBegin(), form.getEnd());
+        } else if (form.getBegin() != null && form.getEnd() == null) {
+            withdrawalsHistory = userService.getUserWithdrawalsHistorySince(form.getUserName(), form.getBegin());
+        } else if (form.getBegin() == null && form.getEnd() != null) {
+            withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(form.getUserName(), form.getEnd());
+        } else {
+            withdrawalsHistory = userService.getUserWithdrawalsHistory(form.getUserName());
+        }
+
+        if (withdrawalsHistory != null) {
+            return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsHistory);
+        }
+
+        return new JsonResponse<>("Could not find withdrawals", RequestStatus.FAIL);
     }
 
-    if (withdrawalsHistory != null) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsHistory);
-    }
-    else {
-      return new JsonResponse<>("Could not find all withdrawals", RequestStatus.FAIL);
-    }
+    return new JsonResponse<>("Could not find withdrawals", RequestStatus.FAIL);
   }
 
 }
