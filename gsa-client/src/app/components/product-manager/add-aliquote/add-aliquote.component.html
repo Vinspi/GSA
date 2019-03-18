@@ -1,0 +1,102 @@
+<div class="container">
+	<h4 *ngIf="!isViewable" class="center">Add a new aliquot</h4>
+	<h4 *ngIf="isViewable" class="center">Transfert aliquot</h4>
+	<div class="col-sm-12 form-group">
+		<div class="custom-control custom-switch">
+			<input type="checkbox" id="reserveInput" class="custom-control-input" (click)="toggle()"
+				id="customSwitches">
+			<label class="custom-control-label" for="customSwitches">transfert</label>
+		</div>
+	</div>
+	<form *ngIf="!isViewable" #aliquoteForm="ngForm">
+		<div class="col-sm-12 form-group">
+			<div id="numLot-container" class="form-group">
+				<label>N°Lot</label>
+				<input type="text" class="form-control" id="name" ngModel pattern="[0-9]*" required
+					placeholder="Enter N°Lot Here.." [(ngModel)]="model.Nlot" name="name" #Nlot="ngModel" appInputMaxLength="15" digitsOnly>
+			</div>
+		</div>
+		<div class="col-sm-12">
+			<div class="row">
+				<div id="price-container" class="col-sm-6 form-group">
+					<label>Price*</label>
+					<input type="text" id="price" [(ngModel)]="model.price"
+						pattern="^[0-9]+(\.[0-9]{1,4})?$" required placeholder="Enter Price Here.."
+						class="form-control" ngModel name="price" #price="ngModel" appInputMaxLength="7">
+				</div>
+				<div class="col-sm-6 form-group">
+					<label>Provider*</label>
+					<input type="text" id="provider" required placeholder="Enter Provider Here.."
+						class="form-control" [(ngModel)]="model.provider" name="provider"
+						#provider="ngModel" appInputMaxLength="100">
+				</div>
+			</div>
+			<div class="row">
+				<div id="visibleQty-container" class="col-sm-6 form-group">
+					<label>Quantity in visible stock</label>
+					<input type="text" class="form-control" id="visibleQty" [(ngModel)]="model.visibleQty"
+						pattern="[0-9]*" placeholder="Enter Quantity in visible stock  Here.."
+						name="visibleQty" #visibleQty="ngModel" appInputMaxLength="5">
+				</div>
+				<div id="reserveQty-container" class="col-sm-6 form-group">
+					<label>Quantity in hidden stock</label>
+					<input type="text" class="form-control" id="reserveQty" [(ngModel)]="model.reserveQty"
+						pattern="[0-9]*" placeholder="Enter Quantity in hidden stock Here.."
+						name="reserveQty" #reserveQty="ngModel" appInputMaxLength="5">
+				</div>
+			</div>
+			<div class="row">
+				<div id="product-container" class="col-sm-12 form-group">
+					<label for="myListOptions">Produit*</label>
+					<select id="product" class="form-control" [(ngModel)]="model.product" name="product"
+						#product="ngModel">
+						<option required [ngValue]="item" *ngFor="let item of data" [ngValue]="item">{{item}}
+						</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group button-container">
+				<button (click)="addAliquote()" class="btn btn-outlined-custom" type="button"
+					[disabled]="!aliquoteForm.form.valid">Add aliquot</button>
+			</div>
+		</div>
+	</form>
+
+	<!-- transfert form  -->
+	<form *ngIf="isViewable" #transfertForm="ngForm">
+		<div class="col-md-12">
+			<div class="row">
+				<div class="col-md-12 form-group">
+					<label for="nlot-transfert">Nlot</label>
+					<input type="text" class="form-control" id="nlot-transfert" ngModel pattern="[0-9]*" required
+					placeholder="Enter N°Lot Here.." [(ngModel)]="modelTransfert.numLot" name="nlot-transfert" #Nlot="ngModel" appInputMaxLength="15">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-4 form-group">
+					<label for="from">From</label>
+					<select [(ngModel)]="modelTransfert.from" id="from" class="form-control" name="from">
+						<option selected>RESERVE</option>
+						<option>STOCK</option>
+					</select>
+				</div>
+				<div class="col-md-4 form-group">
+					<label for="to">To</label>
+					<select [(ngModel)]="modelTransfert.to" id="to" class="form-control" name="to">
+						<option selected>STOCK</option>
+						<option>RESERVE</option>
+					</select>
+				</div>
+				<div class="col-md-4 form-group">
+					<label for="qteTransfert">Quantity</label>
+					<input appInputMaxLength="5" id="qteTransfert" type="number" required placeholder="Quantity" class="form-control" name="qteTransfert" #qteTransfert="ngModel" pattern="[0-9]*" [(ngModel)]="modelTransfert.quantity">
+				</div>
+			</div>
+			<div class="form-group button-container">
+				<button (click)="transfertAliquot()" class="btn btn-outlined-custom" type="button"
+					[disabled]="!transfertForm.form.valid">Transfert aliquot</button>
+			</div>
+		</div>
+	</form>
+</div>
+

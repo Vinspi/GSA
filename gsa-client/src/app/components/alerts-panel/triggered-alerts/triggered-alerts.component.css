@@ -25,3 +25,8 @@ h1 {
     margin-top: 25vh;
     text-align: center;
 }
+
+.alt-color {
+    font-size: 10pt;
+    margin-left: -2px;
+}

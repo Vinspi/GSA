@@ -1,0 +1,22 @@
+<div id="add-product">
+  <h4 class="center">Add a new product</h4>
+  <form>
+    <div id="select-container" class="row">
+      <div id="source-container" class="form-group col-md-6">
+        <label for="source">Select the source :</label>
+        <select [(ngModel)]="selectedSource" id="source" class="form-control" name="source">
+          <option *ngFor="let name of speciesNames">{{name}}</option>
+        </select>
+      </div>
+      <div id="target-container" class="form-group col-md-6">
+        <label for="target">Select the target :</label>
+        <select [(ngModel)]="selectedTarget" id="target" class="form-control" name="target">
+          <option *ngFor="let name of speciesNames">{{name}}</option>
+        </select>
+      </div>
+    </div>
+    <div class="button-container">
+      <button (click)="addProduct()" type="button" class="btn btn-outlined-custom">Add product</button>
+    </div>
+  </form>
+</div>

@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import fr.uniamu.ibdm.gsa_server.conf.MaintenanceBean;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
@@ -20,7 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
+@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
 public class UserController {
 
   @Autowired
@@ -29,6 +30,9 @@ public class UserController {
   @Autowired
   UserServiceImpl userService;
 
+  @Autowired
+  MaintenanceBean maintenanceBean;
+
   /**
    * REST controller for the stockOverview request.
    *
@@ -36,6 +40,10 @@ public class UserController {
    */
   @GetMapping("/stockOverview")
   public JsonResponse<List<ProductOverviewData>> stockOverview() {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
 
     List<ProductOverviewData> data = userService.getAllOverviewProducts();
 
@@ -50,16 +58,23 @@ public class UserController {
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
 
-    boolean data = userService.withdrawCart(form,(User) session.getAttribute("user"));
-    JsonResponse<Boolean> response;
-
-    if (data) {
-      response = new JsonResponse<>(RequestStatus.SUCCESS);
-    } else {
-      response = new JsonResponse<>("bad aliquot nlot", RequestStatus.FAIL);
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
-    return response;
+    if (isLoggedIn() && ((boolean) session.getAttribute("techArea"))) {
+      boolean data = userService.withdrawCart(form, (User) session.getAttribute("user"));
+      JsonResponse<Boolean> response;
+
+      if (data) {
+        response = new JsonResponse<>(RequestStatus.SUCCESS);
+      } else {
+        response = new JsonResponse<>("bad aliquot nlot", RequestStatus.FAIL);
+      }
+
+      return response;
+    }
+    return new JsonResponse<>("Please log in", RequestStatus.FAIL);
   }
 
   /**
@@ -69,6 +84,10 @@ public class UserController {
    */
   @PostMapping("/getProductName")
   public JsonResponse<String> getProductName(@RequestBody GetProductNameForm form) {
+
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
 
     String productName = userService.getProductNameFromNlot(form.getNlot());
     JsonResponse<String> response;
@@ -90,6 +109,10 @@ public class UserController {
   @GetMapping("/getAllTeamName")
   public JsonResponse<List<String>> getAllTeamName() {
 
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllTeamName());
   }
 
@@ -101,9 +124,35 @@ public class UserController {
   @GetMapping("/getAllProductName")
   public JsonResponse<List<String>> getAllProductName() {
 
+    if (maintenanceBean.isMaintenanceMode()){
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllProductName());
   }
 
+  /**
+   * REST endpoint, this endpoint let us know if the app is in maintenance mode.
+   *
+   * @return A JsonResponse containing a boolean.
+   */
+  @GetMapping("/isMaintenanceMode")
+  public JsonResponse<Boolean> isMaintenanceMode() {
+    return new JsonResponse<>(RequestStatus.SUCCESS, maintenanceBean.isMaintenanceMode());
+  }
+
+  /**
+   * Utility function, tell us if the user is logged in or not.
+   *
+   * @return tru if user is logged, false otherwise.
+   */
+  private boolean isLoggedIn() {
+    if (session.getAttribute("user") == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
   /**
    * Endpoint for /history. Return a list of withdrawals depending of the period given in argument.
    *

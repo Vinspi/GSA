@@ -1,0 +1,26 @@
+<form #addAlertForm="ngForm" class="h-100">
+  <div class="row">
+    <div class="form-group col-md-4">
+      <label for="stock-type-select"></label>
+      <select [(ngModel)]="addAlertModel.storageType" id="stock-type-select" type="text" class="form-control" name="storageType">
+        <option>STOCK</option>
+        <option>RESERVE</option>
+        <option>GENERAL</option>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="product-select"></label>
+      <select [(ngModel)]="addAlertModel.productName" id="product-select" type="text" class="form-control" name="productName">
+        <option *ngFor="let product of productNames">{{product}}</option>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="quantity-select"></label>
+      <input appInputMaxLength="5" digitsOnly [(ngModel)]="addAlertModel.quantity" placeholder="quantity" pattern="[0-9]*" id="quantity-select" type="text" class="form-control" #quantity="ngModel" ngModel required name="quantity">
+    </div>
+    <div class="button-container">
+      <button (click)="sendAddAlertForm()" [disabled]="!addAlertForm.form.valid" type="button" class="btn btn-outlined-custom">Add new alert</button>
+    </div>
+  </div>
+</form>
+<app-toast [toastHeader]="toastHeader" [toastBody]="toastBody" [event]="toastEvent" [timeout]="toastTimeout" [toastType]="toastType"></app-toast>

@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.dao;
 
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -29,21 +30,13 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
                                             @Param("monthUpperBound") String monthUpperBound,
                                             @Param("source") String source,
                                             @Param("target") String target);
-  
 
-  @Query(value = "SELECT source_pk, target_pk, SUM(aliquot.aliquot_quantity_visible_stock) as qte, seuil, alert_type\n"
-      + "FROM product\n"
-      + "JOIN alert ON (source_pk LIKE alert.source AND target_pk LIKE alert.target)\n"
-      + "JOIN aliquot ON (aliquot.source LIKE source_pk AND aliquot.target LIKE target_pk)\n"
-      + "GROUP BY source_pk, target_pk, alert_type\n"
-      + "HAVING (qte < seuil)", nativeQuery = true)
-  List<Object[]> getTriggeredAlerts();
 
   @Query(value = "SELECT source_pk, target_pk, SUM(aliquot.aliquot_quantity_visible_stock) as qte, seuil, alert_type, alert_id\n"
       + "FROM product\n"
       + "JOIN alert ON (source_pk LIKE alert.source AND target_pk LIKE alert.target)\n"
       + "JOIN aliquot ON (aliquot.source LIKE source_pk AND aliquot.target LIKE target_pk)\n"
-      + "GROUP BY source_pk, target_pk, alert_type\n"
+      + "GROUP BY source_pk, target_pk, alert_type, seuil, alert_id\n"
       + "HAVING (qte < seuil AND alert_type LIKE 'VISIBLE_STOCK')", nativeQuery = true)
   List<Object[]> getTriggeredAlertsVisible();
 
@@ -51,7 +44,7 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
       + "FROM product\n"
       + "JOIN alert ON (source_pk LIKE alert.source AND target_pk LIKE alert.target)\n"
       + "JOIN aliquot ON (aliquot.source LIKE source_pk AND aliquot.target LIKE target_pk)\n"
-      + "GROUP BY source_pk, target_pk, alert_type\n"
+      + "GROUP BY source_pk, target_pk, alert_type, seuil, alert_id\n"
       + "HAVING (qte < seuil AND alert_type LIKE 'HIDDEN_STOCK')", nativeQuery = true)
   List<Object[]> getTriggeredAlertsHidden();
 
@@ -59,8 +52,13 @@ public interface ProductRepository extends CrudRepository<Product, ProductPK> {
       + "FROM product\n"
       + "JOIN alert ON (source_pk LIKE alert.source AND target_pk LIKE alert.target)\n"
       + "JOIN aliquot ON (aliquot.source LIKE source_pk AND aliquot.target LIKE target_pk)\n"
-      + "GROUP BY source_pk, target_pk, alert_type\n"
+      + "GROUP BY source_pk, target_pk, alert_type, seuil, alert_id\n"
       + "HAVING (qte < seuil AND alert_type LIKE 'GENERAL')", nativeQuery = true)
   List<Object[]> getTriggeredAlertsGeneral();
+
+  @Query("SELECT DISTINCT p FROM Product p JOIN p.aliquots a WHERE (a.aliquotExpirationDate < current_date AND ((a.aliquotQuantityHiddenStock+a.aliquotQuantityVisibleStock) > 0))")
+  List<Product> findAllOutdatedProduct();
+
+
 
 }

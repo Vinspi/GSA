@@ -1,0 +1,58 @@
+<h3 *ngIf="data.length == 0" class="center">Sorry, not data received from server or the database is empty</h3>
+<div *ngIf="data.length > 0" class="d-flex w-100 flex-column" id="inventory">
+  <div *ngFor="let product of data, let i = index">
+    <div *ngIf="product.aliquots.length > 0" class="card w-100">
+      <div class="card-body">
+        <h5 class="card-title center">{{product.productName}}</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-md-3 center">nLot</div>
+              <div class="col-md-3 center">date</div>
+              <div class="col-md-3 center">quantity</div>
+              <div class="col-md-3 center">inventory</div>
+            </div>
+          </li>
+          <li *ngFor="let aliquot of product.aliquots, let k = index" class="list-group-item">
+            <div class="row">
+              <div class="col-md-3 center">
+                {{aliquot.aliquotNLot}}
+              </div>
+              <div class="col-md-3 center">
+                {{aliquot.aliquotExpirationDate}}
+              </div>
+              <div class="col-md-3 center">
+                {{aliquot.aliquotQuantityVisibleStock}}
+              </div>
+              <div class="col-md-3 center">
+                <input appInputMaxLength="5" (change)="setMapValue(aliquot.aliquotNLot, $event)" type="text" digitsOnly [ngModel]="map.get(aliquot.aliquotNLot)" class="form-control">
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="data.length > 0" class="button-container">
+  <button (click)="sendForm()" type="button" class="btn btn-outlined-custom">Terminate</button>
+</div>
+<app-toast toastHeader="Error" toastBody="Bad form, please try again" [event]="toastTrigger" timeout="2000" toastType="danger"></app-toast>
+<div id="modalInventory" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Inventory</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>The inventory has been performed with success. Click OK to return to the homepage.</p>
+      </div>
+      <div class="modal-footer">
+        <button routerLink="/" type="button" class="btn btn-outlined-custom" data-dismiss="modal">OK</button>
+      </div>
+    </div>
+  </div>
+</div>

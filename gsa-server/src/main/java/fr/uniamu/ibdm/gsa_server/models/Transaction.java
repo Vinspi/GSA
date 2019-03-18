@@ -43,7 +43,7 @@ public class Transaction implements Serializable {
   private Aliquot aliquot;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id", nullable = false)
+  @JoinColumn(name = "member_id")
   private Member member;
 
 

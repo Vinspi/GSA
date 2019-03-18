@@ -2,9 +2,17 @@ package fr.uniamu.ibdm.gsa_server.services;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 
@@ -73,7 +81,7 @@ public interface AdminService {
    * @return a list of transactions.
    */
   List<TransactionData> getWithdrawalsHistory();
-  
+
   /**
    * This method adds a new aliquote.
    *
@@ -102,6 +110,7 @@ public interface AdminService {
    * This method update the alert seuil of the given alert.
    *
    * @param form Wrapper containing new seuil and alert id.
+   * @return true if succeed, false otherwise.
    */
   boolean updateAlertSeuil(UpdateAlertForm form);
 
@@ -109,7 +118,82 @@ public interface AdminService {
    * This method remove the given alert from the database.
    *
    * @param id targeted alert id.
+   * @return true if succeed, false otherwise.
    */
   boolean removeAlert(long id);
+
+  /**
+   * This method transfers aliquots between storage type.
+   *
+   * @param form Wrapper containing NLot, quantity and storage type.
+   * @return true if succeed, false otherwise.
+   */
+  boolean transfertAliquot(TransfertAliquotForm form);
+
+  /**
+   * This method add a new alert in the database.
+   *
+   * @param form Wrapper containing product name, quantity and storage type.
+   * @return false if the alert alreadyExist, false otherwise.
+   */
+  boolean addAlert(AddAlertForm form);
+
+  /**
+   * This method retrieve all products and their aliquots
+   *     from the database.
+   *
+   * @return a list of products.
+   */
+  List<Product> getAllProductsWithAliquots();
+
+  /**
+   * This method perform the inventory. It add losses transactions
+   *     for every aliquot lost and restore the database to the user inputs.
+   *
+   * @param forms a list of form containing aliquotNLot and quantity.
+   */
+  void makeInventory(List<InventoryForm> forms);
+
+  /**
+   * This method generate a list of providers stats.
+   *
+   * @return a list of providers stats.
+   */
+  List<ProvidersStatsData> generateProvidersStats();
+
+  /**
+   * This methods return the number of triggered alerts.
+   *
+   * @return the number of triggered alerts.
+   */
+  int getAlertsNotification();
+
+  /**
+   * This method retrieve the number of days until the next report available.
+   *
+   * @return wrapper containing the number of days until the next report.
+   */
+  NextReportData getNextReportData();
+
+  /**
+   * This method generate a list of products stats.
+   *
+   * @return a list of products stats.
+   */
+  List<ProductsStatsData> generateProductsStats();
+
+  /**
+   * This method return all outdated aliquot left in the stocks.
+   *
+   * @return a list of Aliquot.
+   */
+  List<Product> getAllOutdatedAliquot();
+
+  /**
+   * This method remove an outdated aliquot from the database.
+   *
+   * @return true if we can do it, false otherwise.
+   */
+  boolean deleteOutdatedAliquot(Aliquot a);
 
 }

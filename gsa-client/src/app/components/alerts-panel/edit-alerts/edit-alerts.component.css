@@ -1,6 +1,4 @@
-:host {
-    
-}
+
 
 h1 {
     text-align: center;
@@ -110,4 +108,9 @@ form {
     width: 15px;
     height: 8px;
     display: inline-block;
+}
+
+.alt-color {
+    font-size: 10pt;
+    margin-left: -5px;
 }

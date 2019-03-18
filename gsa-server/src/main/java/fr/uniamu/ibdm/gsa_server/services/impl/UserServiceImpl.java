@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -75,7 +76,8 @@ public class UserServiceImpl implements UserService {
         }
 
 
-        byte[] seed = SecureRandom.getSeed(128);
+        byte[] seed = new byte[128];
+        new Random().nextBytes(seed);
         byte[] passwordHash = Crypto.hashPassword(seed, password.getBytes());
 
         User user = new User();

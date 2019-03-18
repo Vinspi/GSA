@@ -1,5 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.controllers;
 
+import fr.uniamu.ibdm.gsa_server.conf.CustomConfig;
+import fr.uniamu.ibdm.gsa_server.conf.MaintenanceBean;
 import fr.uniamu.ibdm.gsa_server.models.Member;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.LoginData;
@@ -15,13 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200"})
+@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
 public class AuthController {
 
   @Autowired
@@ -29,6 +32,15 @@ public class AuthController {
 
   @Autowired
   HttpSession session;
+
+  @Autowired
+  HttpServletRequest request;
+
+  @Autowired
+  CustomConfig appconfig;
+
+  @Autowired
+  MaintenanceBean maintenanceBean;
 
   /**
    * REST endpoint for login request.
@@ -56,6 +68,15 @@ public class AuthController {
       data.setAdmin(user.isAdmin());
       data.setUserName(user.getUserName());
       data.setUserTeam(teams);
+
+
+      if (request.getHeader("Origin") != null && request.getHeader("Origin").equals(appconfig.getIpTechArea())) {
+        data.setTechArea(true);
+        session.setAttribute("techArea", true);
+      } else {
+        data.setTechArea(false);
+        session.setAttribute("techArea", false);
+      }
       response = new JsonResponse<>(RequestStatus.SUCCESS, data);
     }
 
@@ -88,6 +109,11 @@ public class AuthController {
       data.setAdmin(u.isAdmin());
       data.setUserName(u.getUserName());
       data.setUserTeam(teams);
+      if (request.getHeader("Origin") != null && request.getHeader("Origin").equals(appconfig.getIpTechArea())) {
+        data.setTechArea(true);
+      } else {
+        data.setTechArea(false);
+      }
       response = new JsonResponse<>(RequestStatus.SUCCESS, data);
     }
 
@@ -96,6 +122,7 @@ public class AuthController {
 
   /**
    * REST endpoint for logging out the users.
+   *
    * @return This method returns a json formatted response for the logout request.
    */
   @GetMapping("/logout")

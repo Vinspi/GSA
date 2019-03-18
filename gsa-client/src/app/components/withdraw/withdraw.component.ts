@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../services/user.service';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import { User } from 'src/app/user';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-withdraw',
@@ -16,9 +17,12 @@ export class WithdrawComponent implements OnInit {
   teamChoosed: String;
   loaded: boolean = false;
 
+  toastTrigger: Subject<void>;
+
   constructor(private userService: UserService, private localStorage: LocalStorage) { }
 
   ngOnInit() {
+    this.toastTrigger = new Subject();
     this.localStorage.getItem('user').subscribe(user => {
       this.user = <User> user;
       this.teamChoosed = this.user.userTeams[0];
@@ -31,7 +35,6 @@ export class WithdrawComponent implements OnInit {
   }
 
   onMinusClicked(nlot: number) {
-    console.log("minus"+nlot);
     
     this.cart.forEach((element, index, o) => {
       if(element.nlot == nlot){
@@ -44,7 +47,6 @@ export class WithdrawComponent implements OnInit {
   }
 
   onKeyEnter() {
-    console.log("keyup ! ");
 
     var call_api = true;
 
@@ -84,7 +86,12 @@ export class WithdrawComponent implements OnInit {
     });
 
     this.userService.withdrawCart(aliquotList).subscribe(response => {
-      this.cart = new Array();
+      if (response.status == 'SUCCESS'){
+        this.cart = new Array();
+        this.toastTrigger.next();
+        console.log("coucou");
+        
+      }
     });
   }
 }

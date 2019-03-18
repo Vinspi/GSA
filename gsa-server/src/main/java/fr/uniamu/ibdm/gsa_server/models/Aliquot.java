@@ -1,5 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -29,6 +31,7 @@ public class Aliquot implements Serializable {
           @JoinColumn(name = "source", nullable = false),
           @JoinColumn(name = "target", nullable = false)
   })
+  @JsonBackReference
   private Product product;
 
 

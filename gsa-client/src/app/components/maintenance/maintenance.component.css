@@ -1,0 +1,8 @@
+:host {
+    width: 100%;
+    height: 100%;
+}
+
+h1, i {
+    margin-bottom: 25px;
+}

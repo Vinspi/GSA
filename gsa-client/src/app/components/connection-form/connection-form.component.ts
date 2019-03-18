@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthentificationService } from '../../services/authentification.service';
 import { LocalStorage } from '@ngx-pwa/local-storage';
-import { Router } from "@angular/router"
+import { Router } from '@angular/router';
+import { User } from '../../user';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-connection-form',
@@ -13,7 +15,8 @@ export class ConnectionFormComponent implements OnInit {
   email: String;
   password: String;
   error: boolean;
- 
+  toastTrigger:  Subject<void> = new Subject();
+
   constructor(
     private authentificationService: AuthentificationService,
     private localStorage: LocalStorage,
@@ -22,6 +25,13 @@ export class ConnectionFormComponent implements OnInit {
     }
 
   ngOnInit() {
+    this.localStorage.getItem("user").subscribe(user => {
+      if (user != null && (<User> user).admin)
+        this.router.navigate(["/"]);
+
+      if (user != null && !(<User> user).admin)
+        this.router.navigate(["/withdraw"]);
+    });
     this.error = false;
   }
 
@@ -30,16 +40,12 @@ export class ConnectionFormComponent implements OnInit {
       if (response.status == 'SUCCESS') {
         this.error = false;
         this.localStorage.setItem("user", response.data).subscribe(() => {});
-        console.log("navigate to index page ...");
 
-        this.localStorage.getItem("user").subscribe(user => {
-          console.log(user);
-
-        })
         window.location.reload();
-        this.router.navigate(["/"]);
+
       }
       else {
+        this.toastTrigger.next();
         this.error = true;
         this.email = "";
         this.password = "";

@@ -28,8 +28,8 @@ public class Alert implements Serializable {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumns({
-      @JoinColumn(name = "source", insertable = false, updatable = false),
-      @JoinColumn(name = "target", insertable = false, updatable = false)
+      @JoinColumn(name = "source", insertable = true, updatable = false),
+      @JoinColumn(name = "target", insertable = true, updatable = false)
   })
   private Product product;
 

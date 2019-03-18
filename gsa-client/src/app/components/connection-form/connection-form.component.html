@@ -1,16 +1,23 @@
 <div id="connection-form">
-  <h1>Login</h1>
-  <form>
-    <div class="form-group">
-      <label for="email">Email address</label>
-      <input [(ngModel)]="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" name="email">
+  <div class="card">
+    <div class="card-header">
+      <h1>Login</h1>
     </div>
-    <div class="form-group">
-      <label for="password">Password</label>
-      <input [(ngModel)]="password" type="password" class="form-control" id="password" placeholder="Password" name="password">
+    <div class="card-body">
+      <form>
+        <div class="form-group">
+          <label for="email">Email address</label>
+          <input [(ngModel)]="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" name="email">
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input [(ngModel)]="password" type="password" class="form-control" id="password" placeholder="Password" name="password">
+        </div>
+        <div class="button-container">
+          <button (click)="submitCredentials()" type="submit" class="btn btn-outlined-custom" name="loginButton">Login</button>
+        </div>
+      </form>
     </div>
-    <div class="button-container">
-      <button (click)="submitCredentials()" type="submit" class="btn btn-primary" name="loginButton">Login</button>
-    </div>
-  </form>
+  </div>
 </div>
+<app-toast toastHeader="Error" toastBody="Wrong credentials" toastType="danger" [event]="toastTrigger" timeout="2000"></app-toast>

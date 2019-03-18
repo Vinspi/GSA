@@ -43,6 +43,7 @@
     "@angular/cli": "~7.1.2",
     "@angular/compiler-cli": "^7.2.8",
     "@angular/language-service": "~7.1.0",
+    "@types/bootstrap": "^4.3.0",
     "@types/datatables.net": "^1.10.15",
     "@types/datatables.net-buttons": "^1.4.1",
     "@types/jasmine": "~2.8.8",

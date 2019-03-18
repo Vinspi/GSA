@@ -7,6 +7,7 @@ public class LoginData {
   private boolean admin;
   private String userName;
   private List<String> userTeams;
+  private boolean techArea;
 
   public LoginData() {
   }
@@ -29,6 +30,14 @@ public class LoginData {
 
   public List<String> getUserTeams() {
     return userTeams;
+  }
+
+  public boolean isTechArea() {
+    return techArea;
+  }
+
+  public void setTechArea(boolean techArea) {
+    this.techArea = techArea;
   }
 
   public void setUserTeam(List<String> userTeams) {

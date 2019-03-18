@@ -1,0 +1,16 @@
+:host {
+    width: 100%;
+}
+
+.card {
+    padding: 2%;
+    transition: all .5s ease-in-out;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+h1 i {
+    margin-right: 2%;
+}
