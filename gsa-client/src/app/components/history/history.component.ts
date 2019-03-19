@@ -38,13 +38,15 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
               private calendar: NgbCalendar,
               private localStorage: LocalStorage) {
 
-    this.localStorage.getItem('user').subscribe(user => {
-      this.user = <User> user;
-    });
+    
   }
 
   ngOnInit() {
 
+    this.localStorage.getItem('user').subscribe(user => {
+      this.user = <User> user;
+      this.sendData();
+    });
 
     $('#beginDate').attr('readonly', 'true');
     $('#endDate').attr('readonly', 'true');
@@ -61,7 +63,6 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
     };
     this.config.markDisabled = (date: NgbDate) => this.calendar.getWeekday(date) >= 6;
 
-    this.sendData();
   }
 
   sendData() {
@@ -72,6 +73,7 @@ export class HistoryComponent implements AfterViewInit, OnDestroy, OnInit {
         begin: this.stringBegin,
         end: this.stringEnd
       }).subscribe(res => {
+          
         this.history = <Array<Transaction>> res.data;
         this.rerender();
       });

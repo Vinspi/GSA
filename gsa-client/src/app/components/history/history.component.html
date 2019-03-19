@@ -1,55 +1,63 @@
 <div class="history-container justify-content-center col-lg-12">
-  <h1>Withdrawals history</h1>
-
-  <form class="form-inline">
-    <div class="form-group">
-      <div class="input-group">
-        <input id="beginDate" class="form-control" placeholder="Begin date"
-               name="begin" [(ngModel)]="begin" ngbDatepicker #d="ngbDatepicker" readonly
-               title="Begin date of the period" (focus)="resetInputs()" (dateSelect)="setMinDate()">
-        <div class="input-group-append">
-          <button (click)="unsetMinDate(); d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
-        </div>
-      </div>
-      <div class="input-group">
-        <input id="endDate" class="form-control" placeholder="End date"
-               name="end" [(ngModel)]="end" ngbDatepicker #d2="ngbDatepicker" readonly
-               title="End date of the period" (focus)="resetInputs()" (dateSelect)="setMaxDate()">
-        <div class="input-group-append">
-          <button (click)="unsetMaxDate(); d2.toggle()" type="button"><i class="fa fa-calendar"></i></button>
-        </div>
-      </div>
-      <div class="btn-submit">
-        <button class="btn btn-dark" type="button" (click)="sendData()">Send</button>
-      </div>
+  <div class="card">
+    <div class="card-header">
+      <h5><i class="fas fa-history"></i>Withdrawals history</h5>
     </div>
-  </form>
+    <div class="card-body">
 
-  <div class="table">
-    <table id="datatable" datatable [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="row-border hover">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>User</th>
-          <th>Aliquot</th>
-          <th>Team</th>
-          <th>Quantity</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let item of history">
-          <td>{{item.date}}</td>
-          <td>{{item.userName}}</td>
-          <td>{{item.aliquotName}}</td>
-          <td>{{item.teamName}}</td>
-          <td>{{item.quantity}}</td>
-          <td>{{item.price}}</td>
-        </tr>
-      </tbody>
-    </table>
+      <form class="form-inline">
+        <div class="form-group">
+          <div class="input-group">
+            <input id="beginDate" class="form-control" placeholder="Begin date"
+                  name="begin" [(ngModel)]="begin" ngbDatepicker #d="ngbDatepicker" readonly
+                  title="Begin date of the period" (focus)="resetInputs()" (dateSelect)="setMinDate()">
+            <div class="input-group-append">
+              <button (click)="unsetMinDate(); d.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+            </div>
+          </div>
+          <div class="input-group">
+            <input id="endDate" class="form-control" placeholder="End date"
+                  name="end" [(ngModel)]="end" ngbDatepicker #d2="ngbDatepicker" readonly
+                  title="End date of the period" (focus)="resetInputs()" (dateSelect)="setMaxDate()">
+            <div class="input-group-append">
+              <button (click)="unsetMaxDate(); d2.toggle()" type="button"><i class="fa fa-calendar"></i></button>
+            </div>
+          </div>
+          <div class="btn-submit">
+            <button class="btn btn-dark" type="button" (click)="sendData()">Send</button>
+          </div>
+        </div>
+      </form>
+    
+      <div class="table">
+        <table id="datatable" datatable [dtTrigger]="dtTrigger" [dtOptions]="dtOptions" class="row-border hover">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>User</th>
+              <th>Aliquot</th>
+              <th>Team</th>
+              <th>Quantity</th>
+              <th>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of history">
+              <td>{{item.date}}</td>
+              <td>{{item.userName}}</td>
+              <td>{{item.aliquotName}}</td>
+              <td>{{item.teamName}}</td>
+              <td>{{item.quantity}}</td>
+              <td>{{item.price}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    
+      <button class="btn btn-lg btn-outline-dark" (click)="exportToCsv()">Export to CSV</button>
+    </div>
+
   </div>
-
-  <button class="btn btn-lg btn-outline-dark" (click)="exportToCsv()">Export to CSV</button>
+  
 </div>
 
