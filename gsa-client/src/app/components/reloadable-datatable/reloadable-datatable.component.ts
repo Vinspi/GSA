@@ -23,9 +23,9 @@ export class ReloadableDatatableComponent implements AfterViewInit, OnDestroy, O
 
   ngOnInit() {
     this.dtOptions = {
-      scrollY: '50vh',
-      scrollCollapse: true,
-      paging: false,
+      responsive: true,
+      lengthMenu: [5, 10, 25, 50],
+      paging: true,
       searching: true,
       info: false
     };

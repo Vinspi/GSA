@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 public interface TeamRepository extends CrudRepository<Team, Long> {
   Team findByTeamName(String teamName);
 
-  long count();
 }

@@ -43,5 +43,14 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
   BigDecimal getSumOfOutdatedAndLostProductOfQuarter(
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
+  
+  @Query(value = "SELECT SUM(aliquot_price * transaction_quantity)\n"
+      + "FROM transaction\n" + "JOIN aliquot ON (aliquot_id = aliquot.aliquotNLot)\n"
+      + "WHERE (transaction.transaction_date >= :firstDayOfQuarter AND transaction_date <= :lastDayOfQuarter\n"
+      + "AND transaction.member_id IS NOT NULL\n"
+      + "AND transaction.transaction_motif LIKE 'TEAM_WITHDRAW')", nativeQuery = true)
+  BigDecimal getSumOfWithdrawnProductsOfQuarter(
+      @Param("firstDayOfQuarter") String firstDayOfQuarter,
+      @Param("lastDayOfQuarter") String lastDayOfQuarter);
 
 }

@@ -45,7 +45,6 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
@@ -454,18 +453,6 @@ public class AdminServiceTest {
     success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
     Assert.assertTrue(success);
     Mockito.verify(teamTrimestrialReportRepository, Mockito.times(2)).save(Mockito.any());
-
-  }
-
-  @Test
-  public void getWithdrawnTransactionsByTeamNameAndQuarterAndYear() {
-    TeamWithdrawnTransactionsData reportTransactions = adminService
-        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear(null, Quarter.QUARTER_1, 2019);
-    Assert.assertNull(reportTransactions);
-
-    reportTransactions = adminService
-        .getWithdrawnTransactionsByTeamNameAndQuarterAndYear("Best team", null, 2019);
-    Assert.assertNull(reportTransactions);
 
   }
 

@@ -15,6 +15,11 @@ public interface TeamTrimestrialReportRepository
     extends CrudRepository<TeamTrimestrialReport, TeamTrimestrialReportPk> {
 
   List<TeamTrimestrialReport> findAllByYearAndQuarter(int year, Quarter quarter);
+  
+  @Query(value = "SELECT losses\n"
+      + "FROM team_trimestrial_report\n"
+      + "WHERE team_id = :id AND quarter LIKE :quarter AND year = :year", nativeQuery = true)  
+  BigDecimal findQuarterLossesByTeam(@Param("id")long id, @Param("quarter") String quarter, @Param("year") int year);
 
   @Query(value = "SELECT quarter, year\n"
       + "FROM team_trimestrial_report\n"

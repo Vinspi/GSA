@@ -43,8 +43,7 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData.WithdrawnTransactionData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
@@ -375,6 +374,7 @@ public class AdminServiceImpl implements AdminService {
     // Checking that the quarter is over in order to save
     LocalDate now = clock.now();
     LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
     if (!now.isAfter(lastDay)) {
       return false;
     }
@@ -389,25 +389,66 @@ public class AdminServiceImpl implements AdminService {
       teams.add(team);
     }
 
-    /* TO DO
-     * BigDecimal teamReportCost = BigDecimal.ZERO; for (BigDecimal loss :
-     * teamReportLosses.values()) { teamReportCost.add(loss); }
-     * 
-     * BigDecimal dbTeamLoss = teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter.name(),
-     * year);
-     * 
-     * 
-     * // Checking that the sum of losses equals the cost of outdated and lost aliquots. if
-     * (isValidated) { LocalDate firstDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
-     * if (teamReportLosses.size() < 1 && teamReportLosses.size() !=
-     * Math.toIntExact(teamRepository.count())) { return false; } BigDecimal outdatedProductsCost =
-     * transactionRepository .getSumOfOutdatedAndLostProductOfQuarter(firstDay.toString(),
-     * lastDay.toString()); if(outdatedProductsCost == null) { return false; }
-     * 
-     * 
-     * 
-     * }
-     */
+    BigDecimal dbProductLoss = transactionRepository
+        .getSumOfOutdatedAndLostProductOfQuarter(firstDay.toString(), lastDay.toString());
+    BigDecimal dbTeamLoss = teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter.name(),
+        year);
+
+    // If no teams are found in the report table, then initialise for this quarter's year.
+    if (dbTeamLoss == null) {
+      Iterable<Team> allTeams = teamRepository.findAll();
+      for (Team team : allTeams) {
+        TeamTrimestrialReport newReport = new TeamTrimestrialReport();
+        newReport.setFinalFlag(false);
+        newReport.setLosses(BigDecimal.ZERO);
+        newReport.setQuarter(quarter);
+        newReport.setYear(year);
+        newReport.setTeam(team);
+        teamTrimestrialReportRepository.save(newReport);
+      }
+      dbTeamLoss = BigDecimal.ZERO;
+    }
+    
+    // With no lost products, adding a value means that the losses will be negative
+    BigDecimal sumTeamReportLosses = teamReportLosses.values().stream().reduce(BigDecimal.ZERO,
+        BigDecimal::add);
+    if (!(sumTeamReportLosses.compareTo(BigDecimal.ZERO) == 0) && dbProductLoss == null) {
+      return false;
+    }
+
+    // Checking that the sum of new team losses is lesser than the loss of products during the
+    // quarter
+    if (dbProductLoss != null) {
+      
+      List<BigDecimal> oldLossValues = new ArrayList<>();
+      for (Team team : teams) {
+        BigDecimal teamLoss = teamTrimestrialReportRepository
+            .findQuarterLossesByTeam(team.getTeamId(), quarter.name(), year);
+        if (teamLoss == null) {
+          return false;
+        }
+        oldLossValues.add(teamLoss);
+      }
+      BigDecimal updatedTeamLosses = dbTeamLoss
+          .subtract(oldLossValues.stream().reduce(BigDecimal.ZERO, BigDecimal::add))
+          .add(sumTeamReportLosses);
+
+      System.out.println(updatedTeamLosses);
+      if (updatedTeamLosses.compareTo(dbProductLoss) > 0) {
+        return false;
+      }
+
+      if (isValidated && !(teamRepository.count() == teamReportLosses.size())) {
+        System.out.println("Too few teams");
+        return false;
+      }
+      
+      // Checking that the sum of team losses equals the cost of losses of products during this quarter
+      if (isValidated && !(updatedTeamLosses.compareTo(dbProductLoss) == 0)) {
+        System.out.println("Does not equals sum of product losses");
+        return false;
+      }
+    }
 
     List<TeamTrimestrialReport> teamTrimestrialReports = new ArrayList<>();
 
@@ -439,15 +480,13 @@ public class AdminServiceImpl implements AdminService {
 
     }
 
-    for (TeamTrimestrialReport teamTrimestrialReport : teamTrimestrialReports) {
-      teamTrimestrialReportRepository.save(teamTrimestrialReport);
-    }
+    teamTrimestrialReportRepository.saveAll(teamTrimestrialReports);
 
     return true;
   }
 
   @Override
-  public TeamWithdrawnTransactionsData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(
+  public List<WithdrawnTransactionData> getWithdrawnTransactionsByTeamNameAndQuarterAndYear(
       String teamName, Quarter quarter, int year) {
     if (teamName == null || quarter == null) {
       return null;
@@ -459,16 +498,13 @@ public class AdminServiceImpl implements AdminService {
     List<Object[]> resultQuery = transactionRepository.getWithdrawnTransactionsByTeamNameAndQuarter(
         teamName, firstDay.toString(), lastDay.toString());
 
-    TeamWithdrawnTransactionsData data = new TeamWithdrawnTransactionsData();
     List<WithdrawnTransactionData> transactions = new ArrayList<>();
-    BigDecimal totalPrice = BigDecimal.ZERO;
 
     for (Object[] o : resultQuery) {
 
-      WithdrawnTransactionData transactionData = data.new WithdrawnTransactionData();
+      WithdrawnTransactionData transactionData = new fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData();
 
-      BigDecimal aliquotPrice = (BigDecimal) o[0];
-      transactionData.setAliquotPrice(aliquotPrice);
+      transactionData.setAliquotPrice((BigDecimal) o[0]);
       transactionData.setTransactionDate((String) o[1].toString());
       transactionData.setTransactionQuantity((Integer) o[2]);
       transactionData.setUserName((String) o[3]);
@@ -479,17 +515,11 @@ public class AdminServiceImpl implements AdminService {
       productPk.setTarget(target);
 
       transactionData.setProductName(productRepository.findById(productPk).get().getProductName());
-      BigDecimal withdrawnAliquotsCost = aliquotPrice
-          .multiply(BigDecimal.valueOf(transactionData.getTransactionQuantity()));
-      totalPrice = totalPrice.add(withdrawnAliquotsCost);
 
       transactions.add(transactionData);
     }
 
-    data.setTotalPrice(totalPrice);
-    data.setTransactions(transactions);
-
-    return data;
+    return transactions;
   }
 
   @Override
@@ -604,15 +634,32 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-  public BigDecimal getSumOfQuarterLosses(Quarter quarter, Integer year) {
-    BigDecimal sum = (BigDecimal) teamTrimestrialReportRepository
+  public BigDecimal getRemainingReportLosses(Quarter quarter, Integer year) {
+    BigDecimal sumOfReportLosses = (BigDecimal) teamTrimestrialReportRepository
         .getSumOfQuarterLosses(quarter.name(), year);
 
-    if (sum == null) {
+    LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    BigDecimal sumOfOutdatedAndLostProducts = (BigDecimal) transactionRepository
+        .getSumOfOutdatedAndLostProductOfQuarter(firstDay.toString(), lastDay.toString());
+
+    if (sumOfReportLosses == null) {
       return null;
     }
 
-    return sum;
+    if (sumOfOutdatedAndLostProducts == null) {
+      return null;
+    }
+
+    return sumOfOutdatedAndLostProducts.subtract(sumOfReportLosses);
+  }
+
+  @Override
+  public BigDecimal getSumOfCostOfAllWithdrawnProductsByQuarter(Quarter quarter, int year) {
+    LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    return transactionRepository.getSumOfWithdrawnProductsOfQuarter(firstDay.toString(),
+        lastDay.toString());
   }
 
   @Override

@@ -20,13 +20,15 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   @ViewChild(ReloadableDatatableComponent)
   dtElement: ReloadableDatatableComponent;
 
+  activeTab: string;
+
   toast: EventEmitter<any> = new EventEmitter();
   toastTrigger: Subject<void> = new Subject();
   toastBody: String;
   toastHeader: String;
   toastType: String;
 
-  totalLosses: number;
+  quarterBill: number;
   remainingLosses: number;
   productLosses: Map<string, number>;
   teamLosses: Map<string, number>;
@@ -36,7 +38,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   selectedTeam: string;
   selectedQuarter: string;
 
-  headers: Array<string> = ['Date', 'User name', 'Product name', 'Withdrawn quantity', 'Unit price'];
+  headers: Array<string> = ['Date', 'User name', 'Product name', 'Quantity', 'Unit price'];
   quartersText: Array<string>;
   quarters: Map<string, any>;
 
@@ -46,7 +48,8 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   ) { }
 
   ngOnInit() {
-
+    this.teamLosses = new Map<string, number>();
+    this.activeTab = 'quarterOverview';
   }
 
   ngAfterViewInit(): void {
@@ -55,12 +58,18 @@ export class EditReportComponent implements AfterViewInit, OnInit {
       this.userService.getAllTeamName().subscribe(res => {
         if (res && res.data.length > 0) {
           this.teamNames = res.data;
+          this.teamNames.sort((left, right) => (left > right ? 1 : -1));
           this.selectedTeam = this.teamNames[0];
           this.updateAllData();
         }
       })
     );
   }
+
+  public changeTab(activeTab) {
+    this.activeTab = activeTab;
+  }
+
 
   private initializeQuarters(): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -138,9 +147,10 @@ export class EditReportComponent implements AfterViewInit, OnInit {
 
   public updateAllData() {
     this.updateTransactionData();
-    // report needs to be initialised and saved first before being able of getting the sum of losses of this quarter
+    this.updateWithdrawnTransactionsTotalCost();
+    // report needs to be initialised and saved first before being able of getting the remaining losses
     this.updateTeamLosses()
-    .then(() => this.updateProductLosses());
+      .then(() => this.updateProductLosses());
   }
 
   public validateReport() {
@@ -162,34 +172,54 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   public onTeamLossInputChange(teamName: string, event) {
-    const newLossValue: number = event.target.value;
-    const oldLossValue: number = this.teamLosses.get(teamName);
-    const teamLoss = new Map<string, number>();
+    const updateInput = () => $('#input-team-' + this.teamNames.indexOf(teamName)).val(this.teamLosses.get(teamName).toString());
 
-    this.teamLosses.set(teamName, newLossValue);
-    teamLoss.set(teamName, newLossValue);
-    this.saveTeamReportData(teamLoss, false)
-      .then(() => {
-        this.remainingLosses -= newLossValue - oldLossValue;
-        this.remainingLosses = Number(this.remainingLosses.toFixed(2));
-      });
+    const newLossValue: number = event.target.value;
+    const teamLoss = new Map<string, number>();
+    if (event.target.value === '') {
+      //updateInput();
+      return;
+    }
+
+    if (this.remainingLosses - newLossValue >= 0) {
+      this.teamLosses.set(teamName, newLossValue);
+      teamLoss.set(teamName, newLossValue);
+      this.saveTeamReportData(teamLoss, false)
+        .then(() =>
+          this.updateRemainingLosses()
+        );
+    } else {
+      updateInput();
+      this.toastBody = 'Remaining losses cannot be negative';
+      this.toastHeader = 'Error';
+      this.toastType = 'danger';
+      this.toastTrigger.next();
+    }
+  }
+
+  private updateWithdrawnTransactionsTotalCost() {
+    this.adminService.getWithdrawnProductsTotalCost(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
+      if (response.status === 'SUCCESS') {
+        this.quarterBill = response.data;
+      } else {
+        this.quarterBill = 0;
+      }
+    });
   }
 
   public updateTeamLosses() {
     return new Promise((resolve, reject) =>
       this.adminService.getReportLosses(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
         if (response.status === 'SUCCESS') {
-          this.teamLosses = new Map<string, number>();
-          for (const teamLoss of response.data) {
-            this.teamLosses.set(teamLoss.teamName, teamLoss.loss);
-          }
-
-          if (this.teamLosses.size === 0) {
+          if (response.data.length === 0) {
             for (let index = 0; index < this.teamNames.length; index++) {
               this.teamLosses.set(this.teamNames[index], 0);
             }
             this.saveTeamReportData(this.teamLosses, false).then(() => resolve());
           } else {
+            for (const teamLoss of response.data) {
+              this.teamLosses.set(teamLoss.teamName, teamLoss.loss);
+            }
             resolve();
           }
         } else {
@@ -206,15 +236,22 @@ export class EditReportComponent implements AfterViewInit, OnInit {
           this.productLosses.set(productLoss.name, productLoss.loss);
         });
 
-        this.totalLosses = res.data.totalLosses;
-        this.adminService.getSumOfQuarterLosses(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
-          if (response.status === 'SUCCESS') {
-            this.remainingLosses = this.totalLosses - response.data;
-            this.remainingLosses = Number(this.remainingLosses.toFixed(2));
-          } else {
-            this.remainingLosses = -1;
-          }
-        });
+        if (this.productLosses.size !== 0) {
+          this.updateRemainingLosses();
+        } else {
+          this.remainingLosses = 0;
+        }
+      }
+    });
+  }
+
+  private updateRemainingLosses() {
+    this.adminService.getRemainingReportLosses(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
+      if (response.status === 'SUCCESS') {
+        this.remainingLosses = response.data;
+        this.remainingLosses = Number(this.remainingLosses.toFixed(2));
+      } else {
+        this.remainingLosses = 0;
       }
     });
   }
@@ -242,7 +279,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     if (this.quarters.size > 0) {
       this.fetchTransactions()
         .then(data => {
-          this.dtElement.items = this.transactionValuesToArray(<Array<Transaction>>data.transactions);
+          this.dtElement.items = this.transactionValuesToArray(<Array<Transaction>>data);
           this.dtElement.reRenderData();
         })
         .catch(e => {

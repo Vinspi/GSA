@@ -82,8 +82,12 @@ export class AdminService {
     return this.http.get<JsonResponse>(this.BASE_URL + '/quarterYearOfAllEditableReports', { withCredentials: true });
   }
 
-  getSumOfQuarterLosses(quarter: string, year: string) {
-    return this.http.get<JsonResponse>(this.BASE_URL + '/sumQuarterLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  getRemainingReportLosses(quarter: string, year: string) {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/remainingReportLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  }
+
+  getWithdrawnProductsTotalCost(quarter: string, year: string) {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/withdrawalTotalCost/?quarter=' + quarter + '&year=' + year, { withCredentials: true });
   }
 
   getAllProductsWithAliquots(): Observable<JsonResponse> {

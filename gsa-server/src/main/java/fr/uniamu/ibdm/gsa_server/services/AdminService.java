@@ -13,8 +13,8 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamWithdrawnTransactionsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
@@ -114,7 +114,7 @@ public interface AdminService {
    * 
    * @return a list of transactions and the total price or null if an error occurred.
    */
-  TeamWithdrawnTransactionsData getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName,
+  List<WithdrawnTransactionData> getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName,
       Quarter quarter, int year);
 
   /**
@@ -140,7 +140,8 @@ public interface AdminService {
    * 
    * @return total cost losses and its details (product's name and its associated loss).
    */
-  TransactionLossesData getSumAndProductsOfOutdatedAndLostProductOfQuarter(Quarter quarter, int year);
+  TransactionLossesData getSumAndProductsOfOutdatedAndLostProductOfQuarter(Quarter quarter,
+      int year);
 
   /**
    * This method returns the quarter and year of all editable reports.
@@ -161,14 +162,25 @@ public interface AdminService {
   List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(Quarter quarter, int year);
 
   /**
-   * Gets the sum of all team losses of a given quarter.
+   * Gets the remaining losses of a report in a given quarter. The losses are calculated by
+   * subtracting the sum of losses of all teams in a given quarter from the sum of prices of all
+   * lost or outdated products in this same quarter.
    * 
    * @param quarter value of Quarter enumeration
-   * @param year int 
+   * @param year int
    * @return the sum of losses in a given quarter
    */
-  BigDecimal getSumOfQuarterLosses(Quarter quarter, Integer year);
+  BigDecimal getRemainingReportLosses(Quarter quarter, Integer year);
   
+  /**
+   * Gets the sum of cost of all withdrawn products in a given year.
+   * 
+   * @param quarter value of Quarter enumeration
+   * @param year int
+   * @return the sum, null if no records were found
+   */
+  public BigDecimal getSumOfCostOfAllWithdrawnProductsByQuarter(Quarter quarter, int year);
+
   /**
    * This method retrieve all products and their aliquots from the database.
    *

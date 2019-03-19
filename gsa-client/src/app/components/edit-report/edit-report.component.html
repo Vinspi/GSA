@@ -1,101 +1,131 @@
-<div class="card" *ngIf="quartersText && quartersText.length > 0; else noReport">
-  <div class="card-body">
-    <form>
-      <div class="row">
-        <div class="col form-group">
-          <label for="select-quarter">Quarter</label>
-          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control col-md-6"
-            (change)="updateAllData()" name="quarter">
-            <option *ngFor="let quarter of quartersText">{{ quarter }}</option>
-          </select>
-        </div>
-        <div class="col form-group">
-          <label for="select-team">Team</label>
-          <select [(ngModel)]="selectedTeam" id="select-team" class="form-control col-md-6"
-            (change)="updateTransactionData()" name="team">
-            <option *ngFor="let name of teamNames">{{ name }}</option>
-          </select>
-        </div>
+<div *ngIf="quartersText && quartersText.length > 0; else noReport">
+
+  <form>
+    <div class="row justify-content-end">
+      <div class="form-group col-md-7" *ngIf="activeTab==='quarterOverview'">
+        <label for="select-team">Team</label>
+        <select [(ngModel)]="selectedTeam" id="select-team" class="form-control"
+          (change)="updateTransactionData()" name="team">
+          <option *ngFor="let name of teamNames">{{ name }}</option>
+        </select>
       </div>
-    </form>
-    <div class="row">
-      <div class="col-sm-7">
-        <div>
-          <app-reloadable-datatable [headers]="headers"></app-reloadable-datatable>
-        </div>
-        <div *ngIf="productLosses && productLosses.size > 0; else noProducts" class="card-body">
-          <h5 class="card-title center">Outdated and lost products</h5>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <div class="row">
-                <div class="col-md-7 center">Product name</div>
-                <div class="col-md-5 center">Losses</div>
-              </div>
-            </li>
-            <li *ngFor="let product of productLosses | keyvalue" class="list-group-item">
-              <div class="row">
-                <div class="col-md-7 center">
-                  {{product.key}}
-                </div>
-                <div class="col-md-5 center">
-                  {{product.value}}€
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-        <ng-template #noProducts>
-          <div class="card-body center">
-            <h4>No outdated nor lost products.</h4>
-          </div>
-        </ng-template>
+      <div class="form-group col-md-5">
+        <label for="select-quarter">Quarter</label>
+        <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control"
+          (change)="updateAllData()" name="quarter">
+          <option *ngFor="let quarter of quartersText">{{ quarter }}</option>
+        </select>
       </div>
-      <div class="col-sm-5">
-        <div *ngIf="teamLosses && teamLosses.size > 0; else noTeams">
-          <p id="remainingLosses" class="center card-text"><b>Remaining losses : {{remainingLosses}} €</b></p>
-          <div [hidden]="remainingLosses >= 0" class="alert alert-danger">
-            The remaining losses cannot be negative.
+    </div>
+  </form>
+
+  <div id="tabs" #tabs>
+
+    <ul class="nav nav-pills">
+      <li class="nav-item">
+        <a class="nav-link active" href="#quarterOverview" [ngClass]="{ 'active':activeTab==='quarterOverview'}" (click)="changeTab('quarterOverview')"
+          data-toggle="tab">Quarter Overview</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="#teamLosses" [ngClass]="{ 'active':activeTab==='teamLosses'}" data-toggle="tab"
+          (click)="changeTab('teamLosses')">Team Losses</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane" id="quarter-overview-content" [ngClass]="{ 'active':activeTab==='quarterOverview'}">
+        <div class="row">
+          <div class="card col-md-7">
+            <h4 class="card-title center">Withdrawn products</h4>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <app-reloadable-datatable [headers]="headers"></app-reloadable-datatable>
+                </li>
+              </ul>
           </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">
-              <div class="row">
-                <div class="col-md-5 center">Team name</div>
-                <div class="col-md-7 center">Losses</div>
-              </div>
-            </li>
-            <li *ngFor="let teamLoss of teamLosses | keyvalue"
-              class="list-group-item justify-content-center align-items-center">
-              <div class="row">
-                <div class="col-md-7 center">
-                  {{teamLoss.key}}
-                </div>
-                <div class="col-md-5 center">
-                  <input type="text" (change)="onTeamLossInputChange(teamLoss.key, $event)" required price
-                    [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
-                </div>
-              </div>
-            </li>
-          </ul>
-          <div class="card-body form-group row">
-            <div (click)="validateReport()" class="button-container col justify-content-center">
-              <button class="btn btn-danger" type="button">
-                Validate
-              </button>
+          <div class="col-md-5">        
+            <div class="card">
+              <h4 class="card-title center">Billing</h4>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <div class="row">
+                    <div class="col-sm-9 align-items-center">
+                      <div class="card-text"><b>Remaining losses : {{remainingLosses}} €</b></div>
+                      <div class="card-text"><b>Withdrawal total : {{quarterBill}} €</b></div>
+                    </div>
+                    <div class="col-sm-3 button-container align-items-center">
+                      <button (click)="validateReport()" class="btn btn-danger" type="button">Validate</button>
+                    </div>
+                  </div>
+                </li>
+              </ul>
             </div>
-          </div>
+            <div class="card">
+              <h4 class="card-title center">Outdated and lost products</h4>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <div class="row">
+                    <div class="col-md-7 center">Product name</div>
+                    <div class="col-md-5 center">Losses</div>
+                  </div>
+                </li>
+                <li class="col center list-group-item" *ngIf="productLosses && productLosses.size === 0">No outdated nor lost products</li>
+                <li *ngFor="let product of productLosses | keyvalue" class="list-group-item">
+                  <div class="row">
+                    <div class="col-md-7 center">
+                      {{product.key}}
+                    </div>
+                    <div class="col-md-5 center">
+                      {{product.value}} €
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div> 
         </div>
-        <ng-template #noTeams>
-          <div class="card-body center">
-            <h4>No teams are bound to this report.</h4>
-          </div>
-        </ng-template>
+      </div>
+
+
+  <div class="tab-pane" id="team-losses-content" [ngClass]="{ 'active':activeTab==='teamLosses'}">
+    <div *ngIf="teamLosses && teamLosses.size > 0; else noTeams">
+        <div class="card">
+        
+            <div class="card-body billing-info center"><b>Remaining losses : {{remainingLosses}} €</b></div>
+        
+      </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-md-9 center">Team names</div>
+              <div class="col-md-3 center">Losses</div>
+            </div>
+          </li>
+          <li *ngFor="let teamLoss of teamLosses | keyvalue; let i = index"
+            class="list-group-item justify-content-center align-items-center">
+            <div class="row">
+              <div class="col-md-9 center">
+                {{teamLoss.key}}
+              </div>
+              <div class="col-md-3 center">
+                <input [attr.id]="'input-team-' + i" ondrop="return false;" type="text" (change)="onTeamLossInputChange(teamLoss.key, $event)" required price
+                  [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <ng-template #noTeams>
+        <div class="card-body center">
+          <h4>No teams are bound to this report.</h4>
+        </div>
+      </ng-template> 
       </div>
     </div>
   </div>
 </div>
 <ng-template #noReport>
   <div class="card-body center">
-    <h4>No report available.</h4>
+    <h4>No reports available.</h4>
   </div>
 </ng-template>
 <app-toast [toastHeader]="toastHeader" [toastBody]="toastBody" [event]="toastTrigger" [timeout]="2000"

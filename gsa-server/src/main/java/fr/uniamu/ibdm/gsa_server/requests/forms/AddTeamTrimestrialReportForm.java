@@ -15,11 +15,10 @@ public class AddTeamTrimestrialReportForm implements Form {
   /**
    * Constructor for AddTeamTrimestrialReportForm object.
    * 
-   * @param losses bill
+   * @param teamReportLoss list of team names and assosiated value
    * @param finalFlag is editable flag
    * @param year report year
    * @param quarter string value of Quarter enumeration
-   * @param teamName String
    */
   public AddTeamTrimestrialReportForm(List<TeamReportLossForm> teamReportLoss, Boolean finalFlag,
       Integer year, String quarter) {
@@ -67,8 +66,8 @@ public class AddTeamTrimestrialReportForm implements Form {
       return false;
     }
 
-    QuarterForm quarterForm = new QuarterForm(quarter);
-    if (!quarterForm.validate()) {
+    YearQuarterForm yearQuarterForm = new YearQuarterForm(quarter, year);
+    if (!yearQuarterForm.validate()) {
       return false;
     }
 
