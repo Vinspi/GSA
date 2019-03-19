@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberRepository extends CrudRepository<Member, Long> {
 
-    Member findByUser(User user);
+  Member findByUser(User user);
 
 }

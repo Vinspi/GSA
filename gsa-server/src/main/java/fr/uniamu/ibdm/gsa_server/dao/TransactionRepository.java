@@ -12,20 +12,20 @@ import java.util.List;
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
 
-    /* FUNCTIONS FOR ADMIN */
-    List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate begin, LocalDate end, TransactionType transactionType);
+  /* FUNCTIONS FOR ADMIN */
+  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate begin, LocalDate end, TransactionType transactionType);
 
-    List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(LocalDate begin, TransactionType transactionType);
+  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(LocalDate begin, TransactionType transactionType);
 
-    List<Transaction> findAllByTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate end, TransactionType transactionType);
+  List<Transaction> findAllByTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate end, TransactionType transactionType);
 
-    /* FUNCTIONS FOR USERS */
-    List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate begin, LocalDate end, TransactionType transactionType);
+  /* FUNCTIONS FOR USERS */
+  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate begin, LocalDate end, TransactionType transactionType);
 
-    List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionTypeLike(Member member, LocalDate begin, TransactionType transactionType);
+  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionTypeLike(Member member, LocalDate begin, TransactionType transactionType);
 
-    List<Transaction> findAllByMemberAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate end, TransactionType transactionType);
+  List<Transaction> findAllByMemberAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate end, TransactionType transactionType);
 
-    List<Transaction> findAllByMember(Member member);
+  List<Transaction> findAllByMember(Member member);
 
 }

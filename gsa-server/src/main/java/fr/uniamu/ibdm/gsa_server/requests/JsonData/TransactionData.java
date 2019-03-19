@@ -5,72 +5,77 @@ import fr.uniamu.ibdm.gsa_server.models.Transaction;
 import java.time.LocalDate;
 
 public class TransactionData {
-    private LocalDate date;
-    private String userName;
-    private String aliquotName;
-    private String teamName;
-    private int quantity;
-    private float price;
+  private LocalDate date;
+  private String userName;
+  private String aliquotName;
+  private String teamName;
+  private int quantity;
+  private float price;
 
-    public TransactionData() {
-    }
+  public TransactionData() {
+  }
 
-    public TransactionData(Transaction elem) {
-        this.date = elem.getTransactionDate();
-        this.userName = elem.getMember().getUser().getUserName();
-        this.aliquotName = elem.getAliquot().getProduct().getProductName();
-        this.teamName = elem.getMember().getTeam().getTeamName();
-        this.quantity = elem.getTransactionQuantity();
-        float priceUnit = elem.getAliquot().getAliquotPrice();
-        this.price = priceUnit * quantity;
-    }
+  /**
+   * Constructor for TransactionData.
+   *
+   * @param elem a transaction.
+   */
+  public TransactionData(Transaction elem) {
+    this.date = elem.getTransactionDate();
+    this.userName = elem.getMember().getUser().getUserName();
+    this.aliquotName = elem.getAliquot().getProduct().getProductName();
+    this.teamName = elem.getMember().getTeam().getTeamName();
+    this.quantity = elem.getTransactionQuantity();
+    float priceUnit = elem.getAliquot().getAliquotPrice();
+    this.price = priceUnit * quantity;
+  }
 
-    public LocalDate getDate() {
-        return date;
-    }
+  public LocalDate getDate() {
+    return date;
+  }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+  public void setDate(LocalDate date) {
+    this.date = date;
+  }
 
-    public String getUserName() {
-        return userName;
-    }
+  public String getUserName() {
+    return userName;
+  }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
 
-    public String getAliquotName() {
-        return aliquotName;
-    }
+  public String getAliquotName() {
+    return aliquotName;
+  }
 
-    public void setAliquot(String aliquot) {
-        this.aliquotName = aliquot;
-    }
+  public void setAliquot(String aliquot) {
+    this.aliquotName = aliquot;
+  }
 
-    public String getTeamName() {
-        return teamName;
-    }
+  public String getTeamName() {
+    return teamName;
+  }
 
-    public void setTeam(String teamName) {
-        this.teamName = teamName;
-    }
+  public void setTeam(String teamName) {
+    this.teamName = teamName;
+  }
 
-    public int getQuantity() {
-        return quantity;
-    }
+  public int getQuantity() {
+    return quantity;
+  }
 
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
 
-    public float getPrice() {
-        return price;
-    }
+  public float getPrice() {
+    return price;
+  }
 
-    public void setPrice(float price) {
-        this.price = price;
-    }
+  public void setPrice(float price) {
+    this.price = price;
+  }
 
 }

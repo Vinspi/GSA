@@ -41,7 +41,8 @@ public class UserController {
   @GetMapping("/stockOverview")
   public JsonResponse<List<ProductOverviewData>> stockOverview() {
 
-    if (maintenanceBean.isMaintenanceMode()){
+
+    if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
@@ -58,7 +59,7 @@ public class UserController {
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
 
-    if (maintenanceBean.isMaintenanceMode()){
+    if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
@@ -85,7 +86,7 @@ public class UserController {
   @PostMapping("/getProductName")
   public JsonResponse<String> getProductName(@RequestBody GetProductNameForm form) {
 
-    if (maintenanceBean.isMaintenanceMode()){
+    if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
@@ -109,7 +110,7 @@ public class UserController {
   @GetMapping("/getAllTeamName")
   public JsonResponse<List<String>> getAllTeamName() {
 
-    if (maintenanceBean.isMaintenanceMode()){
+    if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
@@ -124,7 +125,7 @@ public class UserController {
   @GetMapping("/getAllProductName")
   public JsonResponse<List<String>> getAllProductName() {
 
-    if (maintenanceBean.isMaintenanceMode()){
+    if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
@@ -153,33 +154,34 @@ public class UserController {
       return true;
     }
   }
+
   /**
    * Endpoint for /history. Return a list of withdrawals depending of the period given in argument.
    *
    * @param form the form containing the date of begin and the date of end of the period.
    * @return if successful, a JSON response with a success status, otherwise a
-   * JSON response with a fail status and an error message.
+   *     JSON response with a fail status and an error message.
    */
   @PostMapping("/history")
   public JsonResponse<List<TransactionData>> getUserWithdrawalsHistory(@RequestBody PeriodForm form) {
     List<TransactionData> withdrawalsHistory;
 
     if (form.validate()) {
-        if (form.getBegin() != null && form.getEnd() != null) {
-            withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(form.getUserName(), form.getBegin(), form.getEnd());
-        } else if (form.getBegin() != null && form.getEnd() == null) {
-            withdrawalsHistory = userService.getUserWithdrawalsHistorySince(form.getUserName(), form.getBegin());
-        } else if (form.getBegin() == null && form.getEnd() != null) {
-            withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(form.getUserName(), form.getEnd());
-        } else {
-            withdrawalsHistory = userService.getUserWithdrawalsHistory(form.getUserName());
-        }
+      if (form.getBegin() != null && form.getEnd() != null) {
+        withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(form.getUserName(), form.getBegin(), form.getEnd());
+      } else if (form.getBegin() != null && form.getEnd() == null) {
+        withdrawalsHistory = userService.getUserWithdrawalsHistorySince(form.getUserName(), form.getBegin());
+      } else if (form.getBegin() == null && form.getEnd() != null) {
+        withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(form.getUserName(), form.getEnd());
+      } else {
+        withdrawalsHistory = userService.getUserWithdrawalsHistory(form.getUserName());
+      }
 
-        if (withdrawalsHistory != null) {
-            return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsHistory);
-        }
+      if (withdrawalsHistory != null) {
+        return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsHistory);
+      }
 
-        return new JsonResponse<>("Could not find withdrawals", RequestStatus.FAIL);
+      return new JsonResponse<>("Could not find withdrawals", RequestStatus.FAIL);
     }
 
     return new JsonResponse<>("Could not find withdrawals", RequestStatus.FAIL);

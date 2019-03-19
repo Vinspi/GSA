@@ -63,11 +63,11 @@ public class AdminServiceImpl implements AdminService {
   /**
    * Constructor for the AdminService.
    *
-   * @param productRepository Autowired repository.
+   * @param productRepository     Autowired repository.
    * @param transactionRepository Autowired repository.
-   * @param aliquotRepository Autowired repository.
-   * @param speciesRepository Autowired repository.
-   * @param alertRepository   Autowired repository.
+   * @param aliquotRepository     Autowired repository.
+   * @param speciesRepository     Autowired repository.
+   * @param alertRepository       Autowired repository.
    */
   @Autowired
   public AdminServiceImpl(ProductRepository productRepository, TransactionRepository transactionRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository, TeamTrimestrialReportRepository teamTrimestrialReportRepository) {
@@ -163,45 +163,45 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
-    public List<TransactionData> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
-        List<TransactionData> history = new ArrayList<>();
+  public List<TransactionData> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
+    List<TransactionData> history = new ArrayList<>();
 
-        transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(begin, end, TransactionType.WITHDRAW).forEach(elem ->
-            history.add(new TransactionData(elem))
-        );
-         return history;
-    }
+    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(begin, end, TransactionType.WITHDRAW).forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
+    return history;
+  }
 
-    @Override
-    public List<TransactionData> getWithdrawalsHistorySince(LocalDate begin) {
-        List<TransactionData> history = new ArrayList<>();
+  @Override
+  public List<TransactionData> getWithdrawalsHistorySince(LocalDate begin) {
+    List<TransactionData> history = new ArrayList<>();
 
-        transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(begin, TransactionType.WITHDRAW).forEach(elem ->
-                history.add(new TransactionData(elem))
-        );
-        return history;
-    }
+    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(begin, TransactionType.WITHDRAW).forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
+    return history;
+  }
 
-    @Override
-    public List<TransactionData> getWithdrawalsHistoryUpTo(LocalDate end) {
-        List<TransactionData> history = new ArrayList<>();
+  @Override
+  public List<TransactionData> getWithdrawalsHistoryUpTo(LocalDate end) {
+    List<TransactionData> history = new ArrayList<>();
 
-        transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionTypeLike(end, TransactionType.WITHDRAW).forEach(elem ->
-                history.add(new TransactionData(elem))
-        );
-        return history;
-    }
+    transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionTypeLike(end, TransactionType.WITHDRAW).forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
+    return history;
+  }
 
-    @Override
-    public List<TransactionData> getWithdrawalsHistory() {
-        List<TransactionData> history = new ArrayList<>();
+  @Override
+  public List<TransactionData> getWithdrawalsHistory() {
+    List<TransactionData> history = new ArrayList<>();
 
-        transactionRepository.findAll().forEach(elem ->
-            history.add(new TransactionData(elem))
-        );
+    transactionRepository.findAll().forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
 
-        return history;
-    }
+    return history;
+  }
 
   @Override
   public List<TriggeredAlertsQuery> getTriggeredAlerts() {
@@ -499,7 +499,7 @@ public class AdminServiceImpl implements AdminService {
 
     products.forEach(product -> {
       product.getAliquots().removeIf(aliquot -> {
-        return aliquot.getAliquotExpirationDate().isAfter(LocalDate.now()) || (aliquot.getAliquotQuantityVisibleStock()+aliquot.getAliquotQuantityHiddenStock() == 0);
+        return aliquot.getAliquotExpirationDate().isAfter(LocalDate.now()) || (aliquot.getAliquotQuantityVisibleStock() + aliquot.getAliquotQuantityHiddenStock() == 0);
       });
     });
 
@@ -517,7 +517,7 @@ public class AdminServiceImpl implements AdminService {
           TransactionMotif.OUTDATED,
           TransactionType.WITHDRAW,
           LocalDate.now(),
-          (int) (aliquotOpt.get().getAliquotQuantityHiddenStock()+aliquotOpt.get().getAliquotQuantityVisibleStock()),
+          (int) (aliquotOpt.get().getAliquotQuantityHiddenStock() + aliquotOpt.get().getAliquotQuantityVisibleStock()),
           aliquotOpt.get(),
           null);
       transactionRepository.save(t);

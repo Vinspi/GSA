@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { MaintenanceGuard } from './guards/maintenance.guard';
+import { TechGuard } from './guards/tech.guard';
 
 import { ConnectionFormComponent } from './components/connection-form/connection-form.component'
 import { StockOverviewComponent } from './components/stock-overview/stock-overview.component'
@@ -21,7 +22,8 @@ const routes: Routes = [
   {path: '', canActivate: [AdminGuard, MaintenanceGuard], component: AdminHomepageComponent},
   {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', canActivate: [MaintenanceGuard], component: StockOverviewComponent},
-  {path: 'withdraw', canActivate: [AuthGuard, MaintenanceGuard],component: WithdrawComponent},  {path: 'history', canActivate: [AuthGuard, MaintenanceGuard], component: HistoryComponent},
+  {path: 'withdraw', canActivate: [AuthGuard, MaintenanceGuard, TechGuard],component: WithdrawComponent}, 
+  {path: 'history', canActivate: [AuthGuard, MaintenanceGuard], component: HistoryComponent},
   {path: 'alerts', canActivate: [AdminGuard, MaintenanceGuard], component: AlertsPanelComponent},
   {path: 'inventory', canActivate: [AdminGuard, MaintenanceGuard], component: InventoryComponent},
   {path: 'product-manager', canActivate: [AdminGuard, MaintenanceGuard], component: ProductManagerComponent},
