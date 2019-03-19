@@ -26,6 +26,7 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -158,7 +159,8 @@ public class AdminServiceTest {
     Assert.assertEquals(false, adminService.addProduct(sourceName, targetName));
   }
 
-  public void getAllAlerts() {
+    @Test
+    public void getAllAlerts() {
 
     List<Alert> alerts = new ArrayList<>();
     Alert tmp;

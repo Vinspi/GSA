@@ -20,12 +20,14 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
@@ -52,9 +54,9 @@ import java.util.Optional;
 public class AdminServiceImpl implements AdminService {
 
   private ProductRepository productRepository;
+  private TransactionRepository transactionRepository;
   private AliquotRepository aliquotRepository;
   private AlertRepository alertRepository;
-  private TransactionRepository transactionRepository;
   private SpeciesRepository speciesRepository;
   private TeamTrimestrialReportRepository teamTrimestrialReportRepository;
 
@@ -62,17 +64,18 @@ public class AdminServiceImpl implements AdminService {
    * Constructor for the AdminService.
    *
    * @param productRepository Autowired repository.
+   * @param transactionRepository Autowired repository.
    * @param aliquotRepository Autowired repository.
    * @param speciesRepository Autowired repository.
    * @param alertRepository   Autowired repository.
    */
   @Autowired
-  public AdminServiceImpl(ProductRepository productRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository, TransactionRepository transactionRepository, TeamTrimestrialReportRepository teamTrimestrialReportRepository) {
+  public AdminServiceImpl(ProductRepository productRepository, TransactionRepository transactionRepository, AliquotRepository aliquotRepository, SpeciesRepository speciesRepository, AlertRepository alertRepository, TeamTrimestrialReportRepository teamTrimestrialReportRepository) {
     this.productRepository = productRepository;
+    this.transactionRepository = transactionRepository;
     this.aliquotRepository = aliquotRepository;
     this.speciesRepository = speciesRepository;
     this.alertRepository = alertRepository;
-    this.transactionRepository = transactionRepository;
     this.teamTrimestrialReportRepository = teamTrimestrialReportRepository;
   }
 
@@ -158,6 +161,47 @@ public class AdminServiceImpl implements AdminService {
       return true;
     }
   }
+
+  @Override
+    public List<TransactionData> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(begin, end, TransactionType.WITHDRAW).forEach(elem ->
+            history.add(new TransactionData(elem))
+        );
+         return history;
+    }
+
+    @Override
+    public List<TransactionData> getWithdrawalsHistorySince(LocalDate begin) {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(begin, TransactionType.WITHDRAW).forEach(elem ->
+                history.add(new TransactionData(elem))
+        );
+        return history;
+    }
+
+    @Override
+    public List<TransactionData> getWithdrawalsHistoryUpTo(LocalDate end) {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionTypeLike(end, TransactionType.WITHDRAW).forEach(elem ->
+                history.add(new TransactionData(elem))
+        );
+        return history;
+    }
+
+    @Override
+    public List<TransactionData> getWithdrawalsHistory() {
+        List<TransactionData> history = new ArrayList<>();
+
+        transactionRepository.findAll().forEach(elem ->
+            history.add(new TransactionData(elem))
+        );
+
+        return history;
+    }
 
   @Override
   public List<TriggeredAlertsQuery> getTriggeredAlerts() {

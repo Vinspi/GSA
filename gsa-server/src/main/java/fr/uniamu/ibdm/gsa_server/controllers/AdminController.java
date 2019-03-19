@@ -7,24 +7,12 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.User;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.*;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.SetupMaintenanceForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.*;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
-import org.openqa.selenium.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/admin")
@@ -140,6 +129,34 @@ public class AdminController {
     } else {
       return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
+  }
+
+  /**
+   * Endpoint for /history. Return a list of withdrawals depending of the period given in argument.
+   *
+   * @param form the form containing the date of begin and the date of end of the period.
+   * @return if successful, a JSON response with a success status, otherwise a
+   * JSON response with a fail status and an error message.
+   */
+  @PostMapping("/history")
+  public JsonResponse<List<TransactionData>> getWithdrawalsHistory(@RequestBody PeriodForm form) {
+      List<TransactionData> withdrawalsHistory;
+
+      if (form.validate()) {
+          if (form.getBegin() != null && form.getEnd() != null) {
+              withdrawalsHistory = adminService.getWithdrawalsHistoryBetween(form.getBegin(), form.getEnd());
+          } else if (form.getBegin() != null && form.getEnd() == null) {
+              withdrawalsHistory = adminService.getWithdrawalsHistorySince(form.getBegin());
+          } else if (form.getBegin() == null && form.getEnd() != null) {
+              withdrawalsHistory = adminService.getWithdrawalsHistoryUpTo(form.getEnd());
+          } else {
+              withdrawalsHistory = adminService.getWithdrawalsHistory();
+          }
+
+          return new JsonResponse<>(RequestStatus.SUCCESS, withdrawalsHistory);
+      }
+
+      return new JsonResponse<>("Could not find all withdrawals", RequestStatus.FAIL);
   }
 
   /**
@@ -453,7 +470,7 @@ public class AdminController {
     }
 
     if (isAdmin()) {
-      return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAlertsNotification());
     } else {
       return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }

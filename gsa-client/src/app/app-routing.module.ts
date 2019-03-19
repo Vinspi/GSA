@@ -15,12 +15,13 @@ import { MaintenanceComponent } from './components/maintenance/maintenance.compo
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
+import { HistoryComponent } from './components/history/history.component';
 
 const routes: Routes = [
   {path: '', canActivate: [AdminGuard, MaintenanceGuard], component: AdminHomepageComponent},
   {path: 'login', component: ConnectionFormComponent},
   {path: 'stockoverview', canActivate: [MaintenanceGuard], component: StockOverviewComponent},
-  {path: 'withdraw', canActivate: [AuthGuard, MaintenanceGuard],component: WithdrawComponent},
+  {path: 'withdraw', canActivate: [AuthGuard, MaintenanceGuard],component: WithdrawComponent},  {path: 'history', canActivate: [AuthGuard, MaintenanceGuard], component: HistoryComponent},
   {path: 'alerts', canActivate: [AdminGuard, MaintenanceGuard], component: AlertsPanelComponent},
   {path: 'inventory', canActivate: [AdminGuard, MaintenanceGuard], component: InventoryComponent},
   {path: 'product-manager', canActivate: [AdminGuard, MaintenanceGuard], component: ProductManagerComponent},

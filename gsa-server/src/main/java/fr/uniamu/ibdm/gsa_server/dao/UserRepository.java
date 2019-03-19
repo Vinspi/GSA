@@ -15,4 +15,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
   @Query("SELECT u.userEmail FROM User u WHERE isAdmin = true")
   List<String> findAllAdminEmail();
 
+  User findByUserName(String userName);
+
 }
