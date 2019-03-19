@@ -36,7 +36,6 @@ import { StatsProductsComponent } from './components/admin-homepage/stats-produc
 import { MaintenanceComponent } from './components/maintenance/maintenance.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
-import { PriceDirective } from './directives/price.directive';
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 
 
@@ -59,7 +58,6 @@ import { OutdatedManagementComponent } from './components/outdated-management/ou
     ToastComponent,
     EditReportComponent,
     ReloadableDatatableComponent,
-    PriceDirective,
     InventoryComponent,
     DigitsOnlyDirective,
     ProductManagerComponent,

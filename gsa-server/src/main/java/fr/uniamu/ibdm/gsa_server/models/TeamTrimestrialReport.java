@@ -19,9 +19,11 @@ import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 @IdClass(TeamTrimestrialReportPk.class)
 public class TeamTrimestrialReport implements Serializable {
 
+  @Column(nullable = false)
   private BigDecimal losses;
 
   /* if final flag is up, the report can't be modified */
+  @Column(nullable = false)
   private boolean finalFlag;
 
   @Id
@@ -39,7 +41,6 @@ public class TeamTrimestrialReport implements Serializable {
 
   public TeamTrimestrialReport() {
   }
-
 
   public BigDecimal getLosses() {
     return losses;
@@ -72,7 +73,6 @@ public class TeamTrimestrialReport implements Serializable {
   public void setYear(int year) {
     this.year = year;
   }
-
 
   public Team getTeam() {
     return team;

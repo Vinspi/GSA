@@ -397,8 +397,7 @@ public class AdminServiceTest {
     Boolean finalFlag = false;
     Map<String, BigDecimal> teamReportLosses = new HashMap<>();
     Integer year = 2019;
-    String teamName = "Some team";
-    teamReportLosses.put(teamName, BigDecimal.valueOf(100.53));
+    teamReportLosses.put("Some team", BigDecimal.valueOf(100.53));
     Quarter quarter = Quarter.QUARTER_1;
 
     // Saving a report when the quarter is not over should fail
@@ -413,15 +412,97 @@ public class AdminServiceTest {
     Mockito.when(clock.now()).thenReturn(now);
 
     // Saving a report should fail when the team name does not match a team.
-    Mockito.when(teamRepository.findByTeamName(teamName)).thenReturn(null);
+    Mockito.when(teamRepository.findByTeamName("Some team")).thenReturn(null);
     success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
     Assert.assertFalse(success);
-    Mockito.verify(teamRepository, Mockito.times(1)).findByTeamName(teamName);
+    Mockito.verify(teamRepository, Mockito.times(1)).findByTeamName("Some team");
 
-    Team team = new Team();
-    team.setTeamName(teamName);
-    team.setTeamId(1L);
-    Mockito.when(teamRepository.findByTeamName(teamName)).thenReturn(team);
+    // Saving a report with no data in the database should initialize data for this given quarter
+
+    Mockito.when(teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter.name(), year))
+        .thenReturn(null);
+
+    teamReportLosses = new HashMap<>();
+    teamReportLosses.put("teamA", BigDecimal.valueOf(5.5));
+    teamReportLosses.put("teamB", BigDecimal.valueOf(6.5));
+
+    List<Team> teams = new ArrayList<>();
+    Team someTeam = new Team();
+    someTeam.setTeamId(1L);
+    teams.add(someTeam);
+    Mockito.when(teamRepository.findByTeamName(Mockito.contains("teamA"))).thenReturn(someTeam);
+    someTeam = new Team();
+    someTeam.setTeamId(2L);
+    Mockito.when(teamRepository.findByTeamName(Mockito.eq("teamB"))).thenReturn(someTeam);
+    teams.add(someTeam);
+    Mockito.when(teamRepository.findAll()).thenReturn(teams);
+    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any(TeamTrimestrialReport.class)))
+        .thenReturn(null);
+
+    // Only to make sure that the execution is stopped after saving process. (fails at the next if
+    // condition)
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(null);
+
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1))
+        .getSumOfQuarterLosses(Mockito.eq(quarter.name()), Mockito.eq(year));
+    Mockito.verify(teamRepository, Mockito.times(1)).findAll();
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(2))
+        .save(Mockito.any(TeamTrimestrialReport.class));
+
+    Assert.assertFalse(success);
+
+    // Saving when there are no lost products and losses are given should fail
+    teamReportLosses = new HashMap<>();
+    teamReportLosses.put("teamA", BigDecimal.valueOf(6.0));
+    teamReportLosses.put("teamB", BigDecimal.ZERO);
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(null);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(transactionRepository, Mockito.times(2))
+        .getSumOfOutdatedAndLostProductOfQuarter(Mockito.anyString(), Mockito.anyString());
+
+    // Saving when the given losses are greater than the calculated losses should fail
+    teamReportLosses = new HashMap<>();
+    teamReportLosses.put("teamA", BigDecimal.valueOf(5.5));
+    teamReportLosses.put("teamB", BigDecimal.valueOf(6.5));
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(BigDecimal.valueOf(10.00));
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(transactionRepository, Mockito.times(3))
+        .getSumOfOutdatedAndLostProductOfQuarter(Mockito.anyString(), Mockito.anyString());
+
+    // Saving a validated report should fail when the number of teams given does not match the
+    // number of teams in the database
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(BigDecimal.valueOf(15.00));
+    Mockito.when(teamRepository.count()).thenReturn(3L);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, true, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(teamRepository, Mockito.times(1)).count();
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(0)).findById(Mockito.any());
+
+    // Saving a validated report should fail when the given losses does not equal the calculated
+    // losses
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(BigDecimal.valueOf(15.00));
+    Mockito.when(teamRepository.count()).thenReturn(2L);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, true, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(0)).findById(Mockito.any());
 
     // Saving a non-editable report should not be updated.
     TeamTrimestrialReport currentReport = new TeamTrimestrialReport();
@@ -434,7 +515,7 @@ public class AdminServiceTest {
 
     Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
         .thenReturn(Optional.of(currentReport));
-    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, false, year, quarter);
     Assert.assertFalse(success);
     Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).findById(Mockito.any());
 
@@ -445,14 +526,8 @@ public class AdminServiceTest {
     Mockito.when(teamTrimestrialReportRepository.save(Mockito.any())).thenReturn(null);
     success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
     Assert.assertTrue(success);
-    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).save(Mockito.any());
-
-    // Saving a new report with a correct form should be added in the database.
-    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
-        .thenReturn(Optional.empty());
-    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
-    Assert.assertTrue(success);
-    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(2)).save(Mockito.any());
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(3)).findById(Mockito.any());
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).saveAll(Mockito.any());
 
   }
 
@@ -468,17 +543,21 @@ public class AdminServiceTest {
 
     LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
     LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
-    Mockito.when(transactionRepository.getSumAndProductsOfOutdatedAndLostProductOfQuarter(firstDay.toString(),
-        lastDay.toString())).thenReturn(cost);
+    Mockito.when(transactionRepository.getSumAndProductsOfOutdatedAndLostProductOfQuarter(
+        firstDay.toString(), lastDay.toString())).thenReturn(cost);
 
-    TransactionLossesData data = adminService.getSumAndProductsOfOutdatedAndLostProductOfQuarter(quarter, year);
+    TransactionLossesData data = adminService
+        .getSumAndProductsOfOutdatedAndLostProductOfQuarter(quarter, year);
     Assert.assertEquals(3, data.getProductLosses().size());
 
     BigDecimal sum = BigDecimal.valueOf(0.00);
     for (ProductLossData loss : data.getProductLosses()) {
       sum = sum.add(loss.getLoss());
     }
-    Assert.assertEquals(BigDecimal.valueOf(198.90), sum);
+
+    if (!(BigDecimal.valueOf(198.90).compareTo(sum) == 0)) {
+      Assert.fail();
+    }
 
   }
 

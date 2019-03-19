@@ -389,8 +389,6 @@ public class AdminServiceImpl implements AdminService {
       teams.add(team);
     }
 
-    BigDecimal dbProductLoss = transactionRepository
-        .getSumOfOutdatedAndLostProductOfQuarter(firstDay.toString(), lastDay.toString());
     BigDecimal dbTeamLoss = teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter.name(),
         year);
 
@@ -408,7 +406,10 @@ public class AdminServiceImpl implements AdminService {
       }
       dbTeamLoss = BigDecimal.ZERO;
     }
-    
+ 
+    BigDecimal dbProductLoss = transactionRepository
+        .getSumOfOutdatedAndLostProductOfQuarter(firstDay.toString(), lastDay.toString());
+
     // With no lost products, adding a value means that the losses will be negative
     BigDecimal sumTeamReportLosses = teamReportLosses.values().stream().reduce(BigDecimal.ZERO,
         BigDecimal::add);
@@ -419,32 +420,19 @@ public class AdminServiceImpl implements AdminService {
     // Checking that the sum of new team losses is lesser than the loss of products during the
     // quarter
     if (dbProductLoss != null) {
-      
-      List<BigDecimal> oldLossValues = new ArrayList<>();
-      for (Team team : teams) {
-        BigDecimal teamLoss = teamTrimestrialReportRepository
-            .findQuarterLossesByTeam(team.getTeamId(), quarter.name(), year);
-        if (teamLoss == null) {
-          return false;
-        }
-        oldLossValues.add(teamLoss);
-      }
-      BigDecimal updatedTeamLosses = dbTeamLoss
-          .subtract(oldLossValues.stream().reduce(BigDecimal.ZERO, BigDecimal::add))
-          .add(sumTeamReportLosses);
-
-      System.out.println(updatedTeamLosses);
-      if (updatedTeamLosses.compareTo(dbProductLoss) > 0) {
+      if (sumTeamReportLosses.compareTo(dbProductLoss) > 0) {
+        System.out.println("given losses > product losses");
         return false;
       }
 
+      System.out.println("Passing");
+      
       if (isValidated && !(teamRepository.count() == teamReportLosses.size())) {
-        System.out.println("Too few teams");
         return false;
       }
       
       // Checking that the sum of team losses equals the cost of losses of products during this quarter
-      if (isValidated && !(updatedTeamLosses.compareTo(dbProductLoss) == 0)) {
+      if (isValidated && !(sumTeamReportLosses.compareTo(dbProductLoss) == 0)) {
         System.out.println("Does not equals sum of product losses");
         return false;
       }

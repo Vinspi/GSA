@@ -394,9 +394,9 @@ public class AdminController {
   public JsonResponse<AddTeamTrimestrialReportForm> editTeamTrimestrialReport(
       @RequestBody AddTeamTrimestrialReportForm form) {
     
-    /*if (maintenanceBean.isMaintenanceMode()) {
+    if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }*/
+    }
 
     if (isAdmin()) {
       JsonResponse<AddTeamTrimestrialReportForm> failedRequestResponse = new JsonResponse<>(
@@ -800,11 +800,10 @@ public class AdminController {
    * @return true if the user is admin, false otherwise.
    */
   private boolean isAdmin() {
-    /*if (session.getAttribute("user") == null) {
+    if (session.getAttribute("user") == null) {
       return false;
     }
-    return ((User) session.getAttribute("user")).isAdmin();*/
-    return true;
+    return ((User) session.getAttribute("user")).isAdmin();
   }
 
 }

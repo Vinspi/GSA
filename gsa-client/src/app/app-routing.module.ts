@@ -27,7 +27,7 @@ const routes: Routes = [
   {path: 'product-manager', canActivate: [AdminGuard, MaintenanceGuard], component: ProductManagerComponent},
   {path: 'maintenance', component: MaintenanceComponent},
   {path: 'admin-maintenance', canActivate: [AdminGuard], component: AdminMaintenanceComponent},
-  {path: 'editreport', canActivate: [AdminGuard], component: EditReportComponent},
+  {path: 'editreport', canActivate: [AdminGuard, MaintenanceGuard], component: EditReportComponent},
   {path: 'outdated-manager', canActivate:[AdminGuard, MaintenanceGuard], component: OutdatedManagementComponent},
   {path: '**', component: NotFoundComponent}
 ];
