@@ -7,24 +7,12 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.User;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.*;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.SetupMaintenanceForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.*;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
-import org.openqa.selenium.json.Json;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -482,7 +470,7 @@ public class AdminController {
     }
 
     if (isAdmin()) {
-      return new JsonResponse(RequestStatus.SUCCESS, adminService.getAlertsNotification());
+      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAlertsNotification());
     } else {
       return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
     }
