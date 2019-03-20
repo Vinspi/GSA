@@ -533,10 +533,11 @@ public class AdminServiceImpl implements AdminService {
 
     for (Object[] o : resultQuery) {
 
-      WithdrawnTransactionData transactionData = new fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData();
+      WithdrawnTransactionData transactionData = new WithdrawnTransactionData();
 
       transactionData.setAliquotPrice((BigDecimal) o[0]);
-      transactionData.setTransactionDate((String) o[1].toString());
+      Timestamp date =  (Timestamp) o[1];
+      transactionData.setTransactionDate(date.toLocalDateTime().toLocalDate().toString());
       transactionData.setTransactionQuantity((Integer) o[2]);
       transactionData.setUserName((String) o[3]);
       String source = (String) o[4];
