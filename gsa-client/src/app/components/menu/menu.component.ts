@@ -2,6 +2,7 @@ import { Component, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { LocalStorage } from '@ngx-pwa/local-storage';
 import * as $ from 'jquery';
 import { User } from 'src/app/user';
+import { Foo } from '../../foo';
 
 @Component({
   selector: 'app-menu',
@@ -15,6 +16,11 @@ export class MenuComponent implements OnInit, OnChanges {
   constructor(private localStorage: LocalStorage) { }
 
   ngOnInit() {
+    Foo.subj.subscribe(user => {
+
+      this.user = user;
+      
+    });
     this.localStorage.getItem("user").subscribe(user => {
       this.user = <User> user;
     });

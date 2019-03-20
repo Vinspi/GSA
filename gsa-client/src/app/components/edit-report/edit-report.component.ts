@@ -7,7 +7,7 @@ import {
 import { AdminService } from 'src/app/services/admin.service';
 import { UserService } from 'src/app/services/user.service';
 import { ReloadableDatatableComponent } from '../reloadable-datatable/reloadable-datatable.component';
-import { Transaction } from 'src/app/transaction';
+import { TeamTransaction } from 'src/app/teamTransaction';
 import { EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Big } from 'big.js';
@@ -307,7 +307,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     if (this.quarters.size > 0) {
       this.fetchTransactions()
         .then(data => {
-          this.dtElement.items = this.transactionValuesToArray(<Array<Transaction>>data);
+          this.dtElement.items = this.transactionValuesToArray(<Array<TeamTransaction>>data);
           this.dtElement.reRenderData();
         })
         .catch(() => {

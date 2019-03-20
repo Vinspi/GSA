@@ -2,6 +2,11 @@ package fr.uniamu.ibdm.gsa_server.dao;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.time.LocalDate;
+
+import fr.uniamu.ibdm.gsa_server.models.Member;
+import fr.uniamu.ibdm.gsa_server.models.Transaction;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -52,5 +57,21 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
   BigDecimal getSumOfWithdrawnProductsOfQuarter(
       @Param("firstDayOfQuarter") String firstDayOfQuarter,
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
+
+  /* FUNCTIONS FOR ADMIN */
+  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate begin, LocalDate end, TransactionType transactionType);
+
+  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(LocalDate begin, TransactionType transactionType);
+
+  List<Transaction> findAllByTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate end, TransactionType transactionType);
+
+  /* FUNCTIONS FOR USERS */
+  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate begin, LocalDate end, TransactionType transactionType);
+
+  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionTypeLike(Member member, LocalDate begin, TransactionType transactionType);
+
+  List<Transaction> findAllByMemberAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate end, TransactionType transactionType);
+
+  List<Transaction> findAllByMember(Member member);
 
 }

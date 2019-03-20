@@ -28,6 +28,10 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/addproduct', data, {withCredentials: true})
   }
 
+  getWithdrawalsHistory(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL + '/history', data, {withCredentials: true});
+  }
+
   getTriggeredAlerts(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL+"/triggeredAlerts", {withCredentials: true});
   }
@@ -53,7 +57,7 @@ export class AdminService {
 
     return this.http.get<JsonResponse>(this.BASE_URL+'/allProducts', {withCredentials: true});
   }
-  
+
   transfertAliquot(data: any): Observable<JsonResponse> {
     return this.http.post<JsonResponse>(this.BASE_URL+'/transfertAliquot', data, {withCredentials: true});
   }

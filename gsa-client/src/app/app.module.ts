@@ -16,6 +16,7 @@ import { WithdrawComponent } from './components/withdraw/withdraw.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { AddProductComponent } from './components/product-manager/add-product/add-product.component';
 import { AddAliquoteComponent } from './components/product-manager/add-aliquote/add-aliquote.component';
+import { HistoryComponent } from './components/history/history.component';
 import { AlertsPanelComponent } from './components/alerts-panel/alerts-panel.component';
 import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-alerts.component';
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
@@ -37,6 +38,7 @@ import { MaintenanceComponent } from './components/maintenance/maintenance.compo
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
+import { InputMaxLengthDirective } from './directives/input-max-length.directive';
 
 
 @NgModule({
@@ -49,6 +51,7 @@ import { OutdatedManagementComponent } from './components/outdated-management/ou
     WithdrawComponent,
     StatsComponent,
     AddProductComponent,
+    HistoryComponent,
     StatsComponent,
     AddAliquoteComponent,
     AlertsPanelComponent,
@@ -70,7 +73,8 @@ import { OutdatedManagementComponent } from './components/outdated-management/ou
     MaintenanceComponent,
     NotFoundComponent,
     AdminMaintenanceComponent,
-    OutdatedManagementComponent
+    OutdatedManagementComponent,
+    InputMaxLengthDirective
   ],
   imports: [
     BrowserModule,

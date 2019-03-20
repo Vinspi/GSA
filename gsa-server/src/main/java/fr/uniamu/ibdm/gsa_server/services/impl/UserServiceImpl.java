@@ -15,6 +15,7 @@ import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
 import fr.uniamu.ibdm.gsa_server.util.Crypto;
@@ -206,5 +207,60 @@ public class UserServiceImpl implements UserService {
     });
 
     return teamNames;
+  }
+
+  @Override
+  public List<TransactionData> getUserWithdrawalsHistoryBetween(String userName, LocalDate begin, LocalDate end) {
+    List<TransactionData> history = new ArrayList<>();
+
+    User user = userRepository.findByUserName(userName);
+    Member member = memberRepository.findByUser(user);
+
+    transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(member, begin, end, TransactionType.WITHDRAW).forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
+    return history;
+  }
+
+  @Override
+  public List<TransactionData> getUserWithdrawalsHistorySince(String userName, LocalDate begin) {
+    List<TransactionData> history = new ArrayList<>();
+
+    User user = userRepository.findByUserName(userName);
+    Member member = memberRepository.findByUser(user);
+
+    transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionTypeLike(member, begin, TransactionType.WITHDRAW).forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
+    return history;
+  }
+
+  @Override
+  public List<TransactionData> getUserWithdrawalsHistoryUpTo(String userName, LocalDate end) {
+    List<TransactionData> history = new ArrayList<>();
+
+    User user = userRepository.findByUserName(userName);
+    Member member = memberRepository.findByUser(user);
+
+    transactionRepository.findAllByMemberAndTransactionDateLessThanEqualAndTransactionTypeLike(member, end, TransactionType.WITHDRAW).forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
+    return history;
+  }
+
+  @Override
+  public List<TransactionData> getUserWithdrawalsHistory(String userName) {
+    List<TransactionData> history = new ArrayList<>();
+
+    User user = userRepository.findByUserName(userName);
+    System.err.println(user.toString());
+    Member member = memberRepository.findByUser(user);
+    System.err.println(member.getUser().getUserName());
+
+    transactionRepository.findAllByMember(member).forEach(elem ->
+        history.add(new TransactionData(elem))
+    );
+
+    return history;
   }
 }

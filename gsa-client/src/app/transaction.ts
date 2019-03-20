@@ -1,10 +1,10 @@
 export class Transaction {
-  transactionDate: String;
+  date: string;
   userName: String;
-  productName: String;
-  //teamName: string;
-  transactionQuantity: number;
-  aliquotPrice: number;
+  aliquotName: string;
+  teamName: string;
+  quantity: number;
+  price: number;
 
   constructor() {
   }

@@ -35,4 +35,8 @@ export class UserService {
     return this.http.get<JsonResponse>(environment.API_URL+'/isMaintenanceMode', {withCredentials: true});
   }
 
+  getWithdrawalsHistory(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(environment.API_URL + '/history', data, {withCredentials: true});
+  }
+
 }

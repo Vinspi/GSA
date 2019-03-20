@@ -15,8 +15,8 @@ export class DigitsOnlyDirective {
 
     // Allow: Delete, Backspace, Tab, Escape, Enter
     if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1) {
-        return;
-      }
+      return;
+    }
 
     if (regexp.test(e.key)){
       return;
