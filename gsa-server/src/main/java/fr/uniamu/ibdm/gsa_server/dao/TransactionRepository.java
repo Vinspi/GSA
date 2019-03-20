@@ -1,19 +1,17 @@
 package fr.uniamu.ibdm.gsa_server.dao;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.time.LocalDate;
-
-import fr.uniamu.ibdm.gsa_server.models.Member;
-import fr.uniamu.ibdm.gsa_server.models.Transaction;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import fr.uniamu.ibdm.gsa_server.models.Member;
 import fr.uniamu.ibdm.gsa_server.models.Transaction;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
 
 @Repository
 public interface TransactionRepository extends CrudRepository<Transaction, Long> {
@@ -59,18 +57,20 @@ public interface TransactionRepository extends CrudRepository<Transaction, Long>
       @Param("lastDayOfQuarter") String lastDayOfQuarter);
 
   /* FUNCTIONS FOR ADMIN */
-  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate begin, LocalDate end, TransactionType transactionType);
+  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionMotifLike(LocalDate begin, LocalDate end, TransactionMotif transactionMotif);
 
-  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(LocalDate begin, TransactionType transactionType);
+  List<Transaction> findAllByTransactionDateGreaterThanEqualAndTransactionMotifLike(LocalDate begin, TransactionMotif transactionMotif);
 
-  List<Transaction> findAllByTransactionDateLessThanEqualAndTransactionTypeLike(LocalDate end, TransactionType transactionType);
+  List<Transaction> findAllByTransactionDateLessThanEqualAndTransactionMotifLike(LocalDate end, TransactionMotif transactionMotif);
+  
+  List<Transaction> findAllByTransactionMotifLike(TransactionMotif transactionMotif);
 
   /* FUNCTIONS FOR USERS */
-  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate begin, LocalDate end, TransactionType transactionType);
+  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionMotifLike(Member member, LocalDate begin, LocalDate end, TransactionMotif transactionMotif);
 
-  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionTypeLike(Member member, LocalDate begin, TransactionType transactionType);
+  List<Transaction> findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionMotifLike(Member member, LocalDate begin, TransactionMotif transactionMotif);
 
-  List<Transaction> findAllByMemberAndTransactionDateLessThanEqualAndTransactionTypeLike(Member member, LocalDate end, TransactionType transactionType);
+  List<Transaction> findAllByMemberAndTransactionDateLessThanEqualAndTransactionMotifLike(Member member, LocalDate end, TransactionMotif transactionMotif);
 
   List<Transaction> findAllByMember(Member member);
 

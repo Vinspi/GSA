@@ -37,19 +37,18 @@ import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
 import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
@@ -190,7 +189,7 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(begin, end, TransactionType.WITHDRAW).forEach(elem ->
+    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionMotifLike(begin, end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
         history.add(new TransactionData(elem))
     );
     return history;
@@ -200,7 +199,7 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistorySince(LocalDate begin) {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionTypeLike(begin, TransactionType.WITHDRAW).forEach(elem ->
+    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionMotifLike(begin, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
         history.add(new TransactionData(elem))
     );
     return history;
@@ -210,7 +209,7 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistoryUpTo(LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionTypeLike(end, TransactionType.WITHDRAW).forEach(elem ->
+    transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionMotifLike(end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
         history.add(new TransactionData(elem))
     );
     return history;
@@ -220,7 +219,7 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistory() {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAll().forEach(elem ->
+    transactionRepository.findAllByTransactionMotifLike(TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
         history.add(new TransactionData(elem))
     );
 

@@ -2,6 +2,7 @@ package fr.uniamu.ibdm.gsa_server.requests.JsonData;
 
 import fr.uniamu.ibdm.gsa_server.models.Transaction;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class TransactionData {
@@ -10,7 +11,7 @@ public class TransactionData {
   private String aliquotName;
   private String teamName;
   private int quantity;
-  private float price;
+  private BigDecimal price;
 
   public TransactionData() {
   }
@@ -26,8 +27,8 @@ public class TransactionData {
     this.aliquotName = elem.getAliquot().getProduct().getProductName();
     this.teamName = elem.getMember().getTeam().getTeamName();
     this.quantity = elem.getTransactionQuantity();
-    float priceUnit = elem.getAliquot().getAliquotPrice();
-    this.price = priceUnit * quantity;
+    BigDecimal priceUnit = elem.getAliquot().getAliquotPrice();
+    this.price = priceUnit.multiply(BigDecimal.valueOf(quantity));
   }
 
   public LocalDate getDate() {
@@ -70,11 +71,11 @@ public class TransactionData {
     this.quantity = quantity;
   }
 
-  public float getPrice() {
+  public BigDecimal getPrice() {
     return price;
   }
 
-  public void setPrice(float price) {
+  public void setPrice(BigDecimal price) {
     this.price = price;
   }
 

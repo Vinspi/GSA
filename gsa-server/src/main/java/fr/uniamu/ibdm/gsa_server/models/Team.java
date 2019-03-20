@@ -1,15 +1,15 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import java.io.Serializable;
+import java.util.Collection;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import java.io.Serializable;
-import java.util.Collection;
 
 @Entity
 public class Team implements Serializable {
