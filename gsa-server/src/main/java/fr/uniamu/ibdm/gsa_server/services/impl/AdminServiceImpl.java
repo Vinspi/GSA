@@ -189,9 +189,10 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionMotifLike(begin, end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
-        history.add(new TransactionData(elem))
-    );
+    transactionRepository
+        .findAllByTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionMotifLike(
+            begin, end, TransactionMotif.TEAM_WITHDRAW)
+        .forEach(elem -> history.add(new TransactionData(elem)));
     return history;
   }
 
@@ -199,9 +200,8 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistorySince(LocalDate begin) {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionMotifLike(begin, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
-        history.add(new TransactionData(elem))
-    );
+    transactionRepository.findAllByTransactionDateGreaterThanEqualAndTransactionMotifLike(begin,
+        TransactionMotif.TEAM_WITHDRAW).forEach(elem -> history.add(new TransactionData(elem)));
     return history;
   }
 
@@ -209,9 +209,8 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistoryUpTo(LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionMotifLike(end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
-        history.add(new TransactionData(elem))
-    );
+    transactionRepository.findAllByTransactionDateLessThanEqualAndTransactionMotifLike(end,
+        TransactionMotif.TEAM_WITHDRAW).forEach(elem -> history.add(new TransactionData(elem)));
     return history;
   }
 
@@ -219,9 +218,8 @@ public class AdminServiceImpl implements AdminService {
   public List<TransactionData> getWithdrawalsHistory() {
     List<TransactionData> history = new ArrayList<>();
 
-    transactionRepository.findAllByTransactionMotifLike(TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
-        history.add(new TransactionData(elem))
-    );
+    transactionRepository.findAllByTransactionMotifLike(TransactionMotif.TEAM_WITHDRAW)
+        .forEach(elem -> history.add(new TransactionData(elem)));
 
     return history;
   }
@@ -449,7 +447,7 @@ public class AdminServiceImpl implements AdminService {
       }
       dbTeamLoss = BigDecimal.ZERO;
     }
- 
+
     BigDecimal dbProductLoss = transactionRepository
         .getSumOfOutdatedAndLostProductOfQuarter(firstDay.toString(), lastDay.toString());
 
@@ -469,12 +467,13 @@ public class AdminServiceImpl implements AdminService {
       }
 
       System.out.println("Passing");
-      
+
       if (isValidated && !(teamRepository.count() == teamReportLosses.size())) {
         return false;
       }
-      
-      // Checking that the sum of team losses equals the cost of losses of products during this quarter
+
+      // Checking that the sum of team losses equals the cost of losses of products during this
+      // quarter
       if (isValidated && !(sumTeamReportLosses.compareTo(dbProductLoss) == 0)) {
         System.out.println("Does not equals sum of product losses");
         return false;
@@ -536,7 +535,7 @@ public class AdminServiceImpl implements AdminService {
       WithdrawnTransactionData transactionData = new WithdrawnTransactionData();
 
       transactionData.setAliquotPrice((BigDecimal) o[0]);
-      Timestamp date =  (Timestamp) o[1];
+      Timestamp date = (Timestamp) o[1];
       transactionData.setTransactionDate(date.toLocalDateTime().toLocalDate().toString());
       transactionData.setTransactionQuantity((Integer) o[2]);
       transactionData.setUserName((String) o[3]);

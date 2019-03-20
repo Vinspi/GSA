@@ -66,8 +66,8 @@ public class AddTeamTrimestrialReportForm implements Form {
       return false;
     }
 
-    YearQuarterForm yearQuarterForm = new YearQuarterForm(quarter, year);
-    if (!yearQuarterForm.validate()) {
+    QuarterForm quarterForm = new QuarterForm(quarter);
+    if (!quarterForm.validate()) {
       return false;
     }
 

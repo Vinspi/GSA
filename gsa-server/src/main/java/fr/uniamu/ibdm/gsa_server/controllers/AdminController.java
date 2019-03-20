@@ -46,7 +46,7 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.YearQuarterForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.QuarterForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
 
@@ -474,7 +474,7 @@ public class AdminController {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
 
-    YearQuarterForm yearQuarterForm = new YearQuarterForm(quarter, year);
+    QuarterForm yearQuarterForm = new QuarterForm(quarter);
     if (!yearQuarterForm.validate()) {
       return new JsonResponse<>("Bad parameters values", RequestStatus.FAIL);
     }
@@ -507,7 +507,7 @@ public class AdminController {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
     
-    YearQuarterForm yearQuarterForm = new YearQuarterForm(quarter, year);
+    QuarterForm yearQuarterForm = new QuarterForm(quarter);
     if (!yearQuarterForm.validate()) {
       return new JsonResponse<>("Bad parameters values", RequestStatus.FAIL);
     }
@@ -559,7 +559,7 @@ public class AdminController {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
     
-    YearQuarterForm yearQuarterForm = new YearQuarterForm(quarter, year);
+    QuarterForm yearQuarterForm = new QuarterForm(quarter);
     if (!yearQuarterForm.validate()) {
       return new JsonResponse<>("Bad parameters values", RequestStatus.FAIL);
     }
@@ -591,7 +591,7 @@ public class AdminController {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
     
-    YearQuarterForm yearQuarterForm = new YearQuarterForm(quarter, year);
+    QuarterForm yearQuarterForm = new QuarterForm(quarter);
     if (!yearQuarterForm.validate()) {
       return new JsonResponse<>("Bad parameters values", RequestStatus.FAIL);
     }
@@ -622,7 +622,7 @@ public class AdminController {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
     }
     
-    YearQuarterForm yearQuarterForm = new YearQuarterForm(quarter, year);
+    QuarterForm yearQuarterForm = new QuarterForm(quarter);
     if (!yearQuarterForm.validate()) {
       return new JsonResponse<>("Bad parameters values", RequestStatus.FAIL);
     }
