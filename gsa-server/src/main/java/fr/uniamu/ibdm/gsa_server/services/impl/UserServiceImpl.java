@@ -214,10 +214,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistoryBetween(String userName, LocalDate begin, LocalDate end) {
+  public List<TransactionData> getUserWithdrawalsHistoryBetween(long userId, LocalDate begin, LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
+    User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
     transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(member, begin, end, TransactionType.WITHDRAW).forEach(elem ->
@@ -227,10 +227,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistorySince(String userName, LocalDate begin) {
+  public List<TransactionData> getUserWithdrawalsHistorySince(long userId, LocalDate begin) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
+    User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
     transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionTypeLike(member, begin, TransactionType.WITHDRAW).forEach(elem ->
@@ -240,10 +240,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistoryUpTo(String userName, LocalDate end) {
+  public List<TransactionData> getUserWithdrawalsHistoryUpTo(long userId, LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
+    User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
     transactionRepository.findAllByMemberAndTransactionDateLessThanEqualAndTransactionTypeLike(member, end, TransactionType.WITHDRAW).forEach(elem ->
@@ -253,10 +253,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistory(String userName) {
+  public List<TransactionData> getUserWithdrawalsHistory(long userId) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
+    User user = userRepository.findById(userId).get();
     System.err.println(user.toString());
     Member member = memberRepository.findByUser(user);
     System.err.println(member.getUser().getUserName());

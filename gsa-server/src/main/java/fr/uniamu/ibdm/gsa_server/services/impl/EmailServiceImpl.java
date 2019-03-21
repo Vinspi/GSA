@@ -3,6 +3,8 @@ package fr.uniamu.ibdm.gsa_server.services.impl;
 import fr.uniamu.ibdm.gsa_server.conf.CustomConfig;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.UserRepository;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.services.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
@@ -45,6 +47,7 @@ public class EmailServiceImpl implements EmailService {
     sb.append("\r");
     sb.append("here is all the triggered alerts : \r\r");
     List<TriggeredAlertsQuery> alertList = adminService.getTriggeredAlerts();
+    List<Product> outdatedProduct = adminService.getAllOutdatedAliquot();
 
     alertList.forEach(alert -> {
       sb.append("Alert type : " + alert.getAlertType() + ",   product : " + alert.getSource() + "_ANTI_" + alert.getTarget() + "\r");
@@ -53,6 +56,18 @@ public class EmailServiceImpl implements EmailService {
       sb.append("\n");
       alert.getAliquots().forEach(aliquot -> {
         sb.append("    " + aliquot.getNlot() + "   " + aliquot.getQte() + "   " + aliquot.getExpirationDate() + "\n");
+      });
+      sb.append("\r\r");
+    });
+
+    sb.append("\r\r");
+    sb.append("Here is all the outdated aliquots\r\r");
+
+    outdatedProduct.forEach(product -> {
+      sb.append("Product : "+product.getProductName()+"\r");
+      sb.append("All aliquot concern are (nlot, quantity, ext date) : \n\n");
+      product.getAliquots().forEach(aliquot -> {
+        sb.append("    "+ aliquot.getAliquotNLot() + "   " + aliquot.getAliquotQuantityVisibleStock()+aliquot.getAliquotQuantityHiddenStock() + "   " + aliquot.getAliquotExpirationDate() + "\n");
       });
       sb.append("\r\r");
     });

@@ -155,7 +155,7 @@ public class AdminController {
   public JsonResponse<List<TransactionData>> getWithdrawalsHistory(@RequestBody PeriodForm form) {
     List<TransactionData> withdrawalsHistory;
 
-    if (form.validate()) {
+    if (isAdmin() && form.validate()) {
       if (form.getBegin() != null && form.getEnd() != null) {
         withdrawalsHistory = adminService.getWithdrawalsHistoryBetween(form.getBegin(), form.getEnd());
       } else if (form.getBegin() != null && form.getEnd() == null) {
