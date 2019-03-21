@@ -51,33 +51,12 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
 import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
-
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -373,6 +352,53 @@ public class AdminServiceTest {
   }
 
   @Test
+  public void transfertAliquot() {
+
+    Aliquot aliquot = new Aliquot();
+    aliquot.setAliquotQuantityVisibleStock(100);
+    aliquot.setAliquotQuantityHiddenStock(100);
+
+    ArgumentCaptor<Aliquot> argumentCaptor = ArgumentCaptor.forClass(Aliquot.class);
+    Mockito.when(aliquotRepository.findById(12345L)).thenReturn(Optional.of(aliquot));
+
+    TransfertAliquotForm form = new TransfertAliquotForm(StorageType.RESERVE, StorageType.STOCK,
+        12345L, 50);
+
+    boolean success = adminService.transfertAliquot(form);
+
+    Assert.assertTrue(success);
+    Mockito.verify(aliquotRepository, Mockito.times(1)).save(argumentCaptor.capture());
+
+    Assert.assertEquals(50, argumentCaptor.getValue().getAliquotQuantityHiddenStock());
+    Assert.assertEquals(150, argumentCaptor.getValue().getAliquotQuantityVisibleStock());
+
+    /* invert storageType */
+    Mockito.reset(aliquotRepository);
+    Mockito.when(aliquotRepository.findById(12345L)).thenReturn(Optional.of(aliquot));
+
+    form.setFrom(StorageType.STOCK);
+    form.setTo(StorageType.RESERVE);
+
+    success = adminService.transfertAliquot(form);
+
+    Assert.assertTrue(success);
+    Mockito.verify(aliquotRepository, Mockito.times(1)).save(argumentCaptor.capture());
+
+    Assert.assertEquals(100, argumentCaptor.getValue().getAliquotQuantityHiddenStock());
+    Assert.assertEquals(100, argumentCaptor.getValue().getAliquotQuantityVisibleStock());
+
+    /* aliquot doesn't exist */
+    Mockito.reset(aliquotRepository);
+    Mockito.when(aliquotRepository.findById(Mockito.any(Long.class))).thenReturn(Optional.empty());
+
+    success = adminService.transfertAliquot(form);
+
+    Assert.assertFalse(success);
+    Mockito.verify(aliquotRepository, Mockito.never()).save(Mockito.any());
+
+  }
+
+  @Test
   public void addAlert() {
 
     AddAlertForm form = new AddAlertForm();
@@ -411,6 +437,113 @@ public class AdminServiceTest {
     success = adminService.addAlert(form);
 
     Assert.assertFalse(success);
+
+  }
+
+  @Test
+  public void makeInventory() {
+
+    Aliquot mockAliquot = new Aliquot();
+    mockAliquot.setAliquotQuantityVisibleStock(5);
+
+    /* all those aliquots exist */
+    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(mockAliquot));
+    Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(mockAliquot));
+    Mockito.when(aliquotRepository.findById(3L)).thenReturn(Optional.of(mockAliquot));
+
+    List<InventoryForm> forms = new ArrayList<>();
+
+    forms.add(new InventoryForm(1, 5));
+    forms.add(new InventoryForm(2, 2));
+    forms.add(new InventoryForm(3, 6));
+    forms.add(new InventoryForm(4, 10));
+
+    adminService.makeInventory(forms);
+
+    /* only 6 < 5 so transactionRepository.save() should be called once */
+    Mockito.verify(transactionRepository, Mockito.times(1)).save(Mockito.any());
+    /* aliquot n°4 doesn't exist so it won't be saved */
+    Mockito.verify(aliquotRepository, Mockito.times(3)).save(Mockito.any());
+
+  }
+
+  @Test
+  public void getAllOutdatedAliquot() {
+
+    Product product = new Product();
+
+    List<Aliquot> aliquots = new ArrayList<>();
+    Aliquot a;
+
+    for (int i = 0; i < 10; i++) {
+      if (i < 5) {
+        /* all those aliquots will be outdated */
+        a = new Aliquot();
+        a.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
+        a.setAliquotQuantityVisibleStock(0);
+        a.setAliquotQuantityHiddenStock(0);
+      } else {
+        /* all those aliquots will be quantity == 0 */
+        a = new Aliquot();
+        a.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));
+        a.setAliquotQuantityVisibleStock(5);
+        a.setAliquotQuantityHiddenStock(0);
+      }
+      aliquots.add(a);
+    }
+
+    /* and we add an aliquot really outdated */
+    a = new Aliquot();
+    a.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
+    a.setAliquotQuantityVisibleStock(5);
+    a.setAliquotQuantityHiddenStock(0);
+    aliquots.add(a);
+
+    product.setAliquots(aliquots);
+
+    List<Product> products = new ArrayList<>();
+    products.add(product);
+
+    Mockito.when(productRepository.findAllOutdatedProduct()).thenReturn(products);
+
+    /* the result should be a list with only the last aliquot */
+    List<Product> result = adminService.getAllOutdatedAliquot();
+
+    Assert.assertNotNull(result);
+    Assert.assertEquals(1, result.size());
+    Assert.assertEquals(1, result.get(0).getAliquots().size());
+    Assert.assertEquals(a, ((List) result.get(0).getAliquots()).get(0));
+
+  }
+
+  @Test
+  public void deleteOutdatedAliquot() {
+
+    Aliquot aliquot = new Aliquot();
+    aliquot.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));
+    aliquot.setAliquotNLot(0);
+
+    Mockito.when(aliquotRepository.findById(0L)).thenReturn(Optional.empty());
+    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(aliquot));
+
+    boolean success;
+
+    /* with an aliquot that doesn't exist */
+    success = adminService.deleteOutdatedAliquot(aliquot);
+
+    Assert.assertFalse(success);
+
+    /* now the aliquot exist but is not outdated */
+    aliquot.setAliquotNLot(1);
+    success = adminService.deleteOutdatedAliquot(aliquot);
+
+    Assert.assertFalse(success);
+
+    /* finallu the aliquot exist end id not outdated */
+    aliquot.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
+    success = adminService.deleteOutdatedAliquot(aliquot);
+
+    Assert.assertTrue(success);
 
   }
 
@@ -606,118 +739,7 @@ public class AdminServiceTest {
 
     List<YearQuarterData> results = adminService.getQuarterAndYearOfAllEditableReports();
 
-    for (YearQuarterData data : results) {
-      System.out.println(data.getQuarter() + data.getYear());
-    }
-
     Assert.assertTrue(results.equals(expectedQuarters));
-  }
-
-  @Test
-  public void makeInventory() {
-
-    Aliquot mockAliquot = new Aliquot();
-    mockAliquot.setAliquotQuantityVisibleStock(5);
-
-    /* all those aliquots exist */
-    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(mockAliquot));
-    Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(mockAliquot));
-    Mockito.when(aliquotRepository.findById(3L)).thenReturn(Optional.of(mockAliquot));
-
-    List<InventoryForm> forms = new ArrayList<>();
-
-    forms.add(new InventoryForm(1, 5));
-    forms.add(new InventoryForm(2, 2));
-    forms.add(new InventoryForm(3, 6));
-    forms.add(new InventoryForm(4, 10));
-
-    adminService.makeInventory(forms);
-
-    /* only 6 < 5 so transactionRepository.save() should be called once */
-    Mockito.verify(transactionRepository, Mockito.times(1)).save(Mockito.any());
-    /* aliquot n°4 doesn't exist so it won't be saved */
-    Mockito.verify(aliquotRepository, Mockito.times(3)).save(Mockito.any());
-
-  }
-
-  @Test
-  public void getAllOutdatedAliquot() {
-
-    Product product = new Product();
-
-    List<Aliquot> aliquots = new ArrayList<>();
-    Aliquot a;
-
-    for (int i = 0; i < 10; i++) {
-      if (i < 5) {
-        /* all those aliquots will be outdated */
-        a = new Aliquot();
-        a.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
-        a.setAliquotQuantityVisibleStock(0);
-        a.setAliquotQuantityHiddenStock(0);
-      } else {
-        /* all those aliquots will be quantity == 0 */
-        a = new Aliquot();
-        a.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));
-        a.setAliquotQuantityVisibleStock(5);
-        a.setAliquotQuantityHiddenStock(0);
-      }
-      aliquots.add(a);
-    }
-
-    /* and we add an aliquot really outdated */
-    a = new Aliquot();
-    a.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
-    a.setAliquotQuantityVisibleStock(5);
-    a.setAliquotQuantityHiddenStock(0);
-    aliquots.add(a);
-
-    product.setAliquots(aliquots);
-
-    List<Product> products = new ArrayList<>();
-    products.add(product);
-
-    Mockito.when(productRepository.findAllOutdatedProduct()).thenReturn(products);
-
-    /* the result should be a list with only the last aliquot */
-    List<Product> result = adminService.getAllOutdatedAliquot();
-
-    Assert.assertNotNull(result);
-    Assert.assertEquals(1, result.size());
-    Assert.assertEquals(1, result.get(0).getAliquots().size());
-    Assert.assertEquals(a, ((List) result.get(0).getAliquots()).get(0));
-
-  }
-
-  @Test
-  public void deleteOutdatedAliquot() {
-
-    Aliquot aliquot = new Aliquot();
-    aliquot.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));
-    aliquot.setAliquotNLot(0);
-
-    Mockito.when(aliquotRepository.findById(0L)).thenReturn(Optional.empty());
-    Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(aliquot));
-
-    boolean success;
-
-    /* with an aliquot that doesn't exist */
-    success = adminService.deleteOutdatedAliquot(aliquot);
-
-    Assert.assertFalse(success);
-
-    /* now the aliquot exist but is not outdated */
-    aliquot.setAliquotNLot(1);
-    success = adminService.deleteOutdatedAliquot(aliquot);
-
-    Assert.assertFalse(success);
-
-    /* finallu the aliquot exist end id not outdated */
-    aliquot.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
-    success = adminService.deleteOutdatedAliquot(aliquot);
-
-    Assert.assertTrue(success);
-
   }
 
 }

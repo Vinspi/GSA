@@ -22,6 +22,7 @@ public class StartupApplicationBean implements ApplicationListener<ContextRefres
     userService.registerAccount("Rosa", "rosa@univ-amu.fr", "pantoufle", "Walgreen Company", true);
     userService.registerAccount("test", "vinspi13@gmail.com", "test", "Walgreen Company", true);
 
+
     System.out.println("application started");
   }
 }

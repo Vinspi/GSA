@@ -44,7 +44,7 @@ public class Transaction implements Serializable {
 
   // Admins add transactions as null members as they are not member of any team.
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "member_id", nullable = true)
+  @JoinColumn(name = "member_id")
   private Member member;
 
   public Transaction() {

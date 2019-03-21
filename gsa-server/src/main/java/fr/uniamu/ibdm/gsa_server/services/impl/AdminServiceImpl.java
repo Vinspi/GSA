@@ -462,11 +462,8 @@ public class AdminServiceImpl implements AdminService {
     // quarter
     if (dbProductLoss != null) {
       if (sumTeamReportLosses.compareTo(dbProductLoss) > 0) {
-        System.out.println("given losses > product losses");
         return false;
       }
-
-      System.out.println("Passing");
 
       if (isValidated && !(teamRepository.count() == teamReportLosses.size())) {
         return false;
@@ -475,7 +472,6 @@ public class AdminServiceImpl implements AdminService {
       // Checking that the sum of team losses equals the cost of losses of products during this
       // quarter
       if (isValidated && !(sumTeamReportLosses.compareTo(dbProductLoss) == 0)) {
-        System.out.println("Does not equals sum of product losses");
         return false;
       }
     }
@@ -588,7 +584,6 @@ public class AdminServiceImpl implements AdminService {
 
       productLosses.add(productLoss);
       totalLosses = totalLosses.add(loss);
-      System.out.println(loss);
     }
 
     data.setProductLosses(productLosses);
@@ -657,7 +652,6 @@ public class AdminServiceImpl implements AdminService {
     List<TeamTrimestrialReport> reports = teamTrimestrialReportRepository
         .findAllByYearAndQuarter(year, quarter);
     for (TeamTrimestrialReport report : reports) {
-      System.out.println("Report added with " + report.getLosses().toString());
       data.add(new TeamReportLossForm(report.getTeam().getTeamName(), report.getLosses()));
     }
 

@@ -8,7 +8,6 @@ insert into team (team_id, team_name) values (6, 'NorthStar Rx LLC');
 insert into team (team_id, team_name) values (7, 'West-Ward Pharmaceutical Corp');
 insert into team (team_id, team_name) values (8, 'Dr. Fresh, Inc.');
 insert into team (team_id, team_name) values (9, 'Boggs Gases div. Boggs Fire Equipment');
---insert into team (team_id, team_name) values (10, 'NorthStar Rx LLC');
 -- species --
 insert into species (species_name) values ('MONKEY');
 insert into species (species_name) values ('DONKEY');
