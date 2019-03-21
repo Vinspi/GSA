@@ -257,9 +257,7 @@ public class UserServiceImpl implements UserService {
     List<TransactionData> history = new ArrayList<>();
 
     User user = userRepository.findById(userId).get();
-    System.err.println(user.toString());
     Member member = memberRepository.findByUser(user);
-    System.err.println(member.getUser().getUserName());
 
     transactionRepository.findAllByMember(member).forEach(elem ->
         history.add(new TransactionData(elem))

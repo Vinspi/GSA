@@ -1,69 +1,69 @@
 <div *ngIf='user != null' id="panel" (mouseenter)="onMouseEnterPanel()" (mouseleave)="onMouseLeavePanel()">
   <div *ngIf='!user.admin'>
-    <a routerLink="/stockoverview">
-      <div class="panel-icon-container panel-icon-container-selected">
+    <a routerLink="/stockoverview" (click)="setSelectedValue('Stock overview')">
+      <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Stock overview')}">
         <i class="fas fa-search"></i> <span style="display: none;">Stock overview</span>
       </div>
     </a>
-    <a *ngIf="user.techArea" routerLink="/withdraw">
-      <div class="panel-icon-container">
+    <a *ngIf='user.techArea' routerLink="/withdraw" (click)="setSelectedValue('Withdraw')">
+      <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Withdraw')}">
         <i class="fas fa-cart-arrow-down"></i> <span style="display: none;">Withdraw</span>
       </div>
     </a>
-    <a routerLink="/history">
-      <div class="panel-icon-container">
+    <a routerLink="/history" (click)="setSelectedValue('History')">
+      <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('History')}">
         <i class="fas fa-history"></i> <span style="display: none;">History</span>
       </div>
     </a>
-    <a href="teamReport.html">
-      <div class="panel-icon-container">
+    <a routerLink="product-manager" (click)="setSelectedValue('Reports')">
+      <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Reports')}">
         <i class="fas fa-file-invoice-dollar"></i> <span style="display: none;">Reports</span>
       </div>
     </a>
   </div>
   <div *ngIf='user.admin'>
-      <a routerLink="/stockoverview">
-        <div class="panel-icon-container panel-icon-container-selected">
+      <a routerLink="/stockoverview" (click)="setSelectedValue('Stock overview')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Stock overview')}">
           <i class="fas fa-search"></i> <span style="display: none;">Stock overview</span>
         </div>
       </a>
-      <a routerLink="/product-manager">
-        <div class="panel-icon-container">
+      <a routerLink="/product-manager" (click)="setSelectedValue('Product manager')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Product manager')}">
           <i class="fa fa-flask" aria-hidden="true"></i> <span style="display: none;">Product manager</span>
         </div>
       </a>
-      <a routerLink="/outdated-manager">
-        <div class="panel-icon-container">
+      <a routerLink="/outdated-manager" (click)="setSelectedValue('Outdated manager')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Outdated manager')}">
           <i class="fas fa-calendar-times"></i> <span style="display: none;">Outdated manager</span>
         </div>
       </a>
-      <a *ngIf='user.techArea' routerLink="/withdraw">
-        <div class="panel-icon-container">
+      <a *ngIf='user.techArea' routerLink="/withdraw" (click)="setSelectedValue('Withdraw')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Withdraw')}">
           <i class="fas fa-cart-arrow-down"></i> <span style="display: none;">Withdraw</span>
         </div>
       </a>
-      <a routerLink="/history">
-        <div class="panel-icon-container">
+      <a routerLink="/history" (click)="setSelectedValue('History')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('History')}">
           <i class="fas fa-history"></i> <span style="display: none;">History</span>
         </div>
       </a>
-      <a routerLink="product-manager">
-        <div class="panel-icon-container">
+      <a routerLink="product-manager" (click)="setSelectedValue('Reports')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Reports')}">
           <i class="fas fa-file-invoice-dollar"></i> <span style="display: none;">Reports</span>
         </div>
       </a>
-      <a href="teamReport.html">
-        <div class="panel-icon-container">
+      <a href="teamReport.html" (click)="setSelectedValue('Edit reports')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Edit reports')}">
           <i class="fas fa-edit"></i> <span style="display: none;">Edit reports</span>
         </div>
       </a>
-      <a routerLink="/alerts">
-        <div class="panel-icon-container">
+      <a routerLink="/alerts" (click)="setSelectedValue('Alerts')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Alerts')}">
             <i class="fas fa-exclamation-triangle"></i> <span style="display: none;">Alerts</span>
         </div>
       </a>
-      <a routerLink="/inventory">
-        <div class="panel-icon-container">
+      <a routerLink="/inventory" (click)="setSelectedValue('Inventory')">
+        <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Inventory')}">
             <i class="fas fa-book"></i> <span style="display: none;">Inventory</span>
         </div>
       </a>

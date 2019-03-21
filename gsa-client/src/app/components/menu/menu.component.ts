@@ -12,6 +12,7 @@ import { Foo } from '../../foo';
 export class MenuComponent implements OnInit, OnChanges {
 
   user: User;
+  selectedValue: String;
 
   constructor(private localStorage: LocalStorage) { }
 
@@ -30,6 +31,16 @@ export class MenuComponent implements OnInit, OnChanges {
     this.localStorage.getItem("user").subscribe(user => {
       this.user = <User> user;
     });
+  }
+
+  setSelectedValue(value: String) {
+    this.selectedValue = value;
+    console.log(this.selectedValue);
+    
+  }
+
+  isSelected(value: String): boolean {
+    return value == this.selectedValue;
   }
 
   globalOne: any;
