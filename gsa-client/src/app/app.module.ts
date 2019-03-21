@@ -39,6 +39,7 @@ import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 import { InputMaxLengthDirective } from './directives/input-max-length.directive';
+import { NodropDirective } from './directives/nodrop.directive';
 
 
 @NgModule({
@@ -74,7 +75,8 @@ import { InputMaxLengthDirective } from './directives/input-max-length.directive
     NotFoundComponent,
     AdminMaintenanceComponent,
     OutdatedManagementComponent,
-    InputMaxLengthDirective
+    InputMaxLengthDirective,
+    NodropDirective
   ],
   imports: [
     BrowserModule,

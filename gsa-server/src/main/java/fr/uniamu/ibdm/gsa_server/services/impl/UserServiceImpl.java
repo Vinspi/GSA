@@ -210,10 +210,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistoryBetween(String userName, LocalDate begin, LocalDate end) {
+  public List<TransactionData> getUserWithdrawalsHistoryBetween(long userId, LocalDate begin, LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
+    User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
     transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionMotifLike(member, begin, end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
@@ -223,10 +223,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistorySince(String userName, LocalDate begin) {
+  public List<TransactionData> getUserWithdrawalsHistorySince(long userId, LocalDate begin) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
+    User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
     transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionMotifLike(member, begin, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
@@ -236,10 +236,10 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistoryUpTo(String userName, LocalDate end) {
+  public List<TransactionData> getUserWithdrawalsHistoryUpTo(long userId, LocalDate end) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
+    User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
     transactionRepository.findAllByMemberAndTransactionDateLessThanEqualAndTransactionMotifLike(member, end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
@@ -249,13 +249,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<TransactionData> getUserWithdrawalsHistory(String userName) {
+  public List<TransactionData> getUserWithdrawalsHistory(long userId) {
     List<TransactionData> history = new ArrayList<>();
 
-    User user = userRepository.findByUserName(userName);
-    System.err.println(user.toString());
+    User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
-    System.err.println(member.getUser().getUserName());
 
     transactionRepository.findAllByMember(member).forEach(elem ->
         history.add(new TransactionData(elem))

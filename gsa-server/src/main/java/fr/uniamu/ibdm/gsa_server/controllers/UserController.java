@@ -166,15 +166,17 @@ public class UserController {
   public JsonResponse<List<TransactionData>> getUserWithdrawalsHistory(@RequestBody PeriodForm form) {
     List<TransactionData> withdrawalsHistory;
 
-    if (form.validate()) {
+    User user = (User) session.getAttribute("user");
+
+    if (isLoggedIn() && form.validate()) {
       if (form.getBegin() != null && form.getEnd() != null) {
-        withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(form.getUserName(), form.getBegin(), form.getEnd());
+        withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(user.getUserId(), form.getBegin(), form.getEnd());
       } else if (form.getBegin() != null && form.getEnd() == null) {
-        withdrawalsHistory = userService.getUserWithdrawalsHistorySince(form.getUserName(), form.getBegin());
+        withdrawalsHistory = userService.getUserWithdrawalsHistorySince(user.getUserId(), form.getBegin());
       } else if (form.getBegin() == null && form.getEnd() != null) {
-        withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(form.getUserName(), form.getEnd());
+        withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(user.getUserId(), form.getEnd());
       } else {
-        withdrawalsHistory = userService.getUserWithdrawalsHistory(form.getUserName());
+        withdrawalsHistory = userService.getUserWithdrawalsHistory(user.getUserId());
       }
 
       if (withdrawalsHistory != null) {

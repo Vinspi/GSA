@@ -18,9 +18,9 @@ public class StartupApplicationBean implements ApplicationListener<ContextRefres
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-    userService.registerAccount("Michel", "michel@univ-amu.fr", "pantoufle", "Walgreen Company", false);
-    userService.registerAccount("Rosa", "rosa@univ-amu.fr", "pantoufle", "Walgreen Company", true);
-    userService.registerAccount("test", "vinspi13@gmail.com", "test", "Walgreen Company", true);
+    userService.registerAccount("testA", "testA@test.com", "pantoufle", "Walgreen Company", true);
+    userService.registerAccount("testU", "testU@test.com", "pantoufle", "Walgreen Company", false);
+
 
 
     System.out.println("application started");

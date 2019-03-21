@@ -68,40 +68,40 @@ public interface UserService {
    * This method fetch all withdrawals in the period given in argument
    * in the database and return a list of those.
    *
-   * @param userName THe member who make the transaction
+   * @param userId The user id who make the transaction
    * @param begin The begin of the period to take into account.
    * @param end The end of the period to take into account.
    * @return a list of transactions.
    */
-  List<TransactionData> getUserWithdrawalsHistoryBetween(String userName, LocalDate begin, LocalDate end);
+  List<TransactionData> getUserWithdrawalsHistoryBetween(long userId, LocalDate begin, LocalDate end);
 
   /**
    * This method fetch all withdrawals since the date given in argument
    * in the database and return a list of those.
    *
-   * @param userName THe member who make the transaction
+   * @param userId The user id who make the transaction
    * @param begin The begin of the period to take into account.
    * @return a list of transactions.
    */
-  List<TransactionData> getUserWithdrawalsHistorySince(String userName, LocalDate begin);
+  List<TransactionData> getUserWithdrawalsHistorySince(long userId, LocalDate begin);
 
   /**
    * This method fetch all withdrawals up to the date given in argument
    * in the database and return a list of those.
    *
-   * @param userName THe member who make the transaction
+   * @param userId The user id who make the transaction
    * @param end The end of the period to take into account.
    * @return a list of transactions.
    */
-  List<TransactionData> getUserWithdrawalsHistoryUpTo(String userName, LocalDate end);
+  List<TransactionData> getUserWithdrawalsHistoryUpTo(long userId, LocalDate end);
 
   /**
    * This method fetch all withdrawals in the database and return
    * a list of those.
    *
-   * @param userName THe member who make the transaction
+   * @param userId The user id who make the transaction
    * @return a list of transactions.
    */
-  List<TransactionData> getUserWithdrawalsHistory(String userName);
+  List<TransactionData> getUserWithdrawalsHistory(long userId);
 
 }

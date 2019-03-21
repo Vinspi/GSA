@@ -60,6 +60,21 @@ import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import fr.uniamu.ibdm.gsa_server.util.EnumConvertor;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -154,6 +169,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean addProduct(String sourceName, String targetName) {
 
     Species sourceSpecies = null;
@@ -282,6 +298,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean updateAlertSeuil(UpdateAlertForm form) {
 
     Optional<fr.uniamu.ibdm.gsa_server.models.Alert> optAlert = alertRepository
@@ -313,6 +330,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean addAliquot(AddAliquoteForm form) {
 
     Aliquot newAliquot = new Aliquot();
@@ -346,6 +364,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean transfertAliquot(TransfertAliquotForm form) {
 
     Optional<Aliquot> aliquotOpt = aliquotRepository.findById(form.getNumLot());
@@ -379,6 +398,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean addAlert(AddAlertForm form) {
 
     String[] shards = form.getProductName().split("_");
@@ -409,6 +429,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean saveTeamTrimestrialReport(Map<String, BigDecimal> teamReportLosses,
       boolean isValidated, int year, Quarter quarter) {
 
@@ -695,6 +716,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public void makeInventory(List<InventoryForm> forms) {
 
     forms.forEach(form -> {
@@ -815,6 +837,7 @@ public class AdminServiceImpl implements AdminService {
   }
 
   @Override
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean deleteOutdatedAliquot(Aliquot a) {
 
     Optional<Aliquot> aliquotOpt = aliquotRepository.findById(a.getAliquotNLot());
