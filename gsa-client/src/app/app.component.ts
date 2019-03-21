@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthentificationService } from './services/authentification.service';
 import { LocalStorage } from '@ngx-pwa/local-storage';
+import { Foo } from './foo';
+import { User } from './user';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,8 @@ export class AppComponent implements OnInit {
         this.localStorage.getItem("user").subscribe(user => {
           if(user != null){
             this.localStorage.clear().subscribe(() => {});
-            window.location.reload();
+            Foo.subj.next(null);
+            // window.location.reload();
           }
         });
       }
@@ -26,7 +29,8 @@ export class AppComponent implements OnInit {
         this.localStorage.getItem("user").subscribe(user => {
           if (user == null) {
             this.localStorage.setItem("user", response.data).subscribe(() => {});
-            window.location.reload();
+            Foo.subj.next(<User> user);
+            // window.location.reload();
           }
         });
       }
