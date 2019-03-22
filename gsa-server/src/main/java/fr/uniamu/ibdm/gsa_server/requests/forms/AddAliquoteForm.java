@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.requests.forms;
 
+import java.math.BigDecimal;
 import java.util.regex.Pattern;
 
 public class AddAliquoteForm implements Form {
@@ -7,7 +8,7 @@ public class AddAliquoteForm implements Form {
   private long aliquotNLot;
   private int aliquotQuantityVisibleStock;
   private int aliquotQuantityHiddenStock;
-  private float aliquotPrice;
+  private BigDecimal aliquotPrice;
   private String aliquotProvider;
   private String aliquotProduct;
 
@@ -24,7 +25,7 @@ public class AddAliquoteForm implements Form {
   public AddAliquoteForm(long aliquotNLot,
                          int aliquotQuantityVisibleStock,
                          int aliquotQuantityHiddenStock,
-                         float aliquotPrice,
+                         BigDecimal aliquotPrice,
                          String aliquotProvider,
                          String aliquotProduct) {
 
@@ -42,6 +43,7 @@ public class AddAliquoteForm implements Form {
   @Override
   public boolean validate() {
 
+    PriceForm priceForm = new PriceForm(aliquotPrice);
     Pattern patternProductName = Pattern.compile("^[A-Z]*_ANTI_[A-Z]*");
 
     /* validation for every input */
@@ -50,9 +52,10 @@ public class AddAliquoteForm implements Form {
             && (aliquotQuantityVisibleStock + aliquotQuantityHiddenStock) > 0
             && aliquotQuantityHiddenStock >= 0
             && aliquotQuantityVisibleStock >= 0
-            && aliquotPrice > 0
+            && aliquotPrice.compareTo(BigDecimal.ZERO) > 0
             && aliquotProvider.length() > 0
             && patternProductName.matcher(aliquotProduct).matches()
+            && priceForm.validate()
     ) {
       return true;
     }
@@ -84,11 +87,11 @@ public class AddAliquoteForm implements Form {
     this.aliquotQuantityHiddenStock = aliquotQuantityHiddenStock;
   }
 
-  public float getAliquotPrice() {
+  public BigDecimal getAliquotPrice() {
     return aliquotPrice;
   }
 
-  public void setAliquotPrice(float aliquotPrice) {
+  public void setAliquotPrice(BigDecimal aliquotPrice) {
     this.aliquotPrice = aliquotPrice;
   }
 

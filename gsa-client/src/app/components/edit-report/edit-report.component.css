@@ -1,0 +1,16 @@
+:host {
+    width: 100%;
+}
+
+.billing-info {
+    color: red;
+}
+
+.card-title {
+    padding-top: 15px;
+}
+
+.card {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}

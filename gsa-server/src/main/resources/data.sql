@@ -8,7 +8,6 @@ insert into team (team_id, team_name) values (6, 'NorthStar Rx LLC');
 insert into team (team_id, team_name) values (7, 'West-Ward Pharmaceutical Corp');
 insert into team (team_id, team_name) values (8, 'Dr. Fresh, Inc.');
 insert into team (team_id, team_name) values (9, 'Boggs Gases div. Boggs Fire Equipment');
-insert into team (team_id, team_name) values (10, 'NorthStar Rx LLC');
 -- species --
 insert into species (species_name) values ('MONKEY');
 insert into species (species_name) values ('DONKEY');
@@ -87,6 +86,24 @@ insert into transaction (transaction_id, transaction_date, transaction_motif, tr
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (49, '2019-06-26 13:48:41', 'TEAM_WITHDRAW', 5, 'WITHDRAW', 1, 2);
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (50, '2019-11-14 02:24:41', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 1, 1);
 insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (51, '2018-11-14 02:24:41', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 1, 1);
+
+
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (52, '2018-12-12', 'TEAM_WITHDRAW', 5, 'WITHDRAW', 1, 1);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (53, '2018-11-27', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 2, 1);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (54, '2018-10-26', 'TEAM_WITHDRAW', 2, 'WITHDRAW', 2, 1);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (55, '2018-12-11', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 1, 1);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (56, '2018-12-11', 'TEAM_WITHDRAW', 4, 'WITHDRAW', 3, 1);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (57, '2018-10-26', 'TEAM_WITHDRAW', 5, 'WITHDRAW', 1, 1);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (58, '2018-11-14', 'TEAM_WITHDRAW', 1, 'WITHDRAW', 3, 1);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (59, '2018-11-14', 'TEAM_WITHDRAW', 3, 'WITHDRAW', 2, 1);
+
+
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (60, '2018-12-14', 'OUTDATED', 3, 'WITHDRAW', 2, null);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (61, '2018-12-14', 'OUTDATED', 3, 'WITHDRAW', 2, null);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (62, '2018-10-14', 'INVENTORY', 3, 'WITHDRAW', 2, null);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (63, '2018-11-14', 'INVENTORY', 3, 'WITHDRAW', 3, null);
+insert into transaction (transaction_id, transaction_date, transaction_motif, transaction_quantity, transaction_type, aliquot_id, member_id) values (64, '2018-09-14', 'INVENTORY', 3, 'WITHDRAW', 3, null);
+
 SET FOREIGN_KEY_CHECKS = 1;
 DELETE FROM `transaction` WHERE (transaction_date > '2019-04-30 00:00:00' AND transaction_date < '2019-06-01 00:00:00');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('VISIBLE_STOCK', 10, 'WOLF', 'SHARK');
@@ -94,3 +111,4 @@ INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('HIDDEN_S
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 20, 'WOLF', 'SHARK');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'WOLF', 'SPIDER');
 INSERT INTO `alert`(`alert_type`, `seuil`, `source`, `target`) VALUES ('GENERAL', 10, 'GOAT', 'WOLF');
+

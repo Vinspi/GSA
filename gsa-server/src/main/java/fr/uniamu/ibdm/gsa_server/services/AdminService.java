@@ -1,23 +1,30 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.time.LocalDate;
+import java.util.Map;
+
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-
-import java.time.LocalDate;
-import java.util.List;
 
 public interface AdminService {
 
@@ -35,7 +42,6 @@ public interface AdminService {
    * @return a list of names or null if an error occurred.
    */
   List<String> getAllSpeciesNames();
-
 
   /**
    * This method adds a new product named after the source and target species name.
@@ -85,17 +91,16 @@ public interface AdminService {
   /**
    * This method adds a new aliquote.
    *
-   * @param  form Wrapper containing informations about the aliquot.
+   * @param form Wrapper containing informations about the aliquot.
    * @return true if adding the aliquote is successful, false otherwise.
    */
   boolean addAliquot(AddAliquoteForm form);
 
   /**
-   * This method retrieve all products on which an
-   * alert has been triggered.
+   * This method retrieve all products on which an alert has been triggered.
    *
-   * @return A list of wrapper containing product names, the quantity left
-   *     and the threshold of the alert.
+   * @return A list of wrapper containing product names, the quantity left and the threshold of the
+   *         alert.
    */
   List<TriggeredAlertsQuery> getTriggeredAlerts();
 
@@ -139,16 +144,91 @@ public interface AdminService {
   boolean addAlert(AddAlertForm form);
 
   /**
-   * This method retrieve all products and their aliquots
-   *     from the database.
+   * This method retrieves all transactions made by a team in a quarter of a given year.
+   * 
+   * @param teamName String
+   * @param quarter value of Quarter enumeration
+   * @param year int
+   * 
+   * @return a list of transactions and the total price or null if an error occurred.
+   */
+  List<WithdrawnTransactionData> getWithdrawnTransactionsByTeamNameAndQuarterAndYear(String teamName,
+      Quarter quarter, int year);
+
+  /**
+   * This method saves a list of team trimestrial reports in the database if there are still all
+   * editable and if the quarter is over. If a team trimestrial report of the list is not valid,
+   * then none of them will be added in the database.
+   * 
+   * @param teamReportLosses a list of teamNames and their associated loss.
+   * @param finalFlag set to true if the report is final, false otherwise
+   * @param year integer
+   * @param quarter value of Quarter enumeration
+   * 
+   * @return true if the saving process is successful, false otherwise.
+   */
+  boolean saveTeamTrimestrialReport(Map<String, BigDecimal> teamReportLosses, boolean finalFlag,
+      int year, Quarter quarter);
+
+  /**
+   * This method returns the sum of prices of outdated and lost aliquots and details of each loss.
+   *
+   * @param quarter value of Quarter enumeration
+   * @param year year value
+   * 
+   * @return total cost losses and its details (product's name and its associated loss).
+   */
+  TransactionLossesData getSumAndProductsOfOutdatedAndLostProductOfQuarter(Quarter quarter,
+      int year);
+
+  /**
+   * This method returns the quarter and year of all editable reports.
+   *
+   * @return a list of quarter and year.
+   */
+  List<YearQuarterData> getQuarterAndYearOfAllEditableReports();
+
+  /**
+   * This method returns the current losses of each team in the database.
+   * 
+   * @param quarter value of Quarter enumeration
+   * @param year year value
+   * 
+   * @return a list of cost losses and their associated team name or null if the quarter parameter
+   *         is invalid.
+   */
+  List<TeamReportLossForm> getReportLossesAndTeamNameByYearAndQuarter(Quarter quarter, int year);
+
+  /**
+   * Gets the remaining losses of a report in a given quarter. The losses are calculated by
+   * subtracting the sum of losses of all teams in a given quarter from the sum of prices of all
+   * lost or outdated products in this same quarter.
+   * 
+   * @param quarter value of Quarter enumeration
+   * @param year int
+   * @return the sum of losses in a given quarter
+   */
+  BigDecimal getRemainingReportLosses(Quarter quarter, Integer year);
+  
+  /**
+   * Gets the sum of cost of all withdrawn products in a given year.
+   * 
+   * @param quarter value of Quarter enumeration
+   * @param year int
+   * @return the sum, null if no records were found
+   */
+  public BigDecimal getSumOfCostOfAllWithdrawnProductsByQuarter(Quarter quarter, int year);
+
+  /**
+   * This method retrieve all products and their aliquots from the database.
    *
    * @return a list of products.
    */
   List<Product> getAllProductsWithAliquots();
 
   /**
-   * This method perform the inventory. It add losses transactions
-   *     for every aliquot lost and restore the database to the user inputs.
+   * This method perform the inventory. It add losses transactions for every aliquot lost and
+   * restore the database to the user inputs.
    *
    * @param forms a list of form containing aliquotNLot and quantity.
    */

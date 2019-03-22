@@ -1,5 +1,16 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.MemberRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
@@ -19,17 +30,6 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrowForm;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
 import fr.uniamu.ibdm.gsa_server.util.Crypto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.security.SecureRandom;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -44,17 +44,14 @@ public class UserServiceImpl implements UserService {
   /**
    * Constructor for UserService.
    *
-   * @param userRepository   Dao for user entities.
-   * @param teamRepository   Dao for team entities.
+   * @param userRepository Dao for user entities.
+   * @param teamRepository Dao for team entities.
    * @param memberRepository Dao for member entities.
    */
   @Autowired
-  public UserServiceImpl(UserRepository userRepository,
-                         TeamRepository teamRepository,
-                         MemberRepository memberRepository,
-                         ProductRepository productRepository,
-                         AliquotRepository aliquotRepository,
-                         TransactionRepository transactionRepository) {
+  public UserServiceImpl(UserRepository userRepository, TeamRepository teamRepository,
+      MemberRepository memberRepository, ProductRepository productRepository,
+      AliquotRepository aliquotRepository, TransactionRepository transactionRepository) {
     this.userRepository = userRepository;
     this.teamRepository = teamRepository;
     this.memberRepository = memberRepository;
@@ -64,11 +61,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User registerAccount(String name, String email, String password, String teamName, boolean isAdmin) {
+  public User registerAccount(String name, String email, String password, String teamName,
+      boolean isAdmin) {
 
     Team team = teamRepository.findByTeamName(teamName);
     User u = userRepository.findByUserEmail(email);
-
 
     if (team == null || u != null) {
       /* the team does not exists or the email is already used */
@@ -94,7 +91,6 @@ public class UserServiceImpl implements UserService {
     member.setTeam(team);
     member.setUser(user);
     memberRepository.save(member);
-
 
     return user;
   }
@@ -174,7 +170,8 @@ public class UserServiceImpl implements UserService {
         }
 
         if (member != null) {
-          transaction = new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW, LocalDate.now(), withdrowQuantity, aliquot, member);
+          transaction = new Transaction(TransactionMotif.TEAM_WITHDRAW, TransactionType.WITHDRAW,
+              LocalDate.now(), withdrowQuantity, aliquot, member);
           transactionRepository.save(transaction);
           aliquotRepository.save(aliquot);
         } else {
@@ -196,7 +193,6 @@ public class UserServiceImpl implements UserService {
     productRepository.findAll().forEach(element -> {
       productNames.add(element.getProductName());
     });
-
 
     return productNames;
   }
@@ -220,7 +216,7 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
-    transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionTypeLike(member, begin, end, TransactionType.WITHDRAW).forEach(elem ->
+    transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionDateLessThanEqualAndTransactionMotifLike(member, begin, end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
         history.add(new TransactionData(elem))
     );
     return history;
@@ -233,7 +229,7 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
-    transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionTypeLike(member, begin, TransactionType.WITHDRAW).forEach(elem ->
+    transactionRepository.findAllByMemberAndTransactionDateGreaterThanEqualAndTransactionMotifLike(member, begin, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
         history.add(new TransactionData(elem))
     );
     return history;
@@ -246,7 +242,7 @@ public class UserServiceImpl implements UserService {
     User user = userRepository.findById(userId).get();
     Member member = memberRepository.findByUser(user);
 
-    transactionRepository.findAllByMemberAndTransactionDateLessThanEqualAndTransactionTypeLike(member, end, TransactionType.WITHDRAW).forEach(elem ->
+    transactionRepository.findAllByMemberAndTransactionDateLessThanEqualAndTransactionMotifLike(member, end, TransactionMotif.TEAM_WITHDRAW).forEach(elem ->
         history.add(new TransactionData(elem))
     );
     return history;

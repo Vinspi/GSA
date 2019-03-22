@@ -1,17 +1,18 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+import javax.persistence.Column;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
-import java.io.Serializable;
-import java.time.LocalDate;
 
 @Entity
 public class Aliquot implements Serializable {
@@ -19,11 +20,12 @@ public class Aliquot implements Serializable {
   @Id
   private long aliquotNLot;
 
-
   private LocalDate aliquotExpirationDate;
   private long aliquotQuantityVisibleStock;
   private long aliquotQuantityHiddenStock;
-  private float aliquotPrice;
+  
+  @Column(precision = 6, scale = 2)
+  private BigDecimal aliquotPrice;
   private String provider;
 
   @ManyToOne(fetch = FetchType.LAZY)
@@ -34,7 +36,6 @@ public class Aliquot implements Serializable {
   @JsonBackReference
   private Product product;
 
-
   public Aliquot() {
   }
 
@@ -44,8 +45,8 @@ public class Aliquot implements Serializable {
   }
 
   /**
-   * The method withdraw a quantity of the visible stock,
-   * if the quantity is higher than the actual, set the quantity of the aliquot to 0.
+   * The method withdraw a quantity of the visible stock, if the quantity is higher than the actual,
+   * set the quantity of the aliquot to 0.
    *
    * @param q quantity to withdraw
    */
@@ -102,11 +103,11 @@ public class Aliquot implements Serializable {
     this.product = product;
   }
 
-  public float getAliquotPrice() {
+  public BigDecimal getAliquotPrice() {
     return aliquotPrice;
   }
 
-  public void setAliquotPrice(float aliquotPrice) {
+  public void setAliquotPrice(BigDecimal aliquotPrice) {
     this.aliquotPrice = aliquotPrice;
   }
 
@@ -117,6 +118,5 @@ public class Aliquot implements Serializable {
   public void setProvider(String provider) {
     this.provider = provider;
   }
-
 
 }

@@ -82,7 +82,8 @@ public class UserServiceTest {
       return i.getArgument(0);
     });
 
-    User user = userService.registerAccount("Bruce", "bruce.wayne@batcave.com", "i'mbatman", "team that exists", false);
+    User user = userService.registerAccount("Bruce", "bruce.wayne@batcave.com", "i'mbatman",
+        "team that exists", false);
 
     Assert.assertNotNull(user);
     Assert.assertSame(user.getUserName(), "Bruce");
@@ -92,11 +93,13 @@ public class UserServiceTest {
 
     Assert.assertTrue(Arrays.equals(passHashed, user.getUserPassword()));
 
-    user = userService.registerAccount("Bruce", "bruce.wayne@batcave.com", "i'mbatman", "team that does not exists", false);
+    user = userService.registerAccount("Bruce", "bruce.wayne@batcave.com", "i'mbatman",
+        "team that does not exists", false);
 
     Assert.assertNull(user);
 
-    user = userService.registerAccount("Bruce", "already.exists@email.com", "i'mbatman", "team that does not exists", false);
+    user = userService.registerAccount("Bruce", "already.exists@email.com", "i'mbatman",
+        "team that does not exists", false);
 
     Assert.assertNull(user);
 
@@ -118,7 +121,6 @@ public class UserServiceTest {
     user = userService.login("nonexistant@void.com", "pantoufle");
 
     Assert.assertNull(user);
-
 
   }
 
@@ -240,16 +242,16 @@ public class UserServiceTest {
 
     List<Product> products = new ArrayList<>();
 
-    for (int i=0;i<10;i++){
-      products.add(new Product(new Species("target"+i), new Species("source"+i), null));
+    for (int i = 0; i < 10; i++) {
+      products.add(new Product(new Species("target" + i), new Species("source" + i), null));
     }
 
     Mockito.when(productRepository.findAll()).thenReturn(products);
 
     List<String> names = userService.getAllProductName();
 
-    for (int i=0;i<10;i++){
-      Assert.assertTrue(names.contains("SOURCE"+i+"_ANTI_"+"TARGET"+i));
+    for (int i = 0; i < 10; i++) {
+      Assert.assertTrue(names.contains("SOURCE" + i + "_ANTI_" + "TARGET" + i));
     }
 
   }
@@ -257,19 +259,18 @@ public class UserServiceTest {
   @Test
   public void getAllTeamName() {
 
-
     List<Team> teams = new ArrayList<>();
 
-    for (int i=0;i<10;i++){
-      teams.add(new Team("fake team"+i, null, null));
+    for (int i = 0; i < 10; i++) {
+      teams.add(new Team("fake team" + i, null, null));
     }
 
     Mockito.when(teamRepository.findAll()).thenReturn(teams);
 
     List<String> names = userService.getAllTeamName();
 
-    for (int i=0;i<10;i++){
-      Assert.assertTrue(names.contains("fake team"+i));
+    for (int i = 0; i < 10; i++) {
+      Assert.assertTrue(names.contains("fake team" + i));
     }
 
   }

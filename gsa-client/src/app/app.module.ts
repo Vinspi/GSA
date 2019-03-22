@@ -22,6 +22,9 @@ import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
 import { AddAlertComponent } from './components/alerts-panel/add-alert/add-alert.component';
 import { ToastComponent } from './components/toast/toast.component';
+import { EditReportComponent } from './components/edit-report/edit-report.component';
+import { ReloadableDatatableComponent } from './components/reloadable-datatable/reloadable-datatable.component';
+
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { DigitsOnlyDirective } from './directives/digits-only.directive';
 import { ProductManagerComponent } from './components/product-manager/product-manager.component';
@@ -57,6 +60,8 @@ import { NodropDirective } from './directives/nodrop.directive';
     TriggeredAlertsComponent,
     AddAlertComponent,
     ToastComponent,
+    EditReportComponent,
+    ReloadableDatatableComponent,
     InventoryComponent,
     DigitsOnlyDirective,
     ProductManagerComponent,

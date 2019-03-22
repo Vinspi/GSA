@@ -1,31 +1,16 @@
 package fr.uniamu.ibdm.gsa_server;
 
-import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
-import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
-import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
-import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
-import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
-import fr.uniamu.ibdm.gsa_server.models.Alert;
-import fr.uniamu.ibdm.gsa_server.models.Aliquot;
-import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.Species;
-import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
-import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,19 +24,45 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
+import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
+import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
+import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
+import fr.uniamu.ibdm.gsa_server.models.Alert;
+import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Product;
+import fr.uniamu.ibdm.gsa_server.models.Species;
+import fr.uniamu.ibdm.gsa_server.models.Team;
+import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.ProductPK;
+import fr.uniamu.ibdm.gsa_server.models.primarykeys.TeamTrimestrialReportPk;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
+import fr.uniamu.ibdm.gsa_server.services.impl.AdminServiceImpl;
+import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
+import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class AdminServiceTest {
+  @MockBean
+  TimeFactory clock;
 
   @MockBean
   ProductRepository productRepository;
@@ -66,10 +77,13 @@ public class AdminServiceTest {
   AliquotRepository aliquotRepository;
 
   @MockBean
-  TransactionRepository transactionRepository;
+  TeamRepository teamRepository;
 
   @MockBean
   TeamTrimestrialReportRepository teamTrimestrialReportRepository;
+
+  @MockBean
+  TransactionRepository transactionRepository;
 
   @InjectMocks
   AdminServiceImpl adminService;
@@ -95,10 +109,10 @@ public class AdminServiceTest {
       }
     }
 
-    Mockito.when(
-        productRepository.getWithdrawStats(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any()))
-        .thenReturn(returnQuery);
-    WithdrawStatsForm form = new WithdrawStatsForm("fake team", "chicken_anti_donkey", "april", "may", 2019, 2019);
+    Mockito.when(productRepository.getWithdrawStats(Mockito.any(), Mockito.any(), Mockito.any(),
+        Mockito.any(), Mockito.any())).thenReturn(returnQuery);
+    WithdrawStatsForm form = new WithdrawStatsForm("fake team", "chicken_anti_donkey", "april",
+        "may", 2019, 2019);
 
     List<StatsWithdrawQuery> list = adminService.getWithdrawStats(form);
 
@@ -159,8 +173,8 @@ public class AdminServiceTest {
     Assert.assertEquals(false, adminService.addProduct(sourceName, targetName));
   }
 
-    @Test
-    public void getAllAlerts() {
+  @Test
+  public void getAllAlerts() {
 
     List<Alert> alerts = new ArrayList<>();
     Alert tmp;
@@ -277,12 +291,12 @@ public class AdminServiceTest {
 
     listAliquotQuery.add(aliquotQuery);
 
-    Mockito.when(aliquotRepository.findAllBySourceAndTargetQuery("SOURCE", "TARGET")).thenReturn(listAliquotQuery);
+    Mockito.when(aliquotRepository.findAllBySourceAndTargetQuery("SOURCE", "TARGET"))
+        .thenReturn(listAliquotQuery);
 
     List<TriggeredAlertsQuery> triggeredAlertsQueries = adminService.getTriggeredAlerts();
 
     Assert.assertEquals(3, triggeredAlertsQueries.size());
-
 
     for (TriggeredAlertsQuery tr : triggeredAlertsQueries) {
       Assert.assertEquals(1, tr.getAliquots().size());
@@ -300,14 +314,14 @@ public class AdminServiceTest {
   public void addAliquote() {
 
     long id = 33;
-    float priceValue1 = 4.56F;
+    BigDecimal priceValue1 = BigDecimal.valueOf(4.56);
     int qtyHiddenValue1 = 6;
     int qtyVisibleValue1 = 2;
     String providerValue1 = "Provider x";
     String productValue1 = "GOAT_ANTI_WOLF";
 
-
-    AddAliquoteForm form = new AddAliquoteForm(id, qtyVisibleValue1, qtyHiddenValue1, priceValue1, providerValue1, productValue1);
+    AddAliquoteForm form = new AddAliquoteForm(id, qtyVisibleValue1, qtyHiddenValue1, priceValue1,
+        providerValue1, productValue1);
 
     final Aliquot aliquotX = new Aliquot();
     aliquotX.setAliquotExpirationDate(LocalDate.now().plusYears(1));
@@ -316,7 +330,8 @@ public class AdminServiceTest {
     aliquotX.setAliquotPrice(priceValue1);
     aliquotX.setProvider(providerValue1);
 
-    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.of(new Product()));
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class)))
+        .thenReturn(Optional.of(new Product()));
     Mockito.when(aliquotRepository.findById(40L)).thenReturn(Optional.of(new Aliquot()));
     Mockito.when(aliquotRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -328,9 +343,9 @@ public class AdminServiceTest {
     success = adminService.addAliquot(form);
     Assert.assertFalse(success);
 
-
     form.setAliquotNLot(id);
-    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.empty());
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class)))
+        .thenReturn(Optional.empty());
     success = adminService.addAliquot(form);
     Assert.assertFalse(success);
 
@@ -346,7 +361,8 @@ public class AdminServiceTest {
     ArgumentCaptor<Aliquot> argumentCaptor = ArgumentCaptor.forClass(Aliquot.class);
     Mockito.when(aliquotRepository.findById(12345L)).thenReturn(Optional.of(aliquot));
 
-    TransfertAliquotForm form = new TransfertAliquotForm(StorageType.RESERVE, StorageType.STOCK, 12345L, 50);
+    TransfertAliquotForm form = new TransfertAliquotForm(StorageType.RESERVE, StorageType.STOCK,
+        12345L, 50);
 
     boolean success = adminService.transfertAliquot(form);
 
@@ -380,11 +396,10 @@ public class AdminServiceTest {
     Assert.assertFalse(success);
     Mockito.verify(aliquotRepository, Mockito.never()).save(Mockito.any());
 
-
   }
 
   @Test
-  public void addAlert(){
+  public void addAlert() {
 
     AddAlertForm form = new AddAlertForm();
     form.setProductName("MONKEY_ANTI_DONKEY");
@@ -394,31 +409,34 @@ public class AdminServiceTest {
     ArgumentCaptor<Alert> captor = ArgumentCaptor.forClass(Alert.class);
 
     /* product exists */
-    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.of(new Product()));
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class)))
+        .thenReturn(Optional.of(new Product()));
     /* alert doesn't exits */
-    Mockito.when(alertRepository.findByAlertTypeAndProduct(Mockito.any(), Mockito.any())).thenReturn(Optional.empty());
+    Mockito.when(alertRepository.findByAlertTypeAndProduct(Mockito.any(), Mockito.any()))
+        .thenReturn(Optional.empty());
 
     boolean success = adminService.addAlert(form);
 
     Mockito.verify(alertRepository, Mockito.times(1)).save(captor.capture());
-    Assert.assertTrue(success);
-    Assert.assertEquals(AlertType.HIDDEN_STOCK ,captor.getValue().getAlertType());
+    Assert.assertEquals(AlertType.HIDDEN_STOCK, captor.getValue().getAlertType());
 
     /* the product doesn't exist */
-    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.empty());
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class)))
+        .thenReturn(Optional.empty());
 
     success = adminService.addAlert(form);
 
     Assert.assertFalse(success);
 
     /* the alert already exists */
-    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class))).thenReturn(Optional.of(new Product()));
-    Mockito.when(alertRepository.findByAlertTypeAndProduct(Mockito.any(), Mockito.any())).thenReturn(Optional.of(new Alert()));
+    Mockito.when(productRepository.findById(Mockito.any(ProductPK.class)))
+        .thenReturn(Optional.of(new Product()));
+    Mockito.when(alertRepository.findByAlertTypeAndProduct(Mockito.any(), Mockito.any()))
+        .thenReturn(Optional.of(new Alert()));
 
     success = adminService.addAlert(form);
 
     Assert.assertFalse(success);
-
 
   }
 
@@ -432,7 +450,6 @@ public class AdminServiceTest {
     Mockito.when(aliquotRepository.findById(1L)).thenReturn(Optional.of(mockAliquot));
     Mockito.when(aliquotRepository.findById(2L)).thenReturn(Optional.of(mockAliquot));
     Mockito.when(aliquotRepository.findById(3L)).thenReturn(Optional.of(mockAliquot));
-
 
     List<InventoryForm> forms = new ArrayList<>();
 
@@ -448,7 +465,6 @@ public class AdminServiceTest {
     /* aliquot n°4 doesn't exist so it won't be saved */
     Mockito.verify(aliquotRepository, Mockito.times(3)).save(Mockito.any());
 
-
   }
 
   @Test
@@ -459,15 +475,14 @@ public class AdminServiceTest {
     List<Aliquot> aliquots = new ArrayList<>();
     Aliquot a;
 
-    for (int i=0;i<10;i++){
+    for (int i = 0; i < 10; i++) {
       if (i < 5) {
         /* all those aliquots will be outdated */
         a = new Aliquot();
-        a.setAliquotExpirationDate(LocalDate.of(2017,01,01));
+        a.setAliquotExpirationDate(LocalDate.of(2017, 01, 01));
         a.setAliquotQuantityVisibleStock(0);
         a.setAliquotQuantityHiddenStock(0);
-      }
-      else {
+      } else {
         /* all those aliquots will be quantity == 0 */
         a = new Aliquot();
         a.setAliquotExpirationDate(LocalDate.of(2122, 01, 01));
@@ -530,6 +545,201 @@ public class AdminServiceTest {
 
     Assert.assertTrue(success);
 
+  }
+
+  @Test
+  public void saveTeamTrimestrialReport() {
+    Boolean finalFlag = false;
+    Map<String, BigDecimal> teamReportLosses = new HashMap<>();
+    Integer year = 2019;
+    teamReportLosses.put("Some team", BigDecimal.valueOf(100.53));
+    Quarter quarter = Quarter.QUARTER_1;
+
+    // Saving a report when the quarter is not over should fail
+    LocalDate now = LocalDate.of(2019, 3, 31);
+    Mockito.when(clock.now()).thenReturn(now);
+    boolean success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year,
+        quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(clock, Mockito.times(1)).now();
+
+    now = LocalDate.of(2019, 4, 1);
+    Mockito.when(clock.now()).thenReturn(now);
+
+    // Saving a report should fail when the team name does not match a team.
+    Mockito.when(teamRepository.findByTeamName("Some team")).thenReturn(null);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(teamRepository, Mockito.times(1)).findByTeamName("Some team");
+
+    // Saving a report with no data in the database should initialize data for this given quarter
+
+    Mockito.when(teamTrimestrialReportRepository.getSumOfQuarterLosses(quarter.name(), year))
+        .thenReturn(null);
+
+    teamReportLosses = new HashMap<>();
+    teamReportLosses.put("teamA", BigDecimal.valueOf(5.5));
+    teamReportLosses.put("teamB", BigDecimal.valueOf(6.5));
+
+    List<Team> teams = new ArrayList<>();
+    Team someTeam = new Team();
+    someTeam.setTeamId(1L);
+    teams.add(someTeam);
+    Mockito.when(teamRepository.findByTeamName(Mockito.contains("teamA"))).thenReturn(someTeam);
+    someTeam = new Team();
+    someTeam.setTeamId(2L);
+    Mockito.when(teamRepository.findByTeamName(Mockito.eq("teamB"))).thenReturn(someTeam);
+    teams.add(someTeam);
+    Mockito.when(teamRepository.findAll()).thenReturn(teams);
+    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any(TeamTrimestrialReport.class)))
+        .thenReturn(null);
+
+    // Only to make sure that the execution is stopped after saving process. (fails at the next if
+    // condition)
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(null);
+
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1))
+        .getSumOfQuarterLosses(Mockito.eq(quarter.name()), Mockito.eq(year));
+    Mockito.verify(teamRepository, Mockito.times(1)).findAll();
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(2))
+        .save(Mockito.any(TeamTrimestrialReport.class));
+
+    Assert.assertFalse(success);
+
+    // Saving when there are no lost products and losses are given should fail
+    teamReportLosses = new HashMap<>();
+    teamReportLosses.put("teamA", BigDecimal.valueOf(6.0));
+    teamReportLosses.put("teamB", BigDecimal.ZERO);
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(null);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(transactionRepository, Mockito.times(2))
+        .getSumOfOutdatedAndLostProductOfQuarter(Mockito.anyString(), Mockito.anyString());
+
+    // Saving when the given losses are greater than the calculated losses should fail
+    teamReportLosses = new HashMap<>();
+    teamReportLosses.put("teamA", BigDecimal.valueOf(5.5));
+    teamReportLosses.put("teamB", BigDecimal.valueOf(6.5));
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(BigDecimal.valueOf(10.00));
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(transactionRepository, Mockito.times(3))
+        .getSumOfOutdatedAndLostProductOfQuarter(Mockito.anyString(), Mockito.anyString());
+
+    // Saving a validated report should fail when the number of teams given does not match the
+    // number of teams in the database
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(BigDecimal.valueOf(15.00));
+    Mockito.when(teamRepository.count()).thenReturn(3L);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, true, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(teamRepository, Mockito.times(1)).count();
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(0)).findById(Mockito.any());
+
+    // Saving a validated report should fail when the given losses does not equal the calculated
+    // losses
+    Mockito
+        .when(transactionRepository.getSumOfOutdatedAndLostProductOfQuarter(
+            LocalDate.of(2019, 1, 1).toString(), LocalDate.of(2019, 3, 31).toString()))
+        .thenReturn(BigDecimal.valueOf(15.00));
+    Mockito.when(teamRepository.count()).thenReturn(2L);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, true, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(0)).findById(Mockito.any());
+
+    // Saving a non-editable report should not be updated.
+    TeamTrimestrialReport currentReport = new TeamTrimestrialReport();
+    currentReport.setFinalFlag(true);
+
+    TeamTrimestrialReportPk teamTrimestrialReportPk = new TeamTrimestrialReportPk();
+    teamTrimestrialReportPk.setQuarter(Quarter.QUARTER_1);
+    teamTrimestrialReportPk.setTeam(1L);
+    teamTrimestrialReportPk.setYear(year);
+
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
+        .thenReturn(Optional.of(currentReport));
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, false, year, quarter);
+    Assert.assertFalse(success);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).findById(Mockito.any());
+
+    // Saving an existing report with a correct form should be updated in the database.
+    currentReport.setFinalFlag(false);
+    Mockito.when(teamTrimestrialReportRepository.findById(Mockito.eq(teamTrimestrialReportPk)))
+        .thenReturn(Optional.of(currentReport));
+    Mockito.when(teamTrimestrialReportRepository.save(Mockito.any())).thenReturn(null);
+    success = adminService.saveTeamTrimestrialReport(teamReportLosses, finalFlag, year, quarter);
+    Assert.assertTrue(success);
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(3)).findById(Mockito.any());
+    Mockito.verify(teamTrimestrialReportRepository, Mockito.times(1)).saveAll(Mockito.any());
+
+  }
+
+  @Test
+  public void getTransactionsLossesByQuarterAndYear() {
+    int year = 2019;
+    Quarter quarter = Quarter.QUARTER_1;
+
+    List<Object[]> cost = new ArrayList<>();
+    cost.add(new Object[] { BigDecimal.valueOf(46.51), "dog", "cat" });
+    cost.add(new Object[] { BigDecimal.valueOf(51.49), "donkey", "kong" });
+    cost.add(new Object[] { BigDecimal.valueOf(100.90), "horse", "cat" });
+
+    LocalDate firstDay = QuarterDateConverter.getQuarterFirstDay(quarter, year);
+    LocalDate lastDay = QuarterDateConverter.getQuarterLastDay(quarter, year);
+    Mockito.when(transactionRepository.getSumAndProductsOfOutdatedAndLostProductOfQuarter(
+        firstDay.toString(), lastDay.toString())).thenReturn(cost);
+
+    TransactionLossesData data = adminService
+        .getSumAndProductsOfOutdatedAndLostProductOfQuarter(quarter, year);
+    Assert.assertEquals(3, data.getProductLosses().size());
+
+    BigDecimal sum = BigDecimal.valueOf(0.00);
+    for (ProductLossData loss : data.getProductLosses()) {
+      sum = sum.add(loss.getLoss());
+    }
+
+    if (!(BigDecimal.valueOf(198.90).compareTo(sum) == 0)) {
+      Assert.fail();
+    }
+
+  }
+
+  @Test
+  public void getQuarterAndYearOfAllEditableReports() {
+    List<Object[]> editableQuarters = new ArrayList<>();
+    List<Object[]> nonEditableQuarters = new ArrayList<>();
+    editableQuarters.add(new Object[] { Quarter.QUARTER_1.name(), 2022 });
+    nonEditableQuarters.add(new Object[] { Quarter.QUARTER_3.name(), 2022 });
+    nonEditableQuarters.add(new Object[] { Quarter.QUARTER_1.name(), 2023 });
+
+    List<YearQuarterData> expectedQuarters = new ArrayList<>();
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_1.name(), 2022));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_2.name(), 2022));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_4.name(), 2022));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_2.name(), 2023));
+    expectedQuarters.add(new YearQuarterData(Quarter.QUARTER_3.name(), 2023));
+
+    Mockito.when(teamTrimestrialReportRepository.findQuarterAndYearOfEditableReports())
+        .thenReturn(editableQuarters);
+    Mockito.when(teamTrimestrialReportRepository.findQuarterAndYearOfNonEditableReports())
+        .thenReturn(nonEditableQuarters);
+    Mockito.when(clock.now()).thenReturn(LocalDate.of(2023, 10, 1));
+
+    List<YearQuarterData> results = adminService.getQuarterAndYearOfAllEditableReports();
+
+    Assert.assertTrue(results.equals(expectedQuarters));
   }
 
 }

@@ -66,6 +66,34 @@ export class AdminService {
     return this.http.post<JsonResponse>(this.BASE_URL+'/addAlert', data, {withCredentials: true});
   }
 
+  saveTeamReport(data: any): Observable<JsonResponse> {
+    return this.http.post<JsonResponse>(this.BASE_URL + '/saveReport', data, { withCredentials: true });
+  }
+
+  getQuarterlyTransactionLosses(quarter: string, year: string): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/transactionLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  }
+
+  getQuarterlyWithdrawnTransactionsByTeamNameAndYear(teamName: string, quarter: string, year: string): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/withdrawnTransactions?teamName=' + teamName + '&quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  }
+
+  getReportLosses(quarter: string, year: string): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/teamReportLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  }
+
+  getQuarterAndYearValuesOfAllEditableReports() {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/quarterYearOfAllEditableReports', { withCredentials: true });
+  }
+
+  getRemainingReportLosses(quarter: string, year: string) {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/remainingReportLosses?quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  }
+
+  getWithdrawnProductsTotalCost(quarter: string, year: string) {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/withdrawalTotalCost/?quarter=' + quarter + '&year=' + year, { withCredentials: true });
+  }
+
   getAllProductsWithAliquots(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL+'/getAllProductsWithAliquots', {withCredentials: true});
   }

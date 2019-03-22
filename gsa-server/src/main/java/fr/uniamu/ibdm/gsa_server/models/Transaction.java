@@ -1,7 +1,7 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
-import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
-import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
+import java.io.Serializable;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,12 +13,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.io.Serializable;
-import java.time.LocalDate;
+
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionMotif;
+import fr.uniamu.ibdm.gsa_server.models.enumerations.TransactionType;
 
 @Entity
 public class Transaction implements Serializable {
-
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,10 +42,10 @@ public class Transaction implements Serializable {
   @JoinColumn(name = "aliquot_id", nullable = false)
   private Aliquot aliquot;
 
+  // Admins add transactions as null members as they are not member of any team.
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id")
   private Member member;
-
 
   public Transaction() {
   }

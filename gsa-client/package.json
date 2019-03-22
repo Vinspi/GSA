@@ -21,6 +21,7 @@
     "@angular/router": "~7.1.0",
     "@ng-bootstrap/ng-bootstrap": "^4.0.4",
     "@ngx-pwa/local-storage": "^7.4.1",
+    "@types/big.js": "^4.0.5",
     "angular-datatables": "^7.0.0",
     "angular7-csv": "^0.2.12",
     "bootstrap": "^4.2.1",

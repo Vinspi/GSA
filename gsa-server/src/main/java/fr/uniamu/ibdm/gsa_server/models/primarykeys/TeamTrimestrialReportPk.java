@@ -3,20 +3,22 @@ package fr.uniamu.ibdm.gsa_server.models.primarykeys;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class TeamTrimestrialReportPK implements Serializable {
+import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 
-  private String quarter;
+public class TeamTrimestrialReportPk implements Serializable {
+
+  private Quarter quarter;
   private int year;
   private Long team;
 
-  public TeamTrimestrialReportPK() {
+  public TeamTrimestrialReportPk() {
   }
-
-  public String getQuarter() {
+  
+  public Quarter getQuarter() {
     return quarter;
   }
 
-  public void setQuarter(String quarter) {
+  public void setQuarter(Quarter quarter) {
     this.quarter = quarter;
   }
 
@@ -44,7 +46,7 @@ public class TeamTrimestrialReportPK implements Serializable {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    TeamTrimestrialReportPK that = (TeamTrimestrialReportPK) o;
+    TeamTrimestrialReportPk that = (TeamTrimestrialReportPk) o;
     return year == that.year
         &&
         Objects.equals(quarter, that.quarter)
