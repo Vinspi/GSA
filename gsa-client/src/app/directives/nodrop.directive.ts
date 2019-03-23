@@ -4,7 +4,12 @@ import { Directive, HostListener, ElementRef, Input, OnInit } from '@angular/cor
   selector: '[appNodrop]'
 })
 export class NodropDirective {
-// Your welcome Kappa
+
+  @HostListener('drop', ['$event'])
+  noDrop(): boolean {
+    return false;
+  }
+
   constructor(private el: ElementRef) {
 
   }

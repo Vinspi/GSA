@@ -40,6 +40,7 @@ import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 import { InputMaxLengthDirective } from './directives/input-max-length.directive';
 import { NodropDirective } from './directives/nodrop.directive';
+import { DigitOnlyDecDirective } from './directives/digit-only-dec.directive';
 
 
 @NgModule({
@@ -76,7 +77,8 @@ import { NodropDirective } from './directives/nodrop.directive';
     AdminMaintenanceComponent,
     OutdatedManagementComponent,
     InputMaxLengthDirective,
-    NodropDirective
+    NodropDirective,
+    DigitOnlyDecDirective
   ],
   imports: [
     BrowserModule,
