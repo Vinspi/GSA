@@ -1,0 +1,47 @@
+<div class="card">
+  <div class="card-body">
+    <div *ngIf="quartersText && quartersText.length > 0; else noReport">
+      <form>
+        <div class="row">
+            <div class="form-group col-md-7">
+            <label for="select-team">Team</label>
+            <select [(ngModel)]="selectedTeam" id="select-team" class="form-control"
+              (change)="dtElement.updateTransactionData(selectedTeam, getSelectedQuarter(), getSelectedYear())" name="team">
+              <option *ngFor="let name of teamNames">{{ name }}</option>
+            </select>
+          </div>
+          <div class="form-group col-md-5">
+            <label for="select-quarter">Quarter</label>
+            <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control"
+              (change)="updateAllData()" name="quarter">
+              <option *ngFor="let quarter of quartersText">{{ quarter }}</option>
+            </select>
+          </div>
+        </div>
+      </form>
+      <div class="card">
+        <h4 class="card-title center">Billing</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class="card-text"><b>Team loss : {{teamLoss}} €</b></div>
+            <div class="card-text"><b>Withdrawal total : {{quarterBill}} €</b></div>
+          </li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="card-title center">Withdrawn products</h4>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <app-transaction-info-datatable></app-transaction-info-datatable>
+            </li>
+          </ul>
+      </div>
+    </div>
+    <ng-template #noReport>
+      <div class="card-body center">
+        <h4>No reports available.</h4>
+      </div>
+    </ng-template>
+  </div>
+</div>
+

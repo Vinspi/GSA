@@ -6,8 +6,7 @@ import {
 } from '@angular/core';
 import { AdminService } from 'src/app/services/admin.service';
 import { UserService } from 'src/app/services/user.service';
-import { ReloadableDatatableComponent } from '../reloadable-datatable/reloadable-datatable.component';
-import { TeamTransaction } from 'src/app/teamTransaction';
+import { TransactionInfoDatatableComponent } from '../../reports/transaction-info-datatable/transaction-info-datatable.component';
 import { EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Big } from 'big.js';
@@ -18,8 +17,8 @@ import { Big } from 'big.js';
   styleUrls: ['./edit-report.component.css']
 })
 export class EditReportComponent implements AfterViewInit, OnInit {
-  @ViewChild(ReloadableDatatableComponent)
-  dtElement: ReloadableDatatableComponent;
+  @ViewChild(TransactionInfoDatatableComponent)
+  dtElement: TransactionInfoDatatableComponent;
 
   activeTab: string;
 
@@ -162,12 +161,12 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   public updateAllData() {
-    this.updateTransactionData();
-    this.updateWithdrawnTransactionsTotalCost();
-    // report needs to be initialised and saved first before being able of getting the remaining losses
-    this.updateTeamLosses()
-      .then(() => this.updateProductLosses())
-      .catch(() => this.displayCouldNotRetrieveDataToast());
+      this.dtElement.updateTransactionData(this.selectedTeam, this.getSelectedQuarter(), this.getSelectedYear());
+      this.updateWithdrawnTransactionsTotalCost();
+      // report needs to be initialised and saved first before being able of getting the remaining losses
+      this.updateTeamLosses()
+        .then(() => this.updateProductLosses())
+        .catch(() => this.displayCouldNotRetrieveDataToast());
   }
 
   public validateReport() {
@@ -284,8 +283,13 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     });
   }
 
-  /*Transactions and datatable*/
-  private fetchTransactions(): Promise<any> {
+
+
+
+
+
+
+  /*private fetchTransactions(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.adminService
         .getQuarterlyWithdrawnTransactionsByTeamNameAndYear(
@@ -304,7 +308,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   public updateTransactionData() {
-    if (this.quarters.size > 0) {
+    // if (numberOfQuarters > 0) {
       this.fetchTransactions()
         .then(data => {
           this.dtElement.items = this.transactionValuesToArray(<Array<TeamTransaction>>data);
@@ -313,9 +317,8 @@ export class EditReportComponent implements AfterViewInit, OnInit {
         .catch(() => {
           this.dtElement.items = [];
           this.dtElement.reRenderData();
-          this.displayCouldNotRetrieveDataToast();
         });
-    }
+    //}
   }
 
   private transactionValuesToArray(transactions: Array<any>): Array<any> {
@@ -330,5 +333,5 @@ export class EditReportComponent implements AfterViewInit, OnInit {
       transactionValues.push(values);
     }
     return transactionValues;
-  }
+  }*/
 }

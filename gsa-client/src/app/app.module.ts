@@ -22,8 +22,9 @@ import { EditAlertsComponent } from './components/alerts-panel/edit-alerts/edit-
 import { TriggeredAlertsComponent } from './components/alerts-panel/triggered-alerts/triggered-alerts.component';
 import { AddAlertComponent } from './components/alerts-panel/add-alert/add-alert.component';
 import { ToastComponent } from './components/toast/toast.component';
-import { EditReportComponent } from './components/edit-report/edit-report.component';
-import { ReloadableDatatableComponent } from './components/reloadable-datatable/reloadable-datatable.component';
+import { EditReportComponent } from './components/reports/edit-report/edit-report.component';
+import { ShowReportComponent } from './components/reports/show-report/show-report.component';
+import { TransactionInfoDatatableComponent } from './components/reports/transaction-info-datatable/transaction-info-datatable.component';
 
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { DigitsOnlyDirective } from './directives/digits-only.directive';
@@ -40,7 +41,6 @@ import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 import { InputMaxLengthDirective } from './directives/input-max-length.directive';
 import { NodropDirective } from './directives/nodrop.directive';
-import { DigitOnlyDecDirective } from './directives/digit-only-dec.directive';
 
 
 @NgModule({
@@ -62,7 +62,8 @@ import { DigitOnlyDecDirective } from './directives/digit-only-dec.directive';
     AddAlertComponent,
     ToastComponent,
     EditReportComponent,
-    ReloadableDatatableComponent,
+    ShowReportComponent,
+    TransactionInfoDatatableComponent,
     InventoryComponent,
     DigitsOnlyDirective,
     ProductManagerComponent,
@@ -77,8 +78,7 @@ import { DigitOnlyDecDirective } from './directives/digit-only-dec.directive';
     AdminMaintenanceComponent,
     OutdatedManagementComponent,
     InputMaxLengthDirective,
-    NodropDirective,
-    DigitOnlyDecDirective
+    NodropDirective
   ],
   imports: [
     BrowserModule,

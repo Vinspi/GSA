@@ -15,7 +15,8 @@ import { AdminHomepageComponent } from './components/admin-homepage/admin-homepa
 import { MaintenanceComponent } from './components/maintenance/maintenance.component';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { AdminMaintenanceComponent } from './components/admin-maintenance/admin-maintenance.component';
-import { EditReportComponent } from './components/edit-report/edit-report.component';
+import { EditReportComponent } from './components/reports/edit-report/edit-report.component';
+import { ShowReportComponent } from './components/reports/show-report/show-report.component';
 import { OutdatedManagementComponent } from './components/outdated-management/outdated-management.component';
 import { HistoryComponent } from './components/history/history.component';
 
@@ -31,6 +32,7 @@ const routes: Routes = [
   {path: 'maintenance', component: MaintenanceComponent},
   {path: 'admin-maintenance', canActivate: [AdminGuard], component: AdminMaintenanceComponent},
   {path: 'editreport', canActivate: [AdminGuard, MaintenanceGuard], component: EditReportComponent},
+  {path: 'showreport', canActivate: [AdminGuard, MaintenanceGuard], component: ShowReportComponent},
   {path: 'outdated-manager', canActivate:[AdminGuard, MaintenanceGuard], component: OutdatedManagementComponent},
   {path: '**', component: NotFoundComponent}
 ];

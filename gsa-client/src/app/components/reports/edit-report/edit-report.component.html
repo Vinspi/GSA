@@ -7,7 +7,7 @@
           <div class="form-group col-md-7" *ngIf="activeTab==='quarterOverview'">
             <label for="select-team">Team</label>
             <select [(ngModel)]="selectedTeam" id="select-team" class="form-control"
-              (change)="updateTransactionData()" name="team">
+              (change)="dtElement.updateTransactionData(selectedTeam, getSelectedQuarter(), getSelectedYear())" name="team">
               <option *ngFor="let name of teamNames">{{ name }}</option>
             </select>
           </div>
@@ -40,7 +40,7 @@
                 <h4 class="card-title center">Withdrawn products</h4>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                      <app-reloadable-datatable [headers]="headers"></app-reloadable-datatable>
+                      <app-transaction-info-datatable></app-transaction-info-datatable>
                     </li>
                   </ul>
               </div>
