@@ -21,7 +21,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
+//@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
 public class UserController {
 
   @Autowired
@@ -41,11 +41,6 @@ public class UserController {
   @GetMapping("/stockOverview")
   public JsonResponse<List<ProductOverviewData>> stockOverview() {
 
-
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
-
     List<ProductOverviewData> data = userService.getAllOverviewProducts();
 
     return new JsonResponse<>(RequestStatus.SUCCESS, data);
@@ -59,9 +54,6 @@ public class UserController {
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
 
     if (isLoggedIn() && ((boolean) session.getAttribute("techArea"))) {
       boolean data = userService.withdrawCart(form, (User) session.getAttribute("user"));
@@ -86,10 +78,6 @@ public class UserController {
   @PostMapping("/getProductName")
   public JsonResponse<String> getProductName(@RequestBody GetProductNameForm form) {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
-
     String productName = userService.getProductNameFromNlot(form.getNlot());
     JsonResponse<String> response;
 
@@ -110,10 +98,6 @@ public class UserController {
   @GetMapping("/getAllTeamName")
   public JsonResponse<List<String>> getAllTeamName() {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
-
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllTeamName());
   }
 
@@ -125,9 +109,6 @@ public class UserController {
   @GetMapping("/getAllProductName")
   public JsonResponse<List<String>> getAllProductName() {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
 
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllProductName());
   }

@@ -23,13 +23,9 @@ public class AdminInterceptor implements HandlerInterceptor {
 
     User user = (User) request.getSession().getAttribute("user");
 
-//    System.out.println("[Log] method : "+request.getMethod());
-//    System.out.println("[Log] user is : "+user);
-
 
     if (request.getMethod().equals("OPTIONS")) {
 
-//      System.out.println("user is : "+user);
       return true;
     }
 

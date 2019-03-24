@@ -52,8 +52,8 @@ import fr.uniamu.ibdm.gsa_server.services.UserService;
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200", "http://localhost",
-    "http://51.77.147.140" })
+//@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200", "http://localhost",
+//    "http://51.77.147.140" })
 public class AdminController {
 
   @Autowired
