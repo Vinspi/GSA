@@ -30,6 +30,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   toastType: String;
 
   quarterBill: Big;
+  teamBill: Big;
   remainingLosses: Big;
   productLosses: Map<string, Big>;
   teamLosses: Map<string, Big>;
@@ -295,6 +296,9 @@ export class EditReportComponent implements AfterViewInit, OnInit {
         )
         .subscribe(transactionResponse => {
           if (transactionResponse.status === 'SUCCESS') {
+            this.teamBill = (<Array<TeamTransaction>> transactionResponse.data).reduce((acc, currentValue) => {
+              return acc+=(currentValue.aliquotPrice*currentValue.transactionQuantity);
+            }, 0);
             resolve(transactionResponse.data);
           } else {
             reject();
