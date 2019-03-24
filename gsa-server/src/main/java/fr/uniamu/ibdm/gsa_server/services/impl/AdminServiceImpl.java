@@ -703,7 +703,15 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public List<Product> getAllProductsWithAliquots() {
 
-    return (List) productRepository.findAll();
+    List<Product> products = (List) productRepository.findAll();
+
+    products.forEach(product -> {
+      product.getAliquots().removeIf(aliquot -> {
+        return aliquot.getAliquotQuantityHiddenStock() == 0 && aliquot.getAliquotQuantityVisibleStock() == 0;
+      });
+    });
+
+    return products;
 
   }
 

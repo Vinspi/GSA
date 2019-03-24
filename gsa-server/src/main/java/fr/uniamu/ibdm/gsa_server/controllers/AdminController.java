@@ -646,15 +646,9 @@ public class AdminController {
   @GetMapping("/getAllProductsWithAliquots")
   public JsonResponse<List<Product>> getAllProductsWithAliquots() {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
 
-    if (isAdmin()) {
-      return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllProductsWithAliquots());
-    } else {
-      return new JsonResponse<>("Not allowed", RequestStatus.FAIL);
-    }
+    return new JsonResponse<>(RequestStatus.SUCCESS, adminService.getAllProductsWithAliquots());
+
 
   }
 
