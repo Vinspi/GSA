@@ -69,7 +69,8 @@ public class AuthController {
       data.setUserTeam(teams);
 
 
-      if (request.getHeader("Origin") != null && request.getHeader("Origin").equals(appconfig.getIpTechArea())) {
+      if (request.getRemoteAddr().equals(appconfig.getIpTechArea())) {
+        
         data.setTechArea(true);
         session.setAttribute("techArea", true);
       } else {
