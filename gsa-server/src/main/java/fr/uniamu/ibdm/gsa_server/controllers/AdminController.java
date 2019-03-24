@@ -213,7 +213,7 @@ public class AdminController {
           return failedRequestResponse;
         }
       } else {
-        failedRequestResponse.setError("Could not add the aliquote");
+        failedRequestResponse.setError("form is not valid");
         return failedRequestResponse;
       }
     } else {

@@ -42,6 +42,15 @@ public class JsonResponse<T> implements Serializable {
     this.data = null;
   }
 
+  @Override
+  public String toString() {
+    return "{" +
+        "status:" + status +
+        ", error:" + error + '\'' +
+        ", data:" + data +
+        '}';
+  }
+
   public RequestStatus getStatus() {
     return status;
   }

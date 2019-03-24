@@ -55,7 +55,7 @@ public class AddAliquoteForm implements Form {
             && aliquotPrice.compareTo(BigDecimal.ZERO) > 0
             && aliquotProvider.length() > 0
             && patternProductName.matcher(aliquotProduct).matches()
-            && priceForm.validate()
+
     ) {
       return true;
     }
