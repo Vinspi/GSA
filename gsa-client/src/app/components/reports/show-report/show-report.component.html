@@ -1,0 +1,48 @@
+<div class="card">
+  <div class="card-body">
+    <form>
+      <div class="row">
+          <div class="form-group col-md-7">
+          <label for="select-team">Team</label>
+          <select [(ngModel)]="selectedTeam" id="select-team" class="form-control"
+            (change)="onTeamChange()" name="team">
+            <option *ngFor="let name of teamNames">{{ name }}</option>
+          </select>
+        </div>
+        <div class="form-group col-md-5">
+          <label for="select-quarter">Quarter</label>
+          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control"
+            (change)="onQuarterChange()" name="quarter">
+            <option *ngFor="let quarter of quartersText">{{ quarter }}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+    <div [hidden]="quarters && quarters.size === 0">
+      <div class="card">
+        <h4 class="card-title center">Billing</h4>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class="row">
+              <div class="col-sm-9 align-items-center">
+                <div *ngIf="user && user.admin" class="card-text"><b>Team loss : {{teamLoss}} €</b></div>
+                <div class="card-text"><b>Team withdrawal total : {{quarterBill}} €</b></div>
+              </div>
+              <div *ngIf="user && user.admin" class="col-sm-3 button-container align-items-center">
+                  <button (click)="exportToCsv()" class="btn btn-primary" type="button">Export to CSV</button>
+              </div>
+            </div>  
+          </li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 class="card-title center">Withdrawn products</h4>
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <app-transaction-info-datatable #transactions></app-transaction-info-datatable>
+            </li>
+          </ul>
+      </div>
+    </div>  
+</div>
+

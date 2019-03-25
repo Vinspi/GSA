@@ -39,4 +39,8 @@ export class UserService {
     return this.http.post<JsonResponse>(environment.API_URL + '/history', data, {withCredentials: true});
   }
 
+  getTeamReports(): Observable<JsonResponse> {
+    return this.http.get<JsonResponse>(environment.API_URL + '/teamReports', {withCredentials: true});
+  }
+
 }

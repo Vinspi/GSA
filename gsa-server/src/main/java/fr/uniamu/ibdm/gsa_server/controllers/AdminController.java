@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +21,6 @@ import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Product;
-import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
@@ -30,6 +28,7 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData;
@@ -40,13 +39,13 @@ import fr.uniamu.ibdm.gsa_server.requests.forms.AddProductForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddTeamTrimestrialReportForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.PeriodForm;
+import fr.uniamu.ibdm.gsa_server.requests.forms.QuarterForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.RemoveAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.SetupMaintenanceForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TransfertAliquotForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.UpdateAlertForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.WithdrawStatsForm;
-import fr.uniamu.ibdm.gsa_server.requests.forms.QuarterForm;
 import fr.uniamu.ibdm.gsa_server.services.AdminService;
 import fr.uniamu.ibdm.gsa_server.services.UserService;
 
@@ -460,7 +459,7 @@ public class AdminController {
 
 
   }
-
+  
   /**
    * REST endpoint returning all team names and their associated loss of a trimestrial report.
    *
@@ -536,6 +535,22 @@ public class AdminController {
 
 
   }
+  
+  /**
+   * Endpoint returning all team reports.
+   *
+   * @return a JsonResponse containing a list of team reports.
+   */
+  @GetMapping("/teamReports")
+  public JsonResponse<List<TeamReportData>> getAllTeamReports() {
+    List<TeamReportData> teamReports = adminService.getAllTeamReports();
+    if (teamReports == null) {
+      return new JsonResponse<>("Could not retrieve any data", RequestStatus.FAIL);
+    } else {
+      return new JsonResponse<>(RequestStatus.SUCCESS, teamReports);
+    }
+
+  } 
   
   /**
    * REST endpoint, retrieve all products and their aliquots.

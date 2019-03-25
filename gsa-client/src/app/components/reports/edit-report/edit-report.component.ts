@@ -6,11 +6,11 @@ import {
 } from '@angular/core';
 import { AdminService } from 'src/app/services/admin.service';
 import { UserService } from 'src/app/services/user.service';
-import { ReloadableDatatableComponent } from '../reloadable-datatable/reloadable-datatable.component';
-import { TeamTransaction } from 'src/app/teamTransaction';
+import { TransactionInfoDatatableComponent } from '../../reports/transaction-info-datatable/transaction-info-datatable.component';
 import { EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Big } from 'big.js';
+import { TeamTransaction } from 'src/app/teamTransaction';
 
 @Component({
   selector: 'app-edit-report',
@@ -18,8 +18,8 @@ import { Big } from 'big.js';
   styleUrls: ['./edit-report.component.css']
 })
 export class EditReportComponent implements AfterViewInit, OnInit {
-  @ViewChild(ReloadableDatatableComponent)
-  dtElement: ReloadableDatatableComponent;
+  @ViewChild(TransactionInfoDatatableComponent)
+  dtElement: TransactionInfoDatatableComponent;
 
   activeTab: string;
 
@@ -163,7 +163,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   public updateAllData() {
-    this.updateTransactionData();
+    this.updateTransactions();
     this.updateWithdrawnTransactionsTotalCost();
     // report needs to be initialised and saved first before being able of getting the remaining losses
     this.updateTeamLosses()
@@ -285,8 +285,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     });
   }
 
-  /*Transactions and datatable*/
-  private fetchTransactions(): Promise<any> {
+  public fetchTransactions(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.adminService
         .getQuarterlyWithdrawnTransactionsByTeamNameAndYear(
@@ -296,9 +295,9 @@ export class EditReportComponent implements AfterViewInit, OnInit {
         )
         .subscribe(transactionResponse => {
           if (transactionResponse.status === 'SUCCESS') {
-            this.teamBill = (<Array<TeamTransaction>> transactionResponse.data).reduce((acc, currentValue) => {
+            this.teamBill = new Big((<Array<TeamTransaction>> transactionResponse.data).reduce((acc, currentValue) => {
               return acc+=(currentValue.aliquotPrice*currentValue.transactionQuantity);
-            }, 0);
+            }, 0));
             resolve(transactionResponse.data);
           } else {
             reject();
@@ -307,32 +306,8 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     });
   }
 
-  public updateTransactionData() {
-    if (this.quarters.size > 0) {
-      this.fetchTransactions()
-        .then(data => {
-          this.dtElement.items = this.transactionValuesToArray(<Array<TeamTransaction>>data);
-          this.dtElement.reRenderData();
-        })
-        .catch(() => {
-          this.dtElement.items = [];
-          this.dtElement.reRenderData();
-          this.displayCouldNotRetrieveDataToast();
-        });
-    }
-  }
-
-  private transactionValuesToArray(transactions: Array<any>): Array<any> {
-    const transactionValues = [];
-    for (const transaction of transactions) {
-      const values = [];
-      values.push(transaction.transactionDate);
-      values.push(transaction.userName);
-      values.push(transaction.productName);
-      values.push(transaction.transactionQuantity);
-      values.push(transaction.aliquotPrice);
-      transactionValues.push(values);
-    }
-    return transactionValues;
+  private updateTransactions() {
+    this.fetchTransactions()
+    .then(withdrawnTransactions => this.dtElement.updateTransactionDatatable(<Array<TeamTransaction>> withdrawnTransactions));
   }
 }

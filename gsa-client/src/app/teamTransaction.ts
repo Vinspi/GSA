@@ -1,8 +1,8 @@
 export class TeamTransaction {
 
-    transactionDate: String;
-    userName: String;
-    productName: String;
+    transactionDate: string;
+    userName: string;
+    productName: string;
     transactionQuantity: number;
     aliquotPrice: number;
 

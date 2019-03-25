@@ -3,21 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { ReloadableDatatableComponent } from './reloadable-datatable.component';
+import { ShowReportComponent } from './show-report.component';
 
-describe('ReloadableDatatableComponent', () => {
-  let component: ReloadableDatatableComponent;
-  let fixture: ComponentFixture<ReloadableDatatableComponent>;
+describe('showReportComponent', () => {
+  let component: ShowReportComponent;
+  let fixture: ComponentFixture<ShowReportComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReloadableDatatableComponent ]
+      declarations: [ ShowReportComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ReloadableDatatableComponent);
+    fixture = TestBed.createComponent(ShowReportComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

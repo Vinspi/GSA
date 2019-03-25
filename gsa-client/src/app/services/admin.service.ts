@@ -94,6 +94,10 @@ export class AdminService {
     return this.http.get<JsonResponse>(this.BASE_URL + '/withdrawalTotalCost/?quarter=' + quarter + '&year=' + year, { withCredentials: true });
   }
 
+  getAllTeamReports() {
+    return this.http.get<JsonResponse>(this.BASE_URL + '/teamReports', { withCredentials: true });
+  }
+
   getAllProductsWithAliquots(): Observable<JsonResponse> {
     return this.http.get<JsonResponse>(this.BASE_URL+'/getAllProductsWithAliquots', {withCredentials: true});
   }

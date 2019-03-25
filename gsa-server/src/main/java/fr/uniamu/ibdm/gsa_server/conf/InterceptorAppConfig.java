@@ -34,6 +34,7 @@ public class InterceptorAppConfig implements WebMvcConfigurer {
         .excludePathPatterns("/isMaintenanceMode");
     registry.addInterceptor(loginInterceptor)
         .addPathPatterns("/withdrawCart")
-        .addPathPatterns("/history");
+        .addPathPatterns("/history")
+        .addPathPatterns("/teamReports");
   }
 }

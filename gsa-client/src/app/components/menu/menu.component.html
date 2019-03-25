@@ -15,7 +15,7 @@
         <i class="fas fa-history"></i> <span style="display: none;">History</span>
       </div>
     </a>
-    <a routerLink="product-manager" (click)="setSelectedValue('Reports')">
+    <a routerLink="/showreport" (click)="setSelectedValue('Reports')">
       <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Reports')}">
         <i class="fas fa-file-invoice-dollar"></i> <span style="display: none;">Reports</span>
       </div>
@@ -47,7 +47,7 @@
           <i class="fas fa-history"></i> <span style="display: none;">History</span>
         </div>
       </a>
-      <a routerLink="product-manager" (click)="setSelectedValue('Reports')">
+      <a routerLink="/showreport" (click)="setSelectedValue('Reports')">
         <div class="panel-icon-container" [ngClass]="{'panel-icon-container-selected': isSelected('Reports')}">
           <i class="fas fa-file-invoice-dollar"></i> <span style="display: none;">Reports</span>
         </div>

@@ -12,11 +12,13 @@ import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
+import fr.uniamu.ibdm.gsa_server.models.Member;
 import fr.uniamu.ibdm.gsa_server.models.Product;
 import fr.uniamu.ibdm.gsa_server.models.Species;
 import fr.uniamu.ibdm.gsa_server.models.Team;
 import fr.uniamu.ibdm.gsa_server.models.TeamTrimestrialReport;
 import fr.uniamu.ibdm.gsa_server.models.Transaction;
+import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.AlertType;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.Quarter;
 import fr.uniamu.ibdm.gsa_server.models.enumerations.StorageType;
@@ -28,6 +30,8 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.ReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData.ProductLossData;
@@ -859,4 +863,75 @@ public class AdminServiceImpl implements AdminService {
 
     return false;
   }
+
+  @Override
+  public List<TeamReportData> getAllTeamReports() {
+
+    List<TeamReportData> userTeamReports = new ArrayList<>();
+    List<Team> teams = (List<Team>) teamRepository.findAll();
+
+    for (Team team : teams) {
+      TeamReportData teamReport = new TeamReportData();
+      teamReport.setTeamName(team.getTeamName());
+
+      List<YearQuarterData> userTeamValidatedQuarters = new ArrayList<>();
+      List<ReportData> reports = new ArrayList<>();
+
+      List<Object[]> resultQuery = teamTrimestrialReportRepository
+          .findQuarterAndYearOfTeamNonEditableReports(team.getTeamId());
+      for (Object[] row : resultQuery) {
+        String quarter = (String) row[0];
+        Integer year = (Integer) row[1];
+
+        LocalDate firstQuarterDay = QuarterDateConverter
+            .getQuarterFirstDay(Quarter.valueOf(quarter), year);
+        LocalDate lastQuarterDay = QuarterDateConverter.getQuarterLastDay(Quarter.valueOf(quarter),
+            year);
+
+        ReportData report = new ReportData();
+        BigDecimal teamWithdrawalCost = BigDecimal.ZERO;
+
+        resultQuery = transactionRepository.getWithdrawnTransactionsByTeamNameAndQuarter(
+            team.getTeamName(), firstQuarterDay.toString(), lastQuarterDay.toString());
+
+        List<WithdrawnTransactionData> transactions = new ArrayList<>();
+
+        for (Object[] o : resultQuery) {
+          WithdrawnTransactionData transactionData = new WithdrawnTransactionData();
+
+          transactionData.setAliquotPrice((BigDecimal) o[0]);
+          Timestamp date = (Timestamp) o[1];
+          transactionData.setTransactionDate(date.toLocalDateTime().toLocalDate().toString());
+          transactionData.setTransactionQuantity((Integer) o[2]);
+          transactionData.setUserName((String) o[3]);
+          String source = (String) o[4];
+          String target = (String) o[5];
+          ProductPK productPk = new ProductPK();
+          productPk.setSource(source);
+          productPk.setTarget(target);
+          transactionData
+              .setProductName(productRepository.findById(productPk).get().getProductName());
+          transactions.add(transactionData);
+          BigDecimal transactionCost = transactionData.getAliquotPrice()
+              .multiply(BigDecimal.valueOf(transactionData.getTransactionQuantity()));
+          teamWithdrawalCost = teamWithdrawalCost.add(transactionCost);
+        }
+
+        BigDecimal teamLoss = teamTrimestrialReportRepository.getTeamValidatedReportLoss(quarter,
+            year, team.getTeamId());
+
+        report.setWithdrawnTransactions(transactions);
+        report.setQuarter(quarter);
+        report.setYear(year);
+        report.setTeamLoss(teamLoss);
+        report.setTeamWithdrawalCost(teamWithdrawalCost);
+        reports.add(report);
+      }
+      userTeamReports.add(new TeamReportData(reports, team.getTeamName()));
+    }
+
+    return userTeamReports;
+
+  }
+
 }
