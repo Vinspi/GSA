@@ -300,7 +300,6 @@ public class UserServiceImpl implements UserService {
       TeamReportData teamReport = new TeamReportData();
       teamReport.setTeamName(member.getTeam().getTeamName());
 
-      List<YearQuarterData> userTeamValidatedQuarters = new ArrayList<>();
       List<ReportData> reports = new ArrayList<>();
 
       // Fetching team validated quarters

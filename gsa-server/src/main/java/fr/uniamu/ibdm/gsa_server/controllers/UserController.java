@@ -23,8 +23,6 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200", "http://localhost",
-    "http://51.77.147.140" })
 public class UserController {
 
   @Autowired
@@ -44,10 +42,6 @@ public class UserController {
   @GetMapping("/stockOverview")
   public JsonResponse<List<ProductOverviewData>> stockOverview() {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
-
     List<ProductOverviewData> data = userService.getAllOverviewProducts();
 
     return new JsonResponse<>(RequestStatus.SUCCESS, data);
@@ -61,11 +55,8 @@ public class UserController {
   @PostMapping("/withdrawCart")
   public JsonResponse<Boolean> withdrawCart(@RequestBody List<WithdrowForm> form) {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
 
-    if (isLoggedIn() && ((boolean) session.getAttribute("techArea"))) {
+    if (((boolean) session.getAttribute("techArea"))) {
       boolean data = userService.withdrawCart(form, (User) session.getAttribute("user"));
       JsonResponse<Boolean> response;
 
@@ -88,10 +79,6 @@ public class UserController {
   @PostMapping("/getProductName")
   public JsonResponse<String> getProductName(@RequestBody GetProductNameForm form) {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
-
     String productName = userService.getProductNameFromNlot(form.getNlot());
     JsonResponse<String> response;
 
@@ -112,21 +99,12 @@ public class UserController {
   @GetMapping("/teamReports")
   public JsonResponse<List<TeamReportData>> getUserTeamReports() {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
-
     User user = (User) session.getAttribute("user");
-    JsonResponse<List<TeamReportData>> failedResponse = new JsonResponse<>(
-        "Could not retrieve any data", RequestStatus.FAIL);
-    if (!isLoggedIn()) {
-      return failedResponse;
-    }
 
     List<TeamReportData> teamReports = userService.getUserTeamReports(user.getUserId());
 
     if (teamReports == null) {
-      return failedResponse;
+      return new JsonResponse<>("Could not retrieve any data", RequestStatus.FAIL);
     } else {
       return new JsonResponse<>(RequestStatus.SUCCESS, teamReports);
     }
@@ -141,10 +119,6 @@ public class UserController {
   @GetMapping("/getAllTeamName")
   public JsonResponse<List<String>> getAllTeamName() {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
-
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllTeamName());
   }
 
@@ -156,9 +130,6 @@ public class UserController {
   @GetMapping("/getAllProductName")
   public JsonResponse<List<String>> getAllProductName() {
 
-    if (maintenanceBean.isMaintenanceMode()) {
-      return new JsonResponse<>(RequestStatus.MAINTENANCE);
-    }
 
     return new JsonResponse<>(RequestStatus.SUCCESS, userService.getAllProductName());
   }
@@ -171,19 +142,6 @@ public class UserController {
   @GetMapping("/isMaintenanceMode")
   public JsonResponse<Boolean> isMaintenanceMode() {
     return new JsonResponse<>(RequestStatus.SUCCESS, maintenanceBean.isMaintenanceMode());
-  }
-
-  /**
-   * Utility function, tell us if the user is logged in or not.
-   *
-   * @return tru if user is logged, false otherwise.
-   */
-  private boolean isLoggedIn() {
-    if (session.getAttribute("user") == null) {
-      return false;
-    } else {
-      return true;
-    }
   }
 
   /**
@@ -200,7 +158,7 @@ public class UserController {
 
     User user = (User) session.getAttribute("user");
 
-    if (isLoggedIn() && form.validate()) {
+    if (form.validate()) {
       if (form.getBegin() != null && form.getEnd() != null) {
         withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(user.getUserId(),
             form.getBegin(), form.getEnd());

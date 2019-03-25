@@ -57,7 +57,7 @@
             <div class="d-flex flex-row w-100 justify-content-center">
               <div class="label-seuil">New seuil : </div>
               <div class="form-group">
-                <input digitOnly pattern="[0-9]*" [(ngModel)]="seuil" type="number" name="seuil" class="form-control" id="new-seuil" aria-describedby="emailHelp" value="{{data[elementChoosed].seuil}}">
+                <input digitsOnly appNodrop appInputMaxLength="5" pattern="[0-9]*" [(ngModel)]="seuil" type="number" name="seuil" class="form-control" id="new-seuil" aria-describedby="emailHelp" value="{{data[elementChoosed].seuil}}">
               </div>
             </div>
           </form>

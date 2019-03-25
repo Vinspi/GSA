@@ -9,6 +9,7 @@ public class CustomConfig {
 
   private String ipTechArea;
   private String superAdminPassword;
+  private String corsAllowedAddress;
 
   public CustomConfig() {
   }
@@ -29,4 +30,11 @@ public class CustomConfig {
     this.superAdminPassword = superAdminPassword;
   }
 
+  public String getCorsAllowedAddress() {
+    return corsAllowedAddress;
+  }
+
+  public void setCorsAllowedAddress(String corsAllowedAddress) {
+    this.corsAllowedAddress = corsAllowedAddress;
+  }
 }

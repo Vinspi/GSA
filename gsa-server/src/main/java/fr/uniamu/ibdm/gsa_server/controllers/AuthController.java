@@ -24,7 +24,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
 public class AuthController {
 
   @Autowired
@@ -70,7 +69,8 @@ public class AuthController {
       data.setUserTeam(teams);
 
 
-      if (request.getHeader("Origin") != null && request.getHeader("Origin").equals(appconfig.getIpTechArea())) {
+      if (request.getRemoteAddr().equals(appconfig.getIpTechArea())) {
+        
         data.setTechArea(true);
         session.setAttribute("techArea", true);
       } else {

@@ -5,6 +5,6 @@
       <i *ngIf="notificationType == 'warning'" class="fas fa-exclamation-circle notif-warning-color"></i>
       <i *ngIf="notificationType == 'success'" class="fas fa-check notif-success-color"></i>
       <span *ngIf="notificationType == 'success'">Report available !</span>
-      <span *ngIf="notificationType == 'warning'">Next report available in X days.</span>
+      <span *ngIf="notificationType == 'warning'">Next report available in {{days}} days.</span>
   </div>
 </div>

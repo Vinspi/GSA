@@ -1,32 +1,15 @@
 package fr.uniamu.ibdm.gsa_server.services.impl;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.Month;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
 import fr.uniamu.ibdm.gsa_server.dao.AlertRepository;
 import fr.uniamu.ibdm.gsa_server.dao.AliquotRepository;
 import fr.uniamu.ibdm.gsa_server.dao.ProductRepository;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
+import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.dao.SpeciesRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TeamTrimestrialReportRepository;
 import fr.uniamu.ibdm.gsa_server.dao.TransactionRepository;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.AlertAliquot;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
-import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.TriggeredAlertsQuery;
 import fr.uniamu.ibdm.gsa_server.models.Alert;
 import fr.uniamu.ibdm.gsa_server.models.Aliquot;
 import fr.uniamu.ibdm.gsa_server.models.Member;
@@ -66,6 +49,24 @@ import fr.uniamu.ibdm.gsa_server.util.DateConverter;
 import fr.uniamu.ibdm.gsa_server.util.EnumConvertor;
 import fr.uniamu.ibdm.gsa_server.util.QuarterDateConverter;
 import fr.uniamu.ibdm.gsa_server.util.TimeFactory;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class AdminServiceImpl implements AdminService {
@@ -191,6 +192,7 @@ public class AdminServiceImpl implements AdminService {
       return true;
     }
   }
+
 
   @Override
   public List<TransactionData> getWithdrawalsHistoryBetween(LocalDate begin, LocalDate end) {
@@ -324,6 +326,7 @@ public class AdminServiceImpl implements AdminService {
   @Transactional(isolation = Isolation.SERIALIZABLE)
   public boolean addAliquot(AddAliquoteForm form) {
 
+    System.out.println("Add aliquot service");
     Aliquot newAliquot = new Aliquot();
     newAliquot.setAliquotNLot(form.getAliquotNLot());
     newAliquot.setAliquotExpirationDate(LocalDate.now().plusYears(1));
@@ -342,6 +345,7 @@ public class AdminServiceImpl implements AdminService {
     Optional<Aliquot> idExist = aliquotRepository.findById(form.getAliquotNLot());
 
     if (idExist.isPresent()) {
+      System.out.println("aliquot already exist");
       return false;
     }
 
@@ -350,6 +354,7 @@ public class AdminServiceImpl implements AdminService {
       aliquotRepository.save(newAliquot);
       return true;
     } else {
+      System.out.println("product don't exsits");
       return false;
     }
   }
@@ -702,7 +707,15 @@ public class AdminServiceImpl implements AdminService {
   @Override
   public List<Product> getAllProductsWithAliquots() {
 
-    return (List) productRepository.findAll();
+    List<Product> products = (List) productRepository.findAll();
+
+    products.forEach(product -> {
+      product.getAliquots().removeIf(aliquot -> {
+        return aliquot.getAliquotQuantityHiddenStock() == 0 && aliquot.getAliquotQuantityVisibleStock() == 0;
+      });
+    });
+
+    return products;
 
   }
 
