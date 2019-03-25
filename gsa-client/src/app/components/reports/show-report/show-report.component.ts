@@ -3,13 +3,18 @@ import {
   AfterViewInit,
   OnInit,
   ViewChild,
+  Output,
+  EventEmitter,
 } from '@angular/core';
 import { AdminService } from 'src/app/services/admin.service';
 import { UserService } from 'src/app/services/user.service';
 import { TransactionInfoDatatableComponent } from '../../reports/transaction-info-datatable/transaction-info-datatable.component';
-import { EventEmitter } from '@angular/core';
-import { Subject } from 'rxjs';
 import { Big } from 'big.js';
+import { AngularCsv } from 'angular7-csv/dist/Angular-csv';
+import { User } from 'src/app/user';
+import { LocalStorage } from '@ngx-pwa/local-storage';
+import { TeamReport } from 'src/app/teamReport';
+import { JsonResponse } from 'src/app/services/request-interfaces/json-response';
 
 @Component({
   selector: 'app-show-report',
@@ -17,14 +22,10 @@ import { Big } from 'big.js';
   styleUrls: ['./show-report.component.css']
 })
 export class ShowReportComponent implements AfterViewInit, OnInit {
-  @ViewChild(TransactionInfoDatatableComponent)
+  @ViewChild('transactions')
   dtElement: TransactionInfoDatatableComponent;
 
-  toast: EventEmitter<any> = new EventEmitter();
-  toastTrigger: Subject<void> = new Subject();
-  toastBody: String;
-  toastHeader: String;
-  toastType: String;
+  teamReports: Array<TeamReport>;
 
   quarterBill: Big;
   teamLoss: Big;
@@ -37,58 +38,44 @@ export class ShowReportComponent implements AfterViewInit, OnInit {
   quartersText: Array<string>;
   quarters: Map<string, any>;
 
+  user: User;
+
   constructor(
     private userService: UserService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private localStorage: LocalStorage
   ) { }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
 
   ngAfterViewInit(): void {
-    // Need to be sure that the items property is defined in the datatable child component.
-    this.initializeQuarters()
-      .then(quarterNumber => {
-        if (quarterNumber > 0) {
-          this.userService.getAllTeamName().subscribe(res => {
-            if (res && res.data.length > 0) {
-              this.teamNames = res.data;
-              this.teamNames.sort((left, right) => (left > right ? 1 : -1));
-              this.selectedTeam = this.teamNames[0];
-              this.updateAllData();
-            }
-          });
-        }
-      }).catch(() => this.displayCouldNotRetrieveDataToast());
-  }
-
-  private displayCouldNotRetrieveDataToast() {
-    this.toastBody = 'Some data could not be retrieved.';
-    this.toastHeader = 'Error';
-    this.toastType = 'danger';
-    this.toastTrigger.next();
-  }
-
-  private initializeQuarters(): Promise<Number> {
-    return new Promise((resolve, reject) => {
-      this.adminService.getQuarterAndYearValuesOfAllEditableReports().subscribe(res => {
-        if (res.status === 'SUCCESS') {
-          this.quartersText = new Array();
-          this.quarters = new Map();
-          for (const obj of res.data) {
-            const key = this.quarterToText(obj.quarter) + obj.year;
-            this.quartersText.push(key);
-            this.quarters.set(key, obj);
-          }
-
-          if (this.quarters.size > 0) {
-            this.selectedQuarter = this.quartersText[0];
-          }
-          resolve(this.quarters.size);
-        } else {
-          reject();
-        }
-      });
+    this.localStorage.getItem('user').subscribe(user => {
+      this.user = <User>user;
+      if (this.user.admin) {
+        this.adminService.getAllTeamReports().subscribe(res => {
+          this.initData(res);
+        });
+      } else {
+        this.userService.getTeamReports().subscribe(res => {
+          this.initData(res);
+        });
+      }
     });
+  }
+
+  private initData(response: JsonResponse) {
+    if (response.status === 'SUCCESS') {
+      this.teamReports = <Array<TeamReport>>response.data;
+    } else {
+      this.teamReports = [];
+    }
+    this.initializeTeams();
+    if (this.teamNames.length > 0) {
+      this.onTeamChange();
+    }
+    console.log(JSON.stringify(this.teamReports));
   }
 
   private getSelectedQuarter(): string {
@@ -115,28 +102,88 @@ export class ShowReportComponent implements AfterViewInit, OnInit {
     }
   }
 
-  public updateAllData() {
-    this.dtElement.updateTransactionData(this.selectedTeam, this.getSelectedQuarter(), this.getSelectedYear());
-    this.updateWithdrawnTransactionsTotalCost();
+  initializeTeams(): void {
+    this.teamNames = [];
+    for (const teamReport of this.teamReports) {
+      this.teamNames.push(teamReport.teamName);
+    }
+    if (this.teamNames.length > 0) {
+      this.selectedTeam = this.teamNames[0];
+    }
   }
 
-  private updateWithdrawnTransactionsTotalCost() {
-    this.adminService.getWithdrawnProductsTotalCost(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
-      if (response.status === 'SUCCESS') {
-        this.quarterBill = new Big(response.data);
-      } else {
-        this.quarterBill = new Big(0);
-      }
-    });
+  updateQuarters(): void {
+    this.quartersText = new Array();
+    this.quarters = new Map();
+    const teamReport = this.teamReports.find(teamReport => teamReport.teamName === this.selectedTeam);
+    for (const report of teamReport.reports) {
+      const key = this.quarterToText(report.quarter) + report.year;
+      this.quartersText.push(key);
+      this.quarters.set(key, {
+        quarter: report.quarter,
+        year: report.year
+      });
+    }
+    if (this.quarters.size > 0) {
+      this.selectedQuarter = this.quartersText[0];
+    }
   }
 
-  private updateRemainingLosses() {
-    this.adminService.getRemainingReportLosses(this.getSelectedQuarter(), this.getSelectedYear()).subscribe(response => {
-      if (response.status === 'SUCCESS') {
-        this.teamLoss = new Big(response.data);
-      } else {
-        this.teamLoss = new Big(0);
-      }
-    });
+  updateTeamQuarterBill(): void {
+    this.quarterBill = this.teamReports
+    .find(teamReport => teamReport.teamName === this.selectedTeam).reports
+    .find(report => report.quarter === this.getSelectedQuarter() && report.year === this.getSelectedYear()).teamWithdrawalCost;
   }
+
+  updateTeamLoss(): void {
+    if (this.user.admin) {
+      this.teamLoss = this.teamReports
+      .find(teamReport => teamReport.teamName === this.selectedTeam).reports
+      .find(report => report.quarter === this.getSelectedQuarter() && report.year === this.getSelectedYear()).teamLoss;
+    }
+  }
+
+  updateTeamWithdrawals(): void {
+    this.dtElement.updateTransactionDatatable(this.teamReports
+    .find(teamReport => teamReport.teamName === this.selectedTeam).reports
+    .find(report => report.quarter === this.getSelectedQuarter() && report.year === this.getSelectedYear()).withdrawnTransactions);
+  }
+
+  onTeamChange(): void {
+    this.updateQuarters();
+    if (this.quarters.size > 0) {
+      this.updateTeamQuarterBill();
+      this.updateTeamLoss();
+      this.updateTeamWithdrawals();
+    } else {
+      this.quarterBill = new Big(0);
+      this.teamLoss = new Big(0);
+    }
+  }
+
+  onQuarterChange(): void {
+    this.updateTeamQuarterBill();
+    this.updateTeamLoss();
+    this.updateTeamWithdrawals();
+  }
+
+  exportToCsv(): AngularCsv {
+    const csvOptions = {
+      fieldSeparator: ';',
+      quoteStrings: '"',
+      decimalseparator: '.',
+      showLabels: true,
+      showTitle: false,
+      useBom: true,
+    };
+
+    const csvData: Array<Array<any>> = [
+      ['Team loss', this.teamLoss, 'Team withdrawal bill', this.quarterBill],
+      [],
+      this.dtElement.headers,
+      ...this.dtElement.items
+    ];
+    return new AngularCsv(csvData, this.selectedTeam + '_bill_' + this.getSelectedQuarter() + '_' + this.getSelectedYear(), csvOptions);
+  }
+
 }

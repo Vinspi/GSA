@@ -3,6 +3,7 @@ package fr.uniamu.ibdm.gsa_server.controllers;
 import fr.uniamu.ibdm.gsa_server.conf.MaintenanceBean;
 import fr.uniamu.ibdm.gsa_server.models.User;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductOverviewData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonResponse;
 import fr.uniamu.ibdm.gsa_server.requests.RequestStatus;
@@ -15,13 +16,15 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@CrossOrigin(allowCredentials = "true", origins = {"http://localhost:4200", "http://localhost", "http://51.77.147.140"})
+@CrossOrigin(allowCredentials = "true", origins = { "http://localhost:4200", "http://localhost",
+    "http://51.77.147.140" })
 public class UserController {
 
   @Autowired
@@ -40,7 +43,6 @@ public class UserController {
    */
   @GetMapping("/stockOverview")
   public JsonResponse<List<ProductOverviewData>> stockOverview() {
-
 
     if (maintenanceBean.isMaintenanceMode()) {
       return new JsonResponse<>(RequestStatus.MAINTENANCE);
@@ -103,6 +105,35 @@ public class UserController {
   }
 
   /**
+   * Endpoint allowing the user to retrieve all of its past and current team trimestrial reports.
+   *
+   * @return A json formatted response.
+   */
+  @GetMapping("/teamReports")
+  public JsonResponse<List<TeamReportData>> getUserTeamReports() {
+
+    if (maintenanceBean.isMaintenanceMode()) {
+      return new JsonResponse<>(RequestStatus.MAINTENANCE);
+    }
+
+    User user = (User) session.getAttribute("user");
+    JsonResponse<List<TeamReportData>> failedResponse = new JsonResponse<>(
+        "Could not retrieve any data", RequestStatus.FAIL);
+    if (!isLoggedIn()) {
+      return failedResponse;
+    }
+
+    List<TeamReportData> teamReports = userService.getUserTeamReports(user.getUserId());
+
+    if (teamReports == null) {
+      return failedResponse;
+    } else {
+      return new JsonResponse<>(RequestStatus.SUCCESS, teamReports);
+    }
+
+  }
+
+  /**
    * REST controller for the getAllTeamName request, return a list of all team name.
    *
    * @return A json formatted response.
@@ -159,22 +190,26 @@ public class UserController {
    * Endpoint for /history. Return a list of withdrawals depending of the period given in argument.
    *
    * @param form the form containing the date of begin and the date of end of the period.
-   * @return if successful, a JSON response with a success status, otherwise a
-   *     JSON response with a fail status and an error message.
+   * @return if successful, a JSON response with a success status, otherwise a JSON response with a
+   *         fail status and an error message.
    */
   @PostMapping("/history")
-  public JsonResponse<List<TransactionData>> getUserWithdrawalsHistory(@RequestBody PeriodForm form) {
+  public JsonResponse<List<TransactionData>> getUserWithdrawalsHistory(
+      @RequestBody PeriodForm form) {
     List<TransactionData> withdrawalsHistory;
 
     User user = (User) session.getAttribute("user");
 
     if (isLoggedIn() && form.validate()) {
       if (form.getBegin() != null && form.getEnd() != null) {
-        withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(user.getUserId(), form.getBegin(), form.getEnd());
+        withdrawalsHistory = userService.getUserWithdrawalsHistoryBetween(user.getUserId(),
+            form.getBegin(), form.getEnd());
       } else if (form.getBegin() != null && form.getEnd() == null) {
-        withdrawalsHistory = userService.getUserWithdrawalsHistorySince(user.getUserId(), form.getBegin());
+        withdrawalsHistory = userService.getUserWithdrawalsHistorySince(user.getUserId(),
+            form.getBegin());
       } else if (form.getBegin() == null && form.getEnd() != null) {
-        withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(user.getUserId(), form.getEnd());
+        withdrawalsHistory = userService.getUserWithdrawalsHistoryUpTo(user.getUserId(),
+            form.getEnd());
       } else {
         withdrawalsHistory = userService.getUserWithdrawalsHistory(user.getUserId());
       }

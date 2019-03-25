@@ -1,8 +1,8 @@
 package fr.uniamu.ibdm.gsa_server.services;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import fr.uniamu.ibdm.gsa_server.dao.QueryObjects.StatsWithdrawQuery;
@@ -14,11 +14,12 @@ import fr.uniamu.ibdm.gsa_server.requests.JsonData.AlertsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.NextReportData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProductsStatsData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.ProvidersStatsData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TeamReportData;
+import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionLossesData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.WithdrawnTransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.JsonData.YearQuarterData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAlertForm;
-import fr.uniamu.ibdm.gsa_server.requests.JsonData.TransactionData;
 import fr.uniamu.ibdm.gsa_server.requests.forms.AddAliquoteForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.InventoryForm;
 import fr.uniamu.ibdm.gsa_server.requests.forms.TeamReportLossForm;
@@ -171,7 +172,7 @@ public interface AdminService {
       int year, Quarter quarter);
 
   /**
-   * This method returns the sum of prices of outdated and lost aliquots and details of each loss.
+   * Gets the sum of prices of outdated and lost aliquots and details of each loss.
    *
    * @param quarter value of Quarter enumeration
    * @param year year value
@@ -182,14 +183,14 @@ public interface AdminService {
       int year);
 
   /**
-   * This method returns the quarter and year of all editable reports.
+   * Gets the quarter and year of all editable reports.
    *
    * @return a list of quarter and year.
    */
   List<YearQuarterData> getQuarterAndYearOfAllEditableReports();
-
+  
   /**
-   * This method returns the current losses of each team in the database.
+   * Gets the current losses of each team in the database.
    * 
    * @param quarter value of Quarter enumeration
    * @param year year value
@@ -218,7 +219,7 @@ public interface AdminService {
    * @return the sum, null if no records were found
    */
   public BigDecimal getSumOfCostOfAllWithdrawnProductsByQuarter(Quarter quarter, int year);
-
+  
   /**
    * This method retrieve all products and their aliquots from the database.
    *
@@ -275,5 +276,12 @@ public interface AdminService {
    * @return true if we can do it, false otherwise.
    */
   boolean deleteOutdatedAliquot(Aliquot a);
-
+  
+  /**
+   * Gets all validated team reports.
+   * 
+   * @return a list of team reports
+   */
+  List<TeamReportData> getAllTeamReports();
+  
 }

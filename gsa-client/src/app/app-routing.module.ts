@@ -32,7 +32,7 @@ const routes: Routes = [
   {path: 'maintenance', component: MaintenanceComponent},
   {path: 'admin-maintenance', canActivate: [AdminGuard], component: AdminMaintenanceComponent},
   {path: 'editreport', canActivate: [AdminGuard, MaintenanceGuard], component: EditReportComponent},
-  {path: 'showreport', canActivate: [AdminGuard, MaintenanceGuard], component: ShowReportComponent},
+  {path: 'showreport', canActivate: [AuthGuard, MaintenanceGuard], component: ShowReportComponent},
   {path: 'outdated-manager', canActivate:[AdminGuard, MaintenanceGuard], component: OutdatedManagementComponent},
   {path: '**', component: NotFoundComponent}
 ];

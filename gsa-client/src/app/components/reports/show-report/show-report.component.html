@@ -1,30 +1,37 @@
 <div class="card">
   <div class="card-body">
-    <div *ngIf="quartersText && quartersText.length > 0; else noReport">
-      <form>
-        <div class="row">
-            <div class="form-group col-md-7">
-            <label for="select-team">Team</label>
-            <select [(ngModel)]="selectedTeam" id="select-team" class="form-control"
-              (change)="dtElement.updateTransactionData(selectedTeam, getSelectedQuarter(), getSelectedYear())" name="team">
-              <option *ngFor="let name of teamNames">{{ name }}</option>
-            </select>
-          </div>
-          <div class="form-group col-md-5">
-            <label for="select-quarter">Quarter</label>
-            <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control"
-              (change)="updateAllData()" name="quarter">
-              <option *ngFor="let quarter of quartersText">{{ quarter }}</option>
-            </select>
-          </div>
+    <form>
+      <div class="row">
+          <div class="form-group col-md-7">
+          <label for="select-team">Team</label>
+          <select [(ngModel)]="selectedTeam" id="select-team" class="form-control"
+            (change)="onTeamChange()" name="team">
+            <option *ngFor="let name of teamNames">{{ name }}</option>
+          </select>
         </div>
-      </form>
+        <div class="form-group col-md-5">
+          <label for="select-quarter">Quarter</label>
+          <select [(ngModel)]="selectedQuarter" id="select-quarter" class="form-control"
+            (change)="onQuarterChange()" name="quarter">
+            <option *ngFor="let quarter of quartersText">{{ quarter }}</option>
+          </select>
+        </div>
+      </div>
+    </form>
+    <div [hidden]="quarters && quarters.size === 0">
       <div class="card">
         <h4 class="card-title center">Billing</h4>
         <ul class="list-group list-group-flush">
           <li class="list-group-item">
-            <div class="card-text"><b>Team loss : {{teamLoss}} €</b></div>
-            <div class="card-text"><b>Withdrawal total : {{quarterBill}} €</b></div>
+            <div class="row">
+              <div class="col-sm-9 align-items-center">
+                <div *ngIf="user && user.admin" class="card-text"><b>Team loss : {{teamLoss}} €</b></div>
+                <div class="card-text"><b>Team withdrawal total : {{quarterBill}} €</b></div>
+              </div>
+              <div *ngIf="user && user.admin" class="col-sm-3 button-container align-items-center">
+                  <button (click)="exportToCsv()" class="btn btn-primary" type="button">Export to CSV</button>
+              </div>
+            </div>  
           </li>
         </ul>
       </div>
@@ -32,16 +39,10 @@
         <h4 class="card-title center">Withdrawn products</h4>
         <ul class="list-group list-group-flush">
             <li class="list-group-item">
-              <app-transaction-info-datatable></app-transaction-info-datatable>
+              <app-transaction-info-datatable #transactions></app-transaction-info-datatable>
             </li>
           </ul>
       </div>
-    </div>
-    <ng-template #noReport>
-      <div class="card-body center">
-        <h4>No reports available.</h4>
-      </div>
-    </ng-template>
-  </div>
+    </div>  
 </div>
 

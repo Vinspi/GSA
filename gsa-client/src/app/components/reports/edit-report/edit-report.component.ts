@@ -10,6 +10,7 @@ import { TransactionInfoDatatableComponent } from '../../reports/transaction-inf
 import { EventEmitter } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Big } from 'big.js';
+import { TeamTransaction } from 'src/app/teamTransaction';
 
 @Component({
   selector: 'app-edit-report',
@@ -161,12 +162,12 @@ export class EditReportComponent implements AfterViewInit, OnInit {
   }
 
   public updateAllData() {
-      this.dtElement.updateTransactionData(this.selectedTeam, this.getSelectedQuarter(), this.getSelectedYear());
-      this.updateWithdrawnTransactionsTotalCost();
-      // report needs to be initialised and saved first before being able of getting the remaining losses
-      this.updateTeamLosses()
-        .then(() => this.updateProductLosses())
-        .catch(() => this.displayCouldNotRetrieveDataToast());
+    this.updateTransactions();
+    this.updateWithdrawnTransactionsTotalCost();
+    // report needs to be initialised and saved first before being able of getting the remaining losses
+    this.updateTeamLosses()
+      .then(() => this.updateProductLosses())
+      .catch(() => this.displayCouldNotRetrieveDataToast());
   }
 
   public validateReport() {
@@ -283,13 +284,7 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     });
   }
 
-
-
-
-
-
-
-  /*private fetchTransactions(): Promise<any> {
+  public fetchTransactions(): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.adminService
         .getQuarterlyWithdrawnTransactionsByTeamNameAndYear(
@@ -307,31 +302,8 @@ export class EditReportComponent implements AfterViewInit, OnInit {
     });
   }
 
-  public updateTransactionData() {
-    // if (numberOfQuarters > 0) {
-      this.fetchTransactions()
-        .then(data => {
-          this.dtElement.items = this.transactionValuesToArray(<Array<TeamTransaction>>data);
-          this.dtElement.reRenderData();
-        })
-        .catch(() => {
-          this.dtElement.items = [];
-          this.dtElement.reRenderData();
-        });
-    //}
+  private updateTransactions() {
+    this.fetchTransactions()
+    .then(withdrawnTransactions => this.dtElement.updateTransactionDatatable(<Array<TeamTransaction>> withdrawnTransactions));
   }
-
-  private transactionValuesToArray(transactions: Array<any>): Array<any> {
-    const transactionValues = [];
-    for (const transaction of transactions) {
-      const values = [];
-      values.push(transaction.transactionDate);
-      values.push(transaction.userName);
-      values.push(transaction.productName);
-      values.push(transaction.transactionQuantity);
-      values.push(transaction.aliquotPrice);
-      transactionValues.push(values);
-    }
-    return transactionValues;
-  }*/
 }

@@ -7,7 +7,7 @@
           <div class="form-group col-md-7" *ngIf="activeTab==='quarterOverview'">
             <label for="select-team">Team</label>
             <select [(ngModel)]="selectedTeam" id="select-team" class="form-control"
-              (change)="dtElement.updateTransactionData(selectedTeam, getSelectedQuarter(), getSelectedYear())" name="team">
+              (change)="updateTransactions()" name="team">
               <option *ngFor="let name of teamNames">{{ name }}</option>
             </select>
           </div>

@@ -39,8 +39,8 @@ export class TransactionInfoDatatableComponent implements AfterViewInit, OnDestr
     this.dtTrigger.unsubscribe();
   }
 
-  public async reRenderData() {
-    return this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
+  public reRenderData() {
+    this.dtElement.dtInstance.then((dtInstance: DataTables.Api) => {
       // Destroy the table first
       dtInstance.destroy();
       // Call the dtTrigger to rerender again
@@ -48,48 +48,14 @@ export class TransactionInfoDatatableComponent implements AfterViewInit, OnDestr
     });
   }
 
-  private fetchTransactions(team: string, quarter: string, year: string): Promise<any> {
-    return new Promise<any>((resolve, reject) => {
-      this.adminService
-        .getQuarterlyWithdrawnTransactionsByTeamNameAndYear(
-          team,
-          quarter,
-          year
-        )
-        .subscribe(transactionResponse => {
-          if (transactionResponse.status === 'SUCCESS') {
-            resolve(transactionResponse.data);
-          } else {
-            reject();
-          }
-        });
-    });
+  public updateTransactionDatatable(transactions: Array<TeamTransaction>) {
+    this.items = transactions.map(transaction => [
+      transaction.transactionDate,
+      transaction.userName,
+      transaction.productName,
+      transaction.transactionQuantity,
+      transaction.aliquotPrice
+    ]);
+    this.reRenderData();
   }
-
-  public updateTransactionData(team: string, quarter: string, year: string) {
-    this.fetchTransactions(team, quarter, year)
-      .then(data => {
-        this.items = this.transactionValuesToArray(<Array<TeamTransaction>>data);
-        this.reRenderData();
-      })
-      .catch(() => {
-        this.items = [];
-        this.reRenderData();
-      });
-  }
-
-  private transactionValuesToArray(transactions: Array<any>): Array<any> {
-    const transactionValues = [];
-    for (const transaction of transactions) {
-      const values = [];
-      values.push(transaction.transactionDate);
-      values.push(transaction.userName);
-      values.push(transaction.productName);
-      values.push(transaction.transactionQuantity);
-      values.push(transaction.aliquotPrice);
-      transactionValues.push(values);
-    }
-    return transactionValues;
-  }
-
 }
