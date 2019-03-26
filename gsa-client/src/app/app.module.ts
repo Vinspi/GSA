@@ -28,6 +28,7 @@ import { TransactionInfoDatatableComponent } from './components/reports/transact
 
 import { InventoryComponent } from './components/inventory/inventory.component';
 import { DigitsOnlyDirective } from './directives/digits-only.directive';
+import { DigitOnlyDecDirective } from './directives/digit-only-dec.directive';
 import { ProductManagerComponent } from './components/product-manager/product-manager.component';
 import { AdminHomepageComponent } from './components/admin-homepage/admin-homepage.component';
 import { AlertsNotificationComponent } from './components/admin-homepage/alerts-notification/alerts-notification.component';
@@ -66,6 +67,7 @@ import { NodropDirective } from './directives/nodrop.directive';
     TransactionInfoDatatableComponent,
     InventoryComponent,
     DigitsOnlyDirective,
+    DigitOnlyDecDirective,
     ProductManagerComponent,
     AdminHomepageComponent,
     AlertsNotificationComponent,

@@ -74,8 +74,9 @@ public class AuthController {
         data.setTechArea(true);
         session.setAttribute("techArea", true);
       } else {
-        data.setTechArea(false);
-        session.setAttribute("techArea", false);
+        /* demo purpose */
+        data.setTechArea(true);
+        session.setAttribute("techArea", true);
       }
       response = new JsonResponse<>(RequestStatus.SUCCESS, data);
     }
