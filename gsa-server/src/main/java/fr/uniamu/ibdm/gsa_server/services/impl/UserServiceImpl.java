@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     user = userRepository.save(user);
 
     Member member = new Member();
-    member.setBegin(LocalDate.now());
+    member.setBegin(LocalDate.of(2017,01,01));
     member.setTeam(team);
     member.setUser(user);
     memberRepository.save(member);
