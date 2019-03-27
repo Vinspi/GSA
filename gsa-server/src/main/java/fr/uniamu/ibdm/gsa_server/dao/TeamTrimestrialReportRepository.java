@@ -31,7 +31,7 @@ public interface TeamTrimestrialReportRepository
       + "ORDER BY quarter, year", nativeQuery = true)
   List<Object[]> findQuarterAndYearOfNonEditableReports();
   
-  @Query(value = "SELECT quarter, year\n" + "FROM team_trimestrial_report\n"
+  @Query(value = "SELECT quarter, year, losses\n" + "FROM team_trimestrial_report\n"
       + "WHERE final_flag = 1 AND team_id = :team_id\n" + "GROUP BY quarter, year\n"
       + "ORDER BY quarter, year", nativeQuery = true)
   List<Object[]> findQuarterAndYearOfTeamNonEditableReports(@Param("team_id") long team_id);

@@ -1,5 +1,6 @@
 package fr.uniamu.ibdm.gsa_server.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,6 +19,7 @@ public class User implements Serializable {
   private long userId;
 
   private String userName;
+  @Column(unique = true)
   private String userEmail;
   private byte[] userPassword;
   private byte[] salt;

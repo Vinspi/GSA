@@ -58,7 +58,7 @@ export class MenuComponent implements OnInit, OnChanges {
     clearTimeout(this.globalOne);
     $('#panel span').hide();
     $('#panel span').css('opacity', '0');
-    $('.panel-icon-container i').css('font-size', '20pt');
+    $('.panel-icon-container i').css('font-size', '18pt');
   }
 
   

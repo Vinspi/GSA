@@ -308,6 +308,8 @@ public class UserServiceImpl implements UserService {
       for (Object[] row : resultQuery) {
         String quarter = (String) row[0];
         Integer year = (Integer) row[1];
+        BigDecimal losses = (BigDecimal) row[2];
+
 
         LocalDate firstQuarterDay = QuarterDateConverter
             .getQuarterFirstDay(Quarter.valueOf(quarter), year);
@@ -360,7 +362,7 @@ public class UserServiceImpl implements UserService {
         report.setWithdrawnTransactions(transactions);
         report.setQuarter(quarter);
         report.setYear(year);
-        report.setTeamLoss(null);
+        report.setTeamLoss(losses);
         report.setTeamWithdrawalCost(teamWithdrawalCost);
         reports.add(report);
       }

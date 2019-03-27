@@ -16,7 +16,7 @@ export class TransactionInfoDatatableComponent implements AfterViewInit, OnDestr
   dtOptions: DataTables.Settings = {};
   dtTrigger: Subject<any> = new Subject();
 
-  headers: Array<string> = ['Date', 'User name', 'Product name', 'Quantity', 'Unit price'];
+  headers: Array<string> = ['Date', 'User name', 'Product name', 'Quantity', 'Unit price (TF)'];
   items: Array<any>;
 
   constructor(private adminService: AdminService) { }

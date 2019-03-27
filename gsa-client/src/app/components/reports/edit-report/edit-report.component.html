@@ -110,7 +110,7 @@
                     {{teamLoss.key}}
                   </div>
                   <div class="col-md-3 center">
-                    <input appDigitOnlyDec appNodrop [attr.id]="'input-team-' + i" type="text" (change)="onTeamLossInputChange(teamLoss.key, $event)" required 
+                    <input appInputMaxLength="6" appDigitOnlyDec appNodrop [attr.id]="'input-team-' + i" type="text" (change)="onTeamLossInputChange(teamLoss.key, $event)" required 
                       [ngModel]="teamLosses.get(teamLoss.key)" class="form-control">
                   </div>
                 </div>

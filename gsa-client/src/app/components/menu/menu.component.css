@@ -15,6 +15,7 @@
     box-shadow: 0px 2px 5px 0px rgba(0,0,0,0.75);
 }
 
+
 @media only screen and (max-width: 1490px) {
     :host {
         width: 8%;
@@ -61,7 +62,7 @@
 .panel-icon-container {
 /* color: #31384e; */
     color: #888f9b;
-    font-size: 20pt;
+    font-size: 16pt;
     padding: 15px;
 }
 
